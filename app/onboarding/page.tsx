@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import WizardShell from "./_components/WizardShell";
 import SignOutButton from "@/components/sign-out-button";
-import Link from "next/link";
 
 export default async function OnboardingPage() {
   const supabase = await createClient();
@@ -14,45 +14,81 @@ export default async function OnboardingPage() {
     redirect("/auth");
   }
 
+  // Fetch the user's term (single term per user for MVP)
+  const { data: term } = await supabase
+    .from("terms")
+    .select("id, name")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  // Fetch courses if a term exists
+  const { data: courses } = term
+    ? await supabase
+        .from("courses")
+        .select("id, name, meeting_times")
+        .eq("term_id", term.id)
+        .order("created_at", { ascending: true })
+    : { data: [] };
+
+  // Fetch availability rules
+  const { data: availabilityRules } = await supabase
+    .from("availability_rules")
+    .select("id")
+    .eq("user_id", user.id)
+    .limit(1);
+
+  const hasTerm = !!term;
+  const hasCourses = (courses ?? []).length > 0;
+  const hasAvailability = (availabilityRules ?? []).length > 0;
+
+  // Returning user check: has term, courses, and availability — send to dashboard
+  if (hasTerm && hasCourses && hasAvailability) {
+    redirect("/dashboard");
+  }
+
+  // Compute which wizard step to resume at
+  let currentStep: number;
+  if (!hasTerm) {
+    currentStep = 1;
+  } else if (!hasCourses) {
+    currentStep = 2;
+  } else if (!hasAvailability) {
+    currentStep = 3;
+  } else {
+    currentStep = 4;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="border-b border-gray-200 bg-white">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
           <h1 className="text-lg font-semibold text-gray-900">BlockPlan</h1>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/dashboard"
-              className="text-sm text-gray-500 hover:text-gray-700"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/settings"
-              className="text-sm text-gray-500 hover:text-gray-700"
-            >
-              Settings
-            </Link>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-500">{user.email}</span>
             <SignOutButton />
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="mx-auto max-w-5xl px-4 py-12">
-        <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
-          <h2 className="mb-2 text-xl font-semibold text-gray-900">
+      <main className="mx-auto max-w-5xl px-4 py-10">
+        <div className="mb-8 text-center">
+          <h2 className="text-2xl font-bold text-gray-900">
             Welcome to BlockPlan
           </h2>
-          <p className="mb-4 text-gray-500">Onboarding coming in Phase 2</p>
-          <p className="text-sm text-gray-400">Signed in as {user.email}</p>
-          <Link
-            href="/dashboard"
-            className="mt-4 inline-block text-sm text-blue-600 hover:text-blue-700"
-          >
-            Go to Dashboard
-          </Link>
+          <p className="mt-2 text-gray-500">
+            Let&apos;s set up your term and courses so you can start planning.
+          </p>
         </div>
+
+        <WizardShell
+          initialStep={currentStep}
+          termId={term?.id ?? null}
+          courses={courses ?? []}
+        />
       </main>
     </div>
   );
