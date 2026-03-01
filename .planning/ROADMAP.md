@@ -65,7 +65,11 @@ Plans:
   3. User can delete parsed items they don't want and add items the parser missed
   4. Items with uncertain parsing are flagged as "needs review" so the user knows what to check
   5. The system falls back to rule-based parsing when no LLM API key is configured
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 03-01-PLAN.md — Dependencies, types, PDF extraction, rule-based parser, LLM parser, merge logic
+- [ ] 03-02-PLAN.md — Upload API routes, upload page UI, onboarding card enablement
+- [ ] 03-03-PLAN.md — Extraction review screen with edit/delete/add and batch confirm
 
 ### Phase 4: Planning Engine
 **Goal**: Users get a time-blocked study plan generated from their tasks and availability — and the plan replans itself when blocks are missed
@@ -120,7 +124,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 |-------|----------------|--------|-----------|
 | 1. Foundation | 0/4 | Planned | - |
 | 2. Core Data Model | 3/3 | Complete   | 2026-03-01 |
-| 3. Syllabus Pipeline | TBD | Not started | - |
+| 3. Syllabus Pipeline | 0/3 | Planned | - |
 | 4. Planning Engine | TBD | Not started | - |
 | 5. Views and Dashboard | TBD | Not started | - |
 | 6. Study Sessions | TBD | Not started | - |
