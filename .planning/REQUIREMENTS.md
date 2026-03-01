@@ -137,13 +137,69 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (populated during roadmap creation) | | |
+| AUTH-01 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Pending |
+| AUTH-04 | Phase 1 | Pending |
+| AUTH-05 | Phase 1 | Pending |
+| SECU-01 | Phase 1 | Pending |
+| SECU-02 | Phase 1 | Pending |
+| SECU-03 | Phase 1 | Pending |
+| ONBD-01 | Phase 2 | Pending |
+| ONBD-02 | Phase 2 | Pending |
+| ONBD-03 | Phase 2 | Pending |
+| ONBD-04 | Phase 2 | Pending |
+| ONBD-05 | Phase 2 | Pending |
+| TASK-01 | Phase 2 | Pending |
+| TASK-02 | Phase 2 | Pending |
+| TASK-03 | Phase 2 | Pending |
+| TASK-04 | Phase 2 | Pending |
+| TASK-05 | Phase 2 | Pending |
+| TASK-06 | Phase 2 | Pending |
+| TASK-07 | Phase 2 | Pending |
+| TASK-10 | Phase 2 | Pending |
+| SYLL-01 | Phase 3 | Pending |
+| SYLL-02 | Phase 3 | Pending |
+| SYLL-03 | Phase 3 | Pending |
+| SYLL-04 | Phase 3 | Pending |
+| SYLL-05 | Phase 3 | Pending |
+| SYLL-06 | Phase 3 | Pending |
+| SYLL-07 | Phase 3 | Pending |
+| SYLL-08 | Phase 3 | Pending |
+| SYLL-09 | Phase 3 | Pending |
+| SYLL-10 | Phase 3 | Pending |
+| SYLL-11 | Phase 3 | Pending |
+| PLAN-01 | Phase 4 | Pending |
+| PLAN-02 | Phase 4 | Pending |
+| PLAN-03 | Phase 4 | Pending |
+| PLAN-04 | Phase 4 | Pending |
+| PLAN-05 | Phase 4 | Pending |
+| PLAN-06 | Phase 4 | Pending |
+| PLAN-07 | Phase 4 | Pending |
+| RESC-01 | Phase 4 | Pending |
+| RESC-02 | Phase 4 | Pending |
+| RESC-03 | Phase 4 | Pending |
+| VIEW-01 | Phase 5 | Pending |
+| VIEW-02 | Phase 5 | Pending |
+| VIEW-03 | Phase 5 | Pending |
+| VIEW-04 | Phase 5 | Pending |
+| STDY-01 | Phase 6 | Pending |
+| STDY-02 | Phase 6 | Pending |
+| STDY-03 | Phase 6 | Pending |
+| STDY-04 | Phase 6 | Pending |
+| STDY-05 | Phase 6 | Pending |
+| STDY-06 | Phase 6 | Pending |
+| STDY-07 | Phase 6 | Pending |
+| CALX-01 | Phase 7 | Pending |
+| TASK-08 | Phase 7 | Pending |
+| TASK-09 | Phase 7 | Pending |
+| RESP-01 | Phase 7 | Pending |
 
 **Coverage:**
 - v1 requirements: 45 total
-- Mapped to phases: 0
-- Unmapped: 45
+- Mapped to phases: 45
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-28*
-*Last updated: 2026-02-28 after initial definition*
+*Last updated: 2026-02-28 after roadmap creation — all 45 requirements mapped*
