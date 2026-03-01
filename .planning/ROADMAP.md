@@ -49,7 +49,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. User can manually create a task with title, type, due date, estimated minutes, and course assignment
   5. User can edit, delete, and mark tasks as done from their task list
   6. User can view all tasks across courses with filtering and sorting
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 02-01-PLAN.md — Setup (Zod, proxy.ts) + onboarding wizard steps 1-2 (term and course creation)
+- [ ] 02-02-PLAN.md — Onboarding steps 3-4 (availability grid, next action) + course management page
+- [ ] 02-03-PLAN.md — Task management (CRUD, filter, sort, status toggle)
 
 ### Phase 3: Syllabus Pipeline
 **Goal**: Users can upload a syllabus PDF per course and confirm parsed tasks before they enter the system — the primary data entry path
@@ -115,7 +119,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 0/4 | Planned | - |
-| 2. Core Data Model | TBD | Not started | - |
+| 2. Core Data Model | 0/3 | Planned | - |
 | 3. Syllabus Pipeline | TBD | Not started | - |
 | 4. Planning Engine | TBD | Not started | - |
 | 5. Views and Dashboard | TBD | Not started | - |
