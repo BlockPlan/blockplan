@@ -2,7 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import SignOutButton from "@/components/sign-out-button";
 import DeleteAccountForm from "@/components/delete-account-form";
+import PlannerSettingsForm from "@/app/settings/_components/PlannerSettings";
 import Link from "next/link";
+import { DEFAULT_PLANNER_SETTINGS, type PlannerSettings } from "@/lib/validations/planner";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -14,6 +16,18 @@ export default async function SettingsPage() {
   if (!user) {
     redirect("/auth");
   }
+
+  // Load existing planner settings from user_profiles (may not exist yet)
+  const { data: profile } = await supabase
+    .from("user_profiles")
+    .select("planner_settings")
+    .eq("id", user.id)
+    .single();
+
+  const plannerSettings: PlannerSettings = {
+    ...DEFAULT_PLANNER_SETTINGS,
+    ...((profile?.planner_settings as Partial<PlannerSettings>) ?? {}),
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -41,6 +55,18 @@ export default async function SettingsPage() {
         <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6">
           <h3 className="mb-2 text-lg font-semibold text-gray-900">Account</h3>
           <p className="text-sm text-gray-500">Signed in as {user.email}</p>
+        </div>
+
+        {/* Planning Preferences */}
+        <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6">
+          <h3 className="mb-1 text-lg font-semibold text-gray-900">
+            Planning Preferences
+          </h3>
+          <p className="mb-6 text-sm text-gray-500">
+            Configure how your study blocks are scheduled. These settings apply
+            when generating your weekly plan.
+          </p>
+          <PlannerSettingsForm initialSettings={plannerSettings} />
         </div>
 
         {/* Delete Account Section */}
