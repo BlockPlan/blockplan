@@ -5,32 +5,32 @@
 See: .planning/PROJECT.md (updated 2026-02-25)
 
 **Core value:** Students always know exactly what to work on next and when — the plan adapts to them, not the other way around.
-**Current focus:** Phase 1 — Foundation
+**Current focus:** Phase 2 — Core Data Model
 
 ## Current Position
 
-Phase: 1 of 7 (Foundation)
-Plan: 3 of 4 in current phase (Plan 04 awaiting user setup)
-Status: Executing Phase 1
-Last activity: 2026-02-28 — Plans 01-03 executed, awaiting migration application
+Phase: 2 of 7 (Core Data Model)
+Plan: 1 of 4 in current phase
+Status: Executing Phase 2
+Last activity: 2026-03-01 — Plan 02-01 executed (onboarding wizard steps 1-2)
 
-Progress: [███████░░░] 75%
+Progress: [███████░░░] 25%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: —
-- Total execution time: —
+- Total plans completed: 1
+- Average duration: 5 min
+- Total execution time: 5 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 02-core-data-model | 1 | 5 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: —
+- Last 5 plans: 02-01 (5 min)
 - Trend: —
 
 *Updated after each plan completion*
@@ -47,6 +47,10 @@ Recent decisions affecting current work:
 - RLS + timezone schema decisions must be made in Phase 1 — retrofitting is high cost
 - PDF parsing uses `unpdf@1.4.0` (serverless-compatible); `pdf-parse` is incompatible with Vercel
 - LLM integration feature-flagged — app must function without it at every phase
+- Zod v3 (not v4) — flatten().fieldErrors pattern used throughout; v4 is breaking
+- proxy.ts renames middleware export to proxy per Next.js 16 convention
+- Single active term per user for MVP — createTerm rejects if term already exists
+- Meeting times stored as JSONB (day_of_week, start_time, end_time) — informational only in Phase 2
 
 ### Pending Todos
 
@@ -59,6 +63,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-28
-Stopped at: Roadmap created, ready to plan Phase 1
+Last session: 2026-03-01
+Stopped at: Completed 02-01-PLAN.md (onboarding wizard steps 1-2)
 Resume file: None
