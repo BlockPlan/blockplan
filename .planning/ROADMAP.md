@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 1: Foundation** - Supabase schema, RLS on all tables, auth flows, and middleware
 - [x] **Phase 2: Core Data Model** - Term/course/task structure, manual task entry, and onboarding wizard (completed 2026-03-01)
 - [x] **Phase 3: Syllabus Pipeline** - PDF upload, server-side text extraction, LLM parsing, and extraction review (completed 2026-03-01)
-- [ ] **Phase 4: Planning Engine** - Availability windows, scheduler, and auto-reschedule
+- [x] **Phase 4: Planning Engine** - Availability windows, scheduler, and auto-reschedule (completed 2026-03-01)
 - [ ] **Phase 5: Views and Dashboard** - Weekly view, daily view, today dashboard, and block completion
 - [ ] **Phase 6: Study Sessions** - LLM-powered study aids from pasted notes
 - [ ] **Phase 7: Export and Polish** - .ics calendar export, mobile-responsive design, and MVP completion
@@ -129,7 +129,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 1. Foundation | 0/4 | Planned | - |
 | 2. Core Data Model | 3/3 | Complete   | 2026-03-01 |
 | 3. Syllabus Pipeline | 3/3 | Complete   | 2026-03-01 |
-| 4. Planning Engine | 2/3 | In Progress|  |
+| 4. Planning Engine | 3/3 | Complete   | 2026-03-01 |
 | 5. Views and Dashboard | TBD | Not started | - |
 | 6. Study Sessions | TBD | Not started | - |
 | 7. Export and Polish | TBD | Not started | - |

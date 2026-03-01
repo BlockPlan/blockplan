@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 ## Current Position
 
 Phase: 4 of 7 (Planning Engine)
-Plan: 2 of 3 in current phase (04-01, 04-02 complete; 04-03 remaining)
-Status: Executing Phase 4
-Last activity: 2026-03-01 — Plan 04-02 executed (pure scheduler: generateSchedule() with greedy EDD bin packing, 12 unit tests passing)
+Plan: 3 of 3 in current phase (04-01, 04-02, 04-03 complete; Phase 4 complete)
+Status: Phase 4 Complete — Ready for Phase 5
+Last activity: 2026-03-01 — Plan 04-03 executed (/plan route, Server Actions for generatePlan/markBlockDone/markBlockMissed, 7-day PlanGrid with optimistic UI, auto-reschedule with sonner toast, risk badges)
 
-Progress: [██████████] 71%
+Progress: [████████████] 78%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
-- Average duration: 16 min
-- Total execution time: 100 min
+- Total plans completed: 7
+- Average duration: 24 min
+- Total execution time: 157 min
 
 **By Phase:**
 
@@ -29,16 +29,17 @@ Progress: [██████████] 71%
 |-------|-------|-------|----------|
 | 02-core-data-model | 2 | 79 min | 40 min |
 | 03-syllabus-pipeline | 3 | 13 min | 4 min |
-| 04-planning-engine | 1 | 8 min | 8 min |
+| 04-planning-engine | 3 | 76 min | 25 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-01 (6 min), 03-02 (2 min), 03-03 (5 min), 04-01 (?), 04-02 (8 min)
-- Trend: Fast
+- Last 5 plans: 03-03 (5 min), 04-01 (11 min), 04-02 (8 min), 04-03 (57 min)
+- Trend: Steady
 
 *Updated after each plan completion*
 | Phase 03-syllabus-pipeline P03 | 5 | 2 tasks | 3 files |
-| Phase 04-planning-engine P02 | 6 | 2 tasks | 5 files |
-| Phase 04-planning-engine P01 | 11 | 2 tasks | 5 files |
+| Phase 04-planning-engine P01 | 6 | 2 tasks | 5 files |
+| Phase 04-planning-engine P02 | 7 | 2 tasks | 5 files |
+| Phase 04-planning-engine P03 | 8 | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -78,6 +79,9 @@ Recent decisions affecting current work:
 - [Phase 04-02]: @date-fns/tz tz() context used for all timezone arithmetic — DST-safe wall-clock to UTC conversion
 - [Phase 04-planning-engine]: user_profiles uses id UUID PRIMARY KEY REFERENCES auth.users(id) — one profile per auth user, cascades on delete
 - [Phase 04-planning-engine]: planner_settings stored as JSONB — scheduler can extend settings without additional migrations
+- [Phase 04-03]: _runScheduler() private helper extracted — shared by generatePlan and markBlockMissed to avoid ~60 lines of duplication
+- [Phase 04-03]: markBlockMissed deletes only 'scheduled' blocks before reinserting — preserves done/missed history
+- [Phase 04-03]: router.refresh() after markBlockMissed to trigger Server Component re-render for new scheduled blocks
 
 ### Pending Todos
 
@@ -90,5 +94,5 @@ None — Phase 4 blocker resolved: scheduler algorithm implemented and tested.
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed 04-01-PLAN.md (user_profiles migration, plannerSettingsSchema, PlannerSettings UI with savePlannerSettings Server Action)
+Stopped at: Completed 04-03-PLAN.md (/plan route, Server Actions for generatePlan/markBlockDone/markBlockMissed, 7-day PlanGrid, optimistic UI, sonner toasts, risk badges — Phase 4 complete)
 Resume file: None

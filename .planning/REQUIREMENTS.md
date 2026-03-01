@@ -58,7 +58,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **PLAN-04**: User can configure max block length (default 90 minutes)
 - [x] **PLAN-05**: User can configure min block length (default 25 minutes)
 - [x] **PLAN-06**: User can configure buffer time between blocks (default 10 minutes)
-- [ ] **PLAN-07**: Plan outputs time blocks assigned to specific tasks for the next 7 days
+- [x] **PLAN-07**: Plan outputs time blocks assigned to specific tasks for the next 7 days
 
 ### Views & Dashboard
 
@@ -69,9 +69,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Auto-Reschedule
 
-- [ ] **RESC-01**: When user marks blocks as missed, system replans remaining tasks into future availability
-- [ ] **RESC-02**: System shows risk badges when workload exceeds available time
-- [ ] **RESC-03**: Catch-up mode recalculates plan from current state forward
+- [x] **RESC-01**: When user marks blocks as missed, system replans remaining tasks into future availability
+- [x] **RESC-02**: System shows risk badges when workload exceeds available time
+- [x] **RESC-03**: Catch-up mode recalculates plan from current state forward
 
 ### Study Session
 
@@ -175,10 +175,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PLAN-04 | Phase 4 | Complete |
 | PLAN-05 | Phase 4 | Complete |
 | PLAN-06 | Phase 4 | Complete |
-| PLAN-07 | Phase 4 | Pending |
-| RESC-01 | Phase 4 | Pending |
-| RESC-02 | Phase 4 | Pending |
-| RESC-03 | Phase 4 | Pending |
+| PLAN-07 | Phase 4 | Complete |
+| RESC-01 | Phase 4 | Complete |
+| RESC-02 | Phase 4 | Complete |
+| RESC-03 | Phase 4 | Complete |
 | VIEW-01 | Phase 5 | Pending |
 | VIEW-02 | Phase 5 | Pending |
 | VIEW-03 | Phase 5 | Pending |
