@@ -124,7 +124,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 |-------|----------------|--------|-----------|
 | 1. Foundation | 0/4 | Planned | - |
 | 2. Core Data Model | 3/3 | Complete   | 2026-03-01 |
-| 3. Syllabus Pipeline | 0/3 | Planned | - |
+| 3. Syllabus Pipeline | 1/3 | In Progress|  |
 | 4. Planning Engine | TBD | Not started | - |
 | 5. Views and Dashboard | TBD | Not started | - |
 | 6. Study Sessions | TBD | Not started | - |

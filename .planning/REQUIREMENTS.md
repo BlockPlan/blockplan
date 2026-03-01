@@ -26,16 +26,16 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Syllabus Upload & Extraction
 
 - [ ] **SYLL-01**: User can upload a PDF syllabus per course
-- [ ] **SYLL-02**: System extracts text from uploaded PDF on the server (no LLM required)
-- [ ] **SYLL-03**: System parses extracted text to identify assignments (title, due date, optional points/weight)
-- [ ] **SYLL-04**: System parses extracted text to identify exams (title, date)
-- [ ] **SYLL-05**: System parses extracted text to identify readings (chapter ranges, due dates if present)
-- [ ] **SYLL-06**: LLM-assisted parsing is available when API key is configured (feature-flagged)
+- [x] **SYLL-02**: System extracts text from uploaded PDF on the server (no LLM required)
+- [x] **SYLL-03**: System parses extracted text to identify assignments (title, due date, optional points/weight)
+- [x] **SYLL-04**: System parses extracted text to identify exams (title, date)
+- [x] **SYLL-05**: System parses extracted text to identify readings (chapter ranges, due dates if present)
+- [x] **SYLL-06**: LLM-assisted parsing is available when API key is configured (feature-flagged)
 - [ ] **SYLL-07**: User sees extraction review screen showing all parsed items before they become tasks
 - [ ] **SYLL-08**: User can edit any parsed item (title, due date, type, estimated minutes) before confirming
 - [ ] **SYLL-09**: User can delete parsed items they don't want
 - [ ] **SYLL-10**: User can add items the parser missed on the review screen
-- [ ] **SYLL-11**: Items with uncertain parsing are flagged as "needs review"
+- [x] **SYLL-11**: Items with uncertain parsing are flagged as "needs review"
 
 ### Task Management
 
@@ -159,16 +159,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TASK-07 | Phase 2 | Complete |
 | TASK-10 | Phase 2 | Complete |
 | SYLL-01 | Phase 3 | Pending |
-| SYLL-02 | Phase 3 | Pending |
-| SYLL-03 | Phase 3 | Pending |
-| SYLL-04 | Phase 3 | Pending |
-| SYLL-05 | Phase 3 | Pending |
-| SYLL-06 | Phase 3 | Pending |
+| SYLL-02 | Phase 3 | Complete |
+| SYLL-03 | Phase 3 | Complete |
+| SYLL-04 | Phase 3 | Complete |
+| SYLL-05 | Phase 3 | Complete |
+| SYLL-06 | Phase 3 | Complete |
 | SYLL-07 | Phase 3 | Pending |
 | SYLL-08 | Phase 3 | Pending |
 | SYLL-09 | Phase 3 | Pending |
 | SYLL-10 | Phase 3 | Pending |
-| SYLL-11 | Phase 3 | Pending |
+| SYLL-11 | Phase 3 | Complete |
 | PLAN-01 | Phase 4 | Pending |
 | PLAN-02 | Phase 4 | Pending |
 | PLAN-03 | Phase 4 | Pending |

@@ -5,32 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-02-25)
 
 **Core value:** Students always know exactly what to work on next and when — the plan adapts to them, not the other way around.
-**Current focus:** Phase 2 — Core Data Model
+**Current focus:** Phase 3 — Syllabus Pipeline
 
 ## Current Position
 
-Phase: 2 of 7 (Core Data Model)
-Plan: 3 of 4 in current phase (02-01, 02-02, 02-03 complete; 02-04 remaining)
-Status: Executing Phase 2
-Last activity: 2026-03-01 — Plan 02-02 executed (availability grid, wizard steps 3-4, course management)
+Phase: 3 of 7 (Syllabus Pipeline)
+Plan: 2 of 4 in current phase (03-01 complete; 03-02, 03-03, 03-04 remaining)
+Status: Executing Phase 3
+Last activity: 2026-03-01 — Plan 03-01 executed (syllabus processing library: types, extraction, rule-based + LLM parsers, merge)
 
-Progress: [████████░░] 43%
+Progress: [████████░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: 40 min
-- Total execution time: 79 min
+- Total plans completed: 3
+- Average duration: 27 min
+- Total execution time: 85 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 02-core-data-model | 2 | 79 min | 40 min |
+| 03-syllabus-pipeline | 1 | 6 min | 6 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (5 min), 02-03 (74 min)
+- Last 5 plans: 02-01 (5 min), 02-03 (74 min), 03-01 (6 min)
 - Trend: —
 
 *Updated after each plan completion*
@@ -57,6 +58,11 @@ Recent decisions affecting current work:
 - Availability grid cells→rules: consecutive same-type cells merge into start_time/end_time ranges per day
 - BYU-Idaho preset: Mon–Fri 7–9 AM and 7–10 PM as available (wall-clock, no timezone conversion)
 - Delete-all + insert-new batch pattern used for availability_rules persistence
+- LLM parser catches NoObjectGeneratedError separately — both error paths return [] for rule-based fallback
+- Rule-based parser skips 'other' lines entirely to reduce noise from non-item text
+- Merge prefers LLM items over rule-based duplicates (better semantic accuracy); threshold >60% word overlap
+- Parser functions are pure (text in, ParsedItem[] out) — no side effects, no DB access
+- All parsers return [] on failure rather than throwing — caller handles empty array
 
 ### Pending Todos
 
@@ -64,11 +70,10 @@ None yet.
 
 ### Blockers/Concerns
 
-- Phase 3 needs pre-implementation research: `unpdf` behavior with adversarial PDFs (scanned, password-protected, multi-column) and Vercel serverless timeout limits
 - Phase 4 needs pre-implementation research: scheduler algorithm design (bin packing, task splitting across blocks, overlap detection)
 
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed 02-02-PLAN.md (availability grid wizard step, course management page)
+Stopped at: Completed 03-01-PLAN.md (syllabus processing library: types, extraction, parsers, merge, Zod schemas)
 Resume file: None
