@@ -1,0 +1,149 @@
+# Requirements: BlockPlan
+
+**Defined:** 2026-02-28
+**Core Value:** Students always know exactly what to work on next and when — the plan adapts to them, not the other way around.
+
+## v1 Requirements
+
+Requirements for initial release. Each maps to roadmap phases.
+
+### Authentication
+
+- [ ] **AUTH-01**: User can sign up with email and password
+- [ ] **AUTH-02**: User can sign in with email and password
+- [ ] **AUTH-03**: User session persists across browser refresh
+- [ ] **AUTH-04**: User can sign out from any page
+- [ ] **AUTH-05**: User can delete their account and all associated data
+
+### Onboarding
+
+- [ ] **ONBD-01**: User can create a term with name, start date, and end date
+- [ ] **ONBD-02**: User can add courses to a term with name and optional meeting times
+- [ ] **ONBD-03**: User can set availability rules (available windows and blocked times per day of week)
+- [ ] **ONBD-04**: User can set preferred study windows within availability
+- [ ] **ONBD-05**: Onboarding wizard guides user through term → courses → syllabi/tasks → availability setup
+
+### Syllabus Upload & Extraction
+
+- [ ] **SYLL-01**: User can upload a PDF syllabus per course
+- [ ] **SYLL-02**: System extracts text from uploaded PDF on the server (no LLM required)
+- [ ] **SYLL-03**: System parses extracted text to identify assignments (title, due date, optional points/weight)
+- [ ] **SYLL-04**: System parses extracted text to identify exams (title, date)
+- [ ] **SYLL-05**: System parses extracted text to identify readings (chapter ranges, due dates if present)
+- [ ] **SYLL-06**: LLM-assisted parsing is available when API key is configured (feature-flagged)
+- [ ] **SYLL-07**: User sees extraction review screen showing all parsed items before they become tasks
+- [ ] **SYLL-08**: User can edit any parsed item (title, due date, type, estimated minutes) before confirming
+- [ ] **SYLL-09**: User can delete parsed items they don't want
+- [ ] **SYLL-10**: User can add items the parser missed on the review screen
+- [ ] **SYLL-11**: Items with uncertain parsing are flagged as "needs review"
+
+### Task Management
+
+- [ ] **TASK-01**: User can manually create tasks with title, type, due date, estimated minutes, and course
+- [ ] **TASK-02**: Each task has type: assignment, exam, reading, or other
+- [ ] **TASK-03**: Each task has status: todo, doing, or done
+- [ ] **TASK-04**: Each task has default estimated minutes based on type heuristic (editable)
+- [ ] **TASK-05**: User can edit any task's fields
+- [ ] **TASK-06**: User can delete tasks
+- [ ] **TASK-07**: User can mark tasks as done
+- [ ] **TASK-08**: For large tasks (papers/projects), system auto-suggests subtasks (outline, first draft, revise, final submit)
+- [ ] **TASK-09**: Subtasks have work-back scheduling from the parent due date
+- [ ] **TASK-10**: User can view all tasks across courses with filtering and sorting
+
+### Planning Engine
+
+- [ ] **PLAN-01**: System generates a plan that schedules tasks into available time blocks before their due dates
+- [ ] **PLAN-02**: Planning respects user-defined availability windows
+- [ ] **PLAN-03**: Planning uses earliest due date first as scheduling priority
+- [ ] **PLAN-04**: User can configure max block length (default 90 minutes)
+- [ ] **PLAN-05**: User can configure min block length (default 25 minutes)
+- [ ] **PLAN-06**: User can configure buffer time between blocks (default 10 minutes)
+- [ ] **PLAN-07**: Plan outputs time blocks assigned to specific tasks for the next 7 days
+
+### Views & Dashboard
+
+- [ ] **VIEW-01**: Weekly view shows blocks per day with assigned tasks
+- [ ] **VIEW-02**: Daily view shows top priorities and estimated time remaining today
+- [ ] **VIEW-03**: "Today" dashboard shows top 5 items, next scheduled block, and risk alerts
+- [ ] **VIEW-04**: User can mark plan blocks as done or missed from the view
+
+### Auto-Reschedule
+
+- [ ] **RESC-01**: When user marks blocks as missed, system replans remaining tasks into future availability
+- [ ] **RESC-02**: System shows risk badges when workload exceeds available time
+- [ ] **RESC-03**: Catch-up mode recalculates plan from current state forward
+
+### Study Session
+
+- [ ] **STDY-01**: User can start a study session for exam or reading tasks
+- [ ] **STDY-02**: User can paste notes or chapter headings as study input
+- [ ] **STDY-03**: System generates brief bullet-point summary from pasted content
+- [ ] **STDY-04**: System generates key terms list from pasted content
+- [ ] **STDY-05**: System generates 8-12 practice questions (recall + conceptual) from pasted content
+- [ ] **STDY-06**: Study session works in mock mode (deterministic output) when no LLM API key is set
+- [ ] **STDY-07**: No solutions for graded assignments or essay completion are provided
+
+### Calendar Export
+
+- [ ] **CALX-01**: User can export their plan as an .ics file download
+
+### Security & Privacy
+
+- [ ] **SECU-01**: PDFs are stored in private per-user storage buckets
+- [ ] **SECU-02**: No cross-user data access (RLS on all tables)
+- [ ] **SECU-03**: All timestamps stored as TIMESTAMPTZ (timezone-aware)
+
+### Responsive Design
+
+- [ ] **RESP-01**: All screens are responsive and usable on mobile (375px+)
+
+## v2 Requirements
+
+Deferred to future release. Tracked but not in current roadmap.
+
+### Notifications
+
+- **NOTF-01**: User receives in-app notifications for upcoming deadlines
+- **NOTF-02**: User can configure notification preferences
+
+### Calendar Sync
+
+- **SYNC-01**: User can sync plan directly to Google Calendar
+- **SYNC-02**: Two-way sync reflects changes back to BlockPlan
+
+### Billing
+
+- **BILL-01**: Stripe integration for freemium tier gating
+- **BILL-02**: LLM features gated behind paid plan
+
+## Out of Scope
+
+Explicitly excluded. Documented to prevent scope creep.
+
+| Feature | Reason |
+|---------|--------|
+| LMS API integration (Canvas/Blackboard) | Per-institution OAuth complexity; PDF upload is universal |
+| Essay writing / homework completion | Ethical boundary — study aids only, no cheating tools |
+| Native mobile app | Web-first responsive; covers mobile use cases |
+| Group/collaboration features | Individual planning tool; social adds complexity |
+| Grade tracking | Opens FERPA liability; not core to planning |
+| Email/push notifications | In-app dashboard surfaces urgency without infra burden |
+| Dark mode | Defer until core UX is stable; styling compounds tech debt |
+| Two-way calendar sync | .ics export covers MVP; OAuth maintenance deferred |
+
+## Traceability
+
+Which phases cover which requirements. Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| (populated during roadmap creation) | | |
+
+**Coverage:**
+- v1 requirements: 45 total
+- Mapped to phases: 0
+- Unmapped: 45
+
+---
+*Requirements defined: 2026-02-28*
+*Last updated: 2026-02-28 after initial definition*
