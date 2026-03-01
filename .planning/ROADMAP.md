@@ -81,7 +81,11 @@ Plans:
   3. User sees a 7-day set of scheduled time blocks, each assigned to a specific task
   4. When a block is missed, the system replans remaining tasks from the current date forward
   5. When workload exceeds available time, risk badges appear — no tasks are silently dropped
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 04-01-PLAN.md — Database migration (user_profiles), planner settings validation, settings UI
+- [ ] 04-02-PLAN.md — Pure scheduler function with TDD (greedy EDD bin packing)
+- [ ] 04-03-PLAN.md — Server Actions, 7-day plan view, block done/missed, auto-reschedule, risk badges
 
 ### Phase 5: Views and Dashboard
 **Goal**: Users have clear daily and weekly visibility into their scheduled work and can act on their plan from each view
@@ -125,7 +129,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 1. Foundation | 0/4 | Planned | - |
 | 2. Core Data Model | 3/3 | Complete   | 2026-03-01 |
 | 3. Syllabus Pipeline | 3/3 | Complete   | 2026-03-01 |
-| 4. Planning Engine | TBD | Not started | - |
+| 4. Planning Engine | 0/3 | Planned | - |
 | 5. Views and Dashboard | TBD | Not started | - |
 | 6. Study Sessions | TBD | Not started | - |
 | 7. Export and Polish | TBD | Not started | - |
