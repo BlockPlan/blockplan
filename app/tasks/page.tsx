@@ -45,10 +45,13 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
           <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900">BlockPlan</h1>
             <nav className="flex items-center gap-4 text-sm text-gray-600">
-              <Link href="/tasks" className="font-medium text-blue-600">
+              <Link href="/tasks" className="font-medium text-blue-600" aria-current="page">
                 Tasks
               </Link>
-              <Link href="/settings">Settings</Link>
+              <Link href="/courses" className="hover:text-gray-900 transition-colors">
+                Courses
+              </Link>
+              <Link href="/settings" className="hover:text-gray-900 transition-colors">Settings</Link>
             </nav>
           </div>
         </header>
