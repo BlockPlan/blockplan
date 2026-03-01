@@ -52,9 +52,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Planning Engine
 
-- [ ] **PLAN-01**: System generates a plan that schedules tasks into available time blocks before their due dates
-- [ ] **PLAN-02**: Planning respects user-defined availability windows
-- [ ] **PLAN-03**: Planning uses earliest due date first as scheduling priority
+- [x] **PLAN-01**: System generates a plan that schedules tasks into available time blocks before their due dates
+- [x] **PLAN-02**: Planning respects user-defined availability windows
+- [x] **PLAN-03**: Planning uses earliest due date first as scheduling priority
 - [ ] **PLAN-04**: User can configure max block length (default 90 minutes)
 - [ ] **PLAN-05**: User can configure min block length (default 25 minutes)
 - [ ] **PLAN-06**: User can configure buffer time between blocks (default 10 minutes)
@@ -169,9 +169,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SYLL-09 | Phase 3 | Complete |
 | SYLL-10 | Phase 3 | Complete |
 | SYLL-11 | Phase 3 | Complete |
-| PLAN-01 | Phase 4 | Pending |
-| PLAN-02 | Phase 4 | Pending |
-| PLAN-03 | Phase 4 | Pending |
+| PLAN-01 | Phase 4 | Complete |
+| PLAN-02 | Phase 4 | Complete |
+| PLAN-03 | Phase 4 | Complete |
 | PLAN-04 | Phase 4 | Pending |
 | PLAN-05 | Phase 4 | Pending |
 | PLAN-06 | Phase 4 | Pending |
