@@ -31,10 +31,10 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **SYLL-04**: System parses extracted text to identify exams (title, date)
 - [x] **SYLL-05**: System parses extracted text to identify readings (chapter ranges, due dates if present)
 - [x] **SYLL-06**: LLM-assisted parsing is available when API key is configured (feature-flagged)
-- [ ] **SYLL-07**: User sees extraction review screen showing all parsed items before they become tasks
-- [ ] **SYLL-08**: User can edit any parsed item (title, due date, type, estimated minutes) before confirming
-- [ ] **SYLL-09**: User can delete parsed items they don't want
-- [ ] **SYLL-10**: User can add items the parser missed on the review screen
+- [x] **SYLL-07**: User sees extraction review screen showing all parsed items before they become tasks
+- [x] **SYLL-08**: User can edit any parsed item (title, due date, type, estimated minutes) before confirming
+- [x] **SYLL-09**: User can delete parsed items they don't want
+- [x] **SYLL-10**: User can add items the parser missed on the review screen
 - [x] **SYLL-11**: Items with uncertain parsing are flagged as "needs review"
 
 ### Task Management
@@ -164,10 +164,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SYLL-04 | Phase 3 | Complete |
 | SYLL-05 | Phase 3 | Complete |
 | SYLL-06 | Phase 3 | Complete |
-| SYLL-07 | Phase 3 | Pending |
-| SYLL-08 | Phase 3 | Pending |
-| SYLL-09 | Phase 3 | Pending |
-| SYLL-10 | Phase 3 | Pending |
+| SYLL-07 | Phase 3 | Complete |
+| SYLL-08 | Phase 3 | Complete |
+| SYLL-09 | Phase 3 | Complete |
+| SYLL-10 | Phase 3 | Complete |
 | SYLL-11 | Phase 3 | Complete |
 | PLAN-01 | Phase 4 | Pending |
 | PLAN-02 | Phase 4 | Pending |

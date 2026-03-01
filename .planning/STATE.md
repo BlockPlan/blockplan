@@ -10,31 +10,32 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 ## Current Position
 
 Phase: 3 of 7 (Syllabus Pipeline)
-Plan: 3 of 4 in current phase (03-01, 03-02 complete; 03-03, 03-04 remaining)
+Plan: 4 of 4 in current phase (03-01, 03-02, 03-03 complete; 03-04 remaining)
 Status: Executing Phase 3
-Last activity: 2026-03-01 — Plan 03-02 executed (PDF upload flow: signed URL API, extraction API, upload page UI, onboarding card enabled)
+Last activity: 2026-03-01 — Plan 03-03 executed (extraction review screen: confirmSyllabusItems Server Action, ReviewScreen client component with edit/delete/add + Confirm All)
 
-Progress: [█████████░] 57%
+Progress: [█████████░] 64%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 22 min
-- Total execution time: 87 min
+- Total plans completed: 5
+- Average duration: 18 min
+- Total execution time: 92 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 02-core-data-model | 2 | 79 min | 40 min |
-| 03-syllabus-pipeline | 2 | 8 min | 4 min |
+| 03-syllabus-pipeline | 3 | 13 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (5 min), 02-03 (74 min), 03-01 (6 min), 03-02 (2 min)
+- Last 5 plans: 02-03 (74 min), 03-01 (6 min), 03-02 (2 min), 03-03 (5 min)
 - Trend: —
 
 *Updated after each plan completion*
+| Phase 03-syllabus-pipeline P03 | 5 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -66,6 +67,9 @@ Recent decisions affecting current work:
 - XHR (not fetch) used for upload PUT to get granular progress events — fetch does not expose upload progress
 - Signed URL pattern: client uploads directly to Supabase Storage (bypasses Vercel 4.5 MB body limit)
 - sessionStorage key parsedItems-{courseId} chosen for review page handoff — courseId scopes it to avoid collision
+- [Phase 03-03]: ReviewScreen extracted to _components/ — consistent with UploadForm pattern from plan 02
+- [Phase 03-03]: Edit saves clear the needsReview flag — once user confirms date/type, warning is no longer applicable
+- [Phase 03-03]: Items re-sorted after user-added item — maintains dueDate ascending order regardless of insert position
 
 ### Pending Todos
 
@@ -78,5 +82,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed 03-02-PLAN.md (PDF upload flow: signed URL API, extraction API, upload page UI, onboarding card)
+Stopped at: Completed 03-03-PLAN.md (extraction review screen: confirmSyllabusItems Server Action, ReviewScreen client component)
 Resume file: None
