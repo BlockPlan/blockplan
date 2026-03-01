@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { termSchema, courseSchema } from "@/lib/validations/onboarding";
+import { availabilityRulesArraySchema } from "@/lib/validations/availability";
 import { revalidatePath } from "next/cache";
 
 // --- Term Actions ---
@@ -134,6 +135,79 @@ export async function addCourse(
 
   revalidatePath("/onboarding");
   return { success: true, course: data };
+}
+
+// --- Availability Actions ---
+
+export type AvailabilityState = {
+  error?: string;
+  success?: boolean;
+};
+
+export async function saveAvailabilityRules(
+  prevState: AvailabilityState,
+  formData: FormData
+): Promise<AvailabilityState> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Not authenticated" };
+  }
+
+  const rulesRaw = formData.get("rules") as string | null;
+  if (!rulesRaw) {
+    return { error: "No availability rules provided." };
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(rulesRaw);
+  } catch {
+    return { error: "Invalid rules format." };
+  }
+
+  const result = availabilityRulesArraySchema.safeParse(parsed);
+  if (!result.success) {
+    const firstError =
+      result.error.errors[0]?.message ?? "Invalid availability rules.";
+    return { error: firstError };
+  }
+
+  // Delete-all + insert-new batch pattern
+  const { error: deleteError } = await supabase
+    .from("availability_rules")
+    .delete()
+    .eq("user_id", user.id);
+
+  if (deleteError) {
+    return { error: "Failed to clear existing availability rules." };
+  }
+
+  if (result.data.length > 0) {
+    const rows = result.data.map((rule) => ({
+      user_id: user.id,
+      day_of_week: rule.day_of_week,
+      start_time: rule.start_time,
+      end_time: rule.end_time,
+      rule_type: rule.rule_type,
+      label: rule.label ?? null,
+    }));
+
+    const { error: insertError } = await supabase
+      .from("availability_rules")
+      .insert(rows);
+
+    if (insertError) {
+      return { error: "Failed to save availability rules." };
+    }
+  }
+
+  revalidatePath("/onboarding");
+  return { success: true };
 }
 
 export async function deleteCourse(courseId: string): Promise<{ error?: string }> {

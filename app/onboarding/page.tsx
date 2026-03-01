@@ -32,12 +32,13 @@ export default async function OnboardingPage() {
         .order("created_at", { ascending: true })
     : { data: [] };
 
-  // Fetch availability rules
+  // Fetch availability rules (full data for pre-filling the grid)
   const { data: availabilityRules } = await supabase
     .from("availability_rules")
-    .select("id")
+    .select("day_of_week, start_time, end_time, rule_type, label")
     .eq("user_id", user.id)
-    .limit(1);
+    .order("day_of_week", { ascending: true })
+    .order("start_time", { ascending: true });
 
   const hasTerm = !!term;
   const hasCourses = (courses ?? []).length > 0;
@@ -88,6 +89,13 @@ export default async function OnboardingPage() {
           initialStep={currentStep}
           termId={term?.id ?? null}
           courses={courses ?? []}
+          availabilityRules={(availabilityRules ?? []).map((r) => ({
+            day_of_week: r.day_of_week as number,
+            start_time: r.start_time as string,
+            end_time: r.end_time as string,
+            rule_type: r.rule_type as "available" | "blocked" | "preferred",
+            label: r.label as string | undefined,
+          }))}
         />
       </main>
     </div>

@@ -3,6 +3,9 @@
 import { useState } from "react";
 import StepTerm from "./StepTerm";
 import StepCourses from "./StepCourses";
+import StepAvailability from "./StepAvailability";
+import StepNextAction from "./StepNextAction";
+import type { AvailabilityRule } from "@/lib/validations/availability";
 
 type Course = {
   id: string;
@@ -14,6 +17,7 @@ type WizardShellProps = {
   initialStep: number;
   termId: string | null;
   courses: Course[];
+  availabilityRules: AvailabilityRule[];
 };
 
 const STEPS = [
@@ -27,6 +31,7 @@ export default function WizardShell({
   initialStep,
   termId,
   courses,
+  availabilityRules,
 }: WizardShellProps) {
   const [currentStep, setCurrentStep] = useState(initialStep);
   const [currentTermId, setCurrentTermId] = useState<string | null>(termId);
@@ -137,48 +142,12 @@ export default function WizardShell({
           />
         )}
         {currentStep === 3 && (
-          <div className="text-center py-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              Set Your Availability
-            </h2>
-            <p className="text-gray-500">
-              Availability setup is coming soon. You will be able to set your
-              weekly study windows and blocked times here.
-            </p>
-            <button
-              onClick={() => setCurrentStep(4)}
-              className="mt-6 rounded-md bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              Continue
-            </button>
-          </div>
+          <StepAvailability
+            initialRules={availabilityRules}
+            onNext={() => setCurrentStep(4)}
+          />
         )}
-        {currentStep === 4 && (
-          <div className="text-center py-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              You are all set!
-            </h2>
-            <p className="text-gray-500">
-              Your term and courses are ready. Start by adding tasks manually
-              or upload a syllabus to get started.
-            </p>
-            <div className="mt-6 flex justify-center gap-3">
-              <a
-                href="/tasks"
-                className="rounded-md bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                Add Tasks Manually
-              </a>
-              <button
-                disabled
-                className="rounded-md border border-gray-200 px-6 py-2.5 text-sm font-semibold text-gray-400 cursor-not-allowed"
-                title="Coming in Phase 3"
-              >
-                Upload Syllabus (Coming Soon)
-              </button>
-            </div>
-          </div>
-        )}
+        {currentStep === 4 && <StepNextAction />}
       </div>
     </div>
   );
