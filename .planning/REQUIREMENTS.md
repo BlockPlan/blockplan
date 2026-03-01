@@ -25,7 +25,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Syllabus Upload & Extraction
 
-- [ ] **SYLL-01**: User can upload a PDF syllabus per course
+- [x] **SYLL-01**: User can upload a PDF syllabus per course
 - [x] **SYLL-02**: System extracts text from uploaded PDF on the server (no LLM required)
 - [x] **SYLL-03**: System parses extracted text to identify assignments (title, due date, optional points/weight)
 - [x] **SYLL-04**: System parses extracted text to identify exams (title, date)
@@ -158,7 +158,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TASK-06 | Phase 2 | Complete |
 | TASK-07 | Phase 2 | Complete |
 | TASK-10 | Phase 2 | Complete |
-| SYLL-01 | Phase 3 | Pending |
+| SYLL-01 | Phase 3 | Complete |
 | SYLL-02 | Phase 3 | Complete |
 | SYLL-03 | Phase 3 | Complete |
 | SYLL-04 | Phase 3 | Complete |
