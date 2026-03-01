@@ -119,7 +119,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 0/4 | Planned | - |
-| 2. Core Data Model | 1/3 | In Progress|  |
+| 2. Core Data Model | 2/3 | In Progress|  |
 | 3. Syllabus Pipeline | TBD | Not started | - |
 | 4. Planning Engine | TBD | Not started | - |
 | 5. Views and Dashboard | TBD | Not started | - |

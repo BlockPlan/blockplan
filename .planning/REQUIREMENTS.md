@@ -39,16 +39,16 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Task Management
 
-- [ ] **TASK-01**: User can manually create tasks with title, type, due date, estimated minutes, and course
-- [ ] **TASK-02**: Each task has type: assignment, exam, reading, or other
-- [ ] **TASK-03**: Each task has status: todo, doing, or done
-- [ ] **TASK-04**: Each task has default estimated minutes based on type heuristic (editable)
-- [ ] **TASK-05**: User can edit any task's fields
-- [ ] **TASK-06**: User can delete tasks
-- [ ] **TASK-07**: User can mark tasks as done
+- [x] **TASK-01**: User can manually create tasks with title, type, due date, estimated minutes, and course
+- [x] **TASK-02**: Each task has type: assignment, exam, reading, or other
+- [x] **TASK-03**: Each task has status: todo, doing, or done
+- [x] **TASK-04**: Each task has default estimated minutes based on type heuristic (editable)
+- [x] **TASK-05**: User can edit any task's fields
+- [x] **TASK-06**: User can delete tasks
+- [x] **TASK-07**: User can mark tasks as done
 - [ ] **TASK-08**: For large tasks (papers/projects), system auto-suggests subtasks (outline, first draft, revise, final submit)
 - [ ] **TASK-09**: Subtasks have work-back scheduling from the parent due date
-- [ ] **TASK-10**: User can view all tasks across courses with filtering and sorting
+- [x] **TASK-10**: User can view all tasks across courses with filtering and sorting
 
 ### Planning Engine
 
@@ -150,14 +150,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ONBD-03 | Phase 2 | Pending |
 | ONBD-04 | Phase 2 | Pending |
 | ONBD-05 | Phase 2 | Complete |
-| TASK-01 | Phase 2 | Pending |
-| TASK-02 | Phase 2 | Pending |
-| TASK-03 | Phase 2 | Pending |
-| TASK-04 | Phase 2 | Pending |
-| TASK-05 | Phase 2 | Pending |
-| TASK-06 | Phase 2 | Pending |
-| TASK-07 | Phase 2 | Pending |
-| TASK-10 | Phase 2 | Pending |
+| TASK-01 | Phase 2 | Complete |
+| TASK-02 | Phase 2 | Complete |
+| TASK-03 | Phase 2 | Complete |
+| TASK-04 | Phase 2 | Complete |
+| TASK-05 | Phase 2 | Complete |
+| TASK-06 | Phase 2 | Complete |
+| TASK-07 | Phase 2 | Complete |
+| TASK-10 | Phase 2 | Complete |
 | SYLL-01 | Phase 3 | Pending |
 | SYLL-02 | Phase 3 | Pending |
 | SYLL-03 | Phase 3 | Pending |

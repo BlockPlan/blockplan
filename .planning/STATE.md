@@ -10,27 +10,27 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 ## Current Position
 
 Phase: 2 of 7 (Core Data Model)
-Plan: 1 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: Executing Phase 2
-Last activity: 2026-03-01 — Plan 02-01 executed (onboarding wizard steps 1-2)
+Last activity: 2026-03-01 — Plan 02-03 executed (task management CRUD, filters, status toggle)
 
-Progress: [███████░░░] 25%
+Progress: [████████░░] 43%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 5 min
-- Total execution time: 5 min
+- Total plans completed: 2
+- Average duration: 40 min
+- Total execution time: 79 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 02-core-data-model | 1 | 5 min | 5 min |
+| 02-core-data-model | 2 | 79 min | 40 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (5 min)
+- Last 5 plans: 02-01 (5 min), 02-03 (74 min)
 - Trend: —
 
 *Updated after each plan completion*
@@ -51,6 +51,9 @@ Recent decisions affecting current work:
 - proxy.ts renames middleware export to proxy per Next.js 16 convention
 - Single active term per user for MVP — createTerm rejects if term already exists
 - Meeting times stored as JSONB (day_of_week, start_time, end_time) — informational only in Phase 2
+- Course sort in tasks page done client-side — Supabase does not support .order() on relation columns
+- estimated_minutes defaults applied in createTask Server Action (not in form) — keeps form stateless
+- StatusToggle uses useOptimistic inside useTransition for instant feedback with automatic revert on error
 
 ### Pending Todos
 
@@ -64,5 +67,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed 02-01-PLAN.md (onboarding wizard steps 1-2)
+Stopped at: Completed 02-03-PLAN.md (task management CRUD, filters, optimistic status toggle)
 Resume file: None
