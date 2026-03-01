@@ -142,3 +142,18 @@ None — tasks table and all RLS policies were created in Phase 1 migration (000
 ---
 *Phase: 02-core-data-model*
 *Completed: 2026-03-01*
+
+## Self-Check: PASSED
+
+- FOUND: lib/validations/task.ts
+- FOUND: app/tasks/actions.ts
+- FOUND: app/tasks/page.tsx
+- FOUND: app/tasks/_components/TaskFilters.tsx
+- FOUND: app/tasks/_components/TaskList.tsx
+- FOUND: app/tasks/_components/TaskForm.tsx
+- FOUND: app/tasks/_components/StatusToggle.tsx
+- FOUND: app/tasks/_components/DeleteConfirm.tsx
+- FOUND: .planning/phases/02-core-data-model/02-03-SUMMARY.md
+- FOUND commit 05f0aa1: feat(02-03) task Zod schema and Server Actions
+- FOUND commit 19b1187: feat(02-03) tasks page with filter/sort and TaskFilters
+- FOUND commit d93ce08: feat(02-03) task list, form, status toggle, delete confirmation
