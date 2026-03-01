@@ -32,7 +32,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can sign out from any page and is returned to the login screen
   4. User can delete their account and all associated data is removed
   5. No user can access another user's data — RLS blocks cross-user queries on all tables
-**Plans**: TBD
+**Plans**: 4 plans
+  - [ ] 01-01-PLAN.md — Bootstrap project, Supabase clients, database schema with RLS
+  - [ ] 01-02-PLAN.md — Auth flows (sign-up, sign-in, sign-out, session persistence)
+  - [ ] 01-03-PLAN.md — Account deletion with settings page
+  - [ ] 01-04-PLAN.md — Migration application and end-to-end verification
 
 ### Phase 2: Core Data Model
 **Goal**: Users can define their term, add courses, set availability, and manually create and manage tasks — the data foundation every other feature depends on
@@ -110,7 +114,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | TBD | Not started | - |
+| 1. Foundation | 0/4 | Planned | - |
 | 2. Core Data Model | TBD | Not started | - |
 | 3. Syllabus Pipeline | TBD | Not started | - |
 | 4. Planning Engine | TBD | Not started | - |
