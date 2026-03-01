@@ -19,8 +19,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **ONBD-01**: User can create a term with name, start date, and end date
 - [x] **ONBD-02**: User can add courses to a term with name and optional meeting times
-- [ ] **ONBD-03**: User can set availability rules (available windows and blocked times per day of week)
-- [ ] **ONBD-04**: User can set preferred study windows within availability
+- [x] **ONBD-03**: User can set availability rules (available windows and blocked times per day of week)
+- [x] **ONBD-04**: User can set preferred study windows within availability
 - [x] **ONBD-05**: Onboarding wizard guides user through term → courses → syllabi/tasks → availability setup
 
 ### Syllabus Upload & Extraction
@@ -147,8 +147,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SECU-03 | Phase 1 | Pending |
 | ONBD-01 | Phase 2 | Complete |
 | ONBD-02 | Phase 2 | Complete |
-| ONBD-03 | Phase 2 | Pending |
-| ONBD-04 | Phase 2 | Pending |
+| ONBD-03 | Phase 2 | Complete |
+| ONBD-04 | Phase 2 | Complete |
 | ONBD-05 | Phase 2 | Complete |
 | TASK-01 | Phase 2 | Complete |
 | TASK-02 | Phase 2 | Complete |

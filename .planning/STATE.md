@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 ## Current Position
 
 Phase: 2 of 7 (Core Data Model)
-Plan: 3 of 4 in current phase
+Plan: 3 of 4 in current phase (02-01, 02-02, 02-03 complete; 02-04 remaining)
 Status: Executing Phase 2
-Last activity: 2026-03-01 — Plan 02-03 executed (task management CRUD, filters, status toggle)
+Last activity: 2026-03-01 — Plan 02-02 executed (availability grid, wizard steps 3-4, course management)
 
 Progress: [████████░░] 43%
 
@@ -54,6 +54,9 @@ Recent decisions affecting current work:
 - Course sort in tasks page done client-side — Supabase does not support .order() on relation columns
 - estimated_minutes defaults applied in createTask Server Action (not in form) — keeps form stateless
 - StatusToggle uses useOptimistic inside useTransition for instant feedback with automatic revert on error
+- Availability grid cells→rules: consecutive same-type cells merge into start_time/end_time ranges per day
+- BYU-Idaho preset: Mon–Fri 7–9 AM and 7–10 PM as available (wall-clock, no timezone conversion)
+- Delete-all + insert-new batch pattern used for availability_rules persistence
 
 ### Pending Todos
 
@@ -67,5 +70,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed 02-03-PLAN.md (task management CRUD, filters, optimistic status toggle)
+Stopped at: Completed 02-02-PLAN.md (availability grid wizard step, course management page)
 Resume file: None

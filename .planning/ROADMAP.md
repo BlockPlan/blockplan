@@ -13,7 +13,7 @@ BlockPlan is built in seven phases, each delivering a coherent, verifiable capab
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Foundation** - Supabase schema, RLS on all tables, auth flows, and middleware
-- [ ] **Phase 2: Core Data Model** - Term/course/task structure, manual task entry, and onboarding wizard
+- [x] **Phase 2: Core Data Model** - Term/course/task structure, manual task entry, and onboarding wizard (completed 2026-03-01)
 - [ ] **Phase 3: Syllabus Pipeline** - PDF upload, server-side text extraction, LLM parsing, and extraction review
 - [ ] **Phase 4: Planning Engine** - Availability windows, scheduler, and auto-reschedule
 - [ ] **Phase 5: Views and Dashboard** - Weekly view, daily view, today dashboard, and block completion
@@ -119,7 +119,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 0/4 | Planned | - |
-| 2. Core Data Model | 2/3 | In Progress|  |
+| 2. Core Data Model | 3/3 | Complete   | 2026-03-01 |
 | 3. Syllabus Pipeline | TBD | Not started | - |
 | 4. Planning Engine | TBD | Not started | - |
 | 5. Views and Dashboard | TBD | Not started | - |
