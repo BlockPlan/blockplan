@@ -38,6 +38,7 @@ Progress: [██████████] 71%
 *Updated after each plan completion*
 | Phase 03-syllabus-pipeline P03 | 5 | 2 tasks | 3 files |
 | Phase 04-planning-engine P02 | 6 | 2 tasks | 5 files |
+| Phase 04-planning-engine P01 | 11 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -75,6 +76,8 @@ Recent decisions affecting current work:
 - [Phase 04-02]: Overdue tasks appear in risk_tasks even when successfully scheduled — they are already late
 - [Phase 04-02]: vitest used as test framework (not jest) — zero config, ESM-native, no additional config needed
 - [Phase 04-02]: @date-fns/tz tz() context used for all timezone arithmetic — DST-safe wall-clock to UTC conversion
+- [Phase 04-planning-engine]: user_profiles uses id UUID PRIMARY KEY REFERENCES auth.users(id) — one profile per auth user, cascades on delete
+- [Phase 04-planning-engine]: planner_settings stored as JSONB — scheduler can extend settings without additional migrations
 
 ### Pending Todos
 
@@ -87,5 +90,5 @@ None — Phase 4 blocker resolved: scheduler algorithm implemented and tested.
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed 04-02-PLAN.md (pure scheduler: generateSchedule() with TDD, 12 passing tests)
+Stopped at: Completed 04-01-PLAN.md (user_profiles migration, plannerSettingsSchema, PlannerSettings UI with savePlannerSettings Server Action)
 Resume file: None

@@ -55,9 +55,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **PLAN-01**: System generates a plan that schedules tasks into available time blocks before their due dates
 - [x] **PLAN-02**: Planning respects user-defined availability windows
 - [x] **PLAN-03**: Planning uses earliest due date first as scheduling priority
-- [ ] **PLAN-04**: User can configure max block length (default 90 minutes)
-- [ ] **PLAN-05**: User can configure min block length (default 25 minutes)
-- [ ] **PLAN-06**: User can configure buffer time between blocks (default 10 minutes)
+- [x] **PLAN-04**: User can configure max block length (default 90 minutes)
+- [x] **PLAN-05**: User can configure min block length (default 25 minutes)
+- [x] **PLAN-06**: User can configure buffer time between blocks (default 10 minutes)
 - [ ] **PLAN-07**: Plan outputs time blocks assigned to specific tasks for the next 7 days
 
 ### Views & Dashboard
@@ -172,9 +172,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PLAN-01 | Phase 4 | Complete |
 | PLAN-02 | Phase 4 | Complete |
 | PLAN-03 | Phase 4 | Complete |
-| PLAN-04 | Phase 4 | Pending |
-| PLAN-05 | Phase 4 | Pending |
-| PLAN-06 | Phase 4 | Pending |
+| PLAN-04 | Phase 4 | Complete |
+| PLAN-05 | Phase 4 | Complete |
+| PLAN-06 | Phase 4 | Complete |
 | PLAN-07 | Phase 4 | Pending |
 | RESC-01 | Phase 4 | Pending |
 | RESC-02 | Phase 4 | Pending |
