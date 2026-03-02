@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-25)
 
 **Core value:** Students always know exactly what to work on next and when — the plan adapts to them, not the other way around.
-**Current focus:** Phase 5 — Views and Dashboard (Complete)
+**Current focus:** Phase 6 — Study Sessions (Complete)
 
 ## Current Position
 
-Phase: 5 of 7 (Views and Dashboard)
-Plan: 3 of 3 in current phase (05-01, 05-02, 05-03 complete; Phase 5 complete)
-Status: Phase 5 Complete — Ready for Phase 6
-Last activity: 2026-03-02 — Phase 5 executed (NavHeader, /plan/day daily view, /dashboard with priorities/next block/risk alerts, cross-view revalidation)
+Phase: 6 of 7 (Study Sessions)
+Plan: 2 of 2 in current phase (06-01, 06-02 complete; Phase 6 complete)
+Status: Phase 6 Complete — Ready for Phase 7
+Last activity: 2026-03-02 — Phase 6 executed (study aid Zod schemas, AI SDK generation with mock fallback, study session UI at /study, entry points on exam/reading tasks)
 
-Progress: [██████████████] 85%
+Progress: [████████████████] 95%
 
 ## Performance Metrics
 
@@ -93,6 +93,6 @@ None — Phase 4 blocker resolved: scheduler algorithm implemented and tested.
 
 ## Session Continuity
 
-Last session: 2026-03-01
-Stopped at: Completed 04-03-PLAN.md (/plan route, Server Actions for generatePlan/markBlockDone/markBlockMissed, 7-day PlanGrid, optimistic UI, sonner toasts, risk badges — Phase 4 complete)
+Last session: 2026-03-02
+Stopped at: Completed 06-02-PLAN.md (study session page, server action with task type validation, entry points on exam/reading tasks — Phase 6 complete)
 Resume file: None

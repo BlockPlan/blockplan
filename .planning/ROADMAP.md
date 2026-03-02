@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Syllabus Pipeline** - PDF upload, server-side text extraction, LLM parsing, and extraction review (completed 2026-03-01)
 - [x] **Phase 4: Planning Engine** - Availability windows, scheduler, and auto-reschedule (completed 2026-03-01)
 - [x] **Phase 5: Views and Dashboard** - Weekly view, daily view, today dashboard, and block completion (completed 2026-03-02)
-- [ ] **Phase 6: Study Sessions** - LLM-powered study aids from pasted notes
+- [x] **Phase 6: Study Sessions** - LLM-powered study aids from pasted notes (completed 2026-03-02)
 - [ ] **Phase 7: Export and Polish** - .ics calendar export, mobile-responsive design, and MVP completion
 
 ## Phase Details
@@ -138,5 +138,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 3. Syllabus Pipeline | 3/3 | Complete   | 2026-03-01 |
 | 4. Planning Engine | 3/3 | Complete   | 2026-03-01 |
 | 5. Views and Dashboard | 3/3 | Complete   | 2026-03-02 |
-| 6. Study Sessions | 0/2 | Planned | - |
+| 6. Study Sessions | 2/2 | Complete | 2026-03-02 |
 | 7. Export and Polish | TBD | Not started | - |
