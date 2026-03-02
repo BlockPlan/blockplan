@@ -124,7 +124,11 @@ Plans:
   1. User can download their plan as an .ics file that imports correctly into Google Calendar or Apple Calendar with events at the right times in their timezone
   2. For large tasks (papers, projects), the system auto-suggests subtasks with work-back scheduling from the due date
   3. All screens are usable on a 375px-wide mobile screen without horizontal scroll or overlapping elements
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 07-01-PLAN.md — .ics calendar export (API route + Export button on plan view)
+- [ ] 07-02-PLAN.md — Auto-suggested subtasks with work-back scheduling for large tasks
+- [ ] 07-03-PLAN.md — Mobile responsive audit and fixes across all screens
 
 ## Progress
 
@@ -139,4 +143,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 4. Planning Engine | 3/3 | Complete   | 2026-03-01 |
 | 5. Views and Dashboard | 3/3 | Complete   | 2026-03-02 |
 | 6. Study Sessions | 2/2 | Complete | 2026-03-02 |
-| 7. Export and Polish | TBD | Not started | - |
+| 7. Export and Polish | 0/3 | Planned | - |
