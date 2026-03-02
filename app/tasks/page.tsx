@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import NavHeader from "@/app/plan/_components/NavHeader";
 import TaskList from "./_components/TaskList";
 import TaskFilters from "./_components/TaskFilters";
 
@@ -41,20 +42,7 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
   if (courseList.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <header className="border-b border-gray-200 bg-white">
-          <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-            <h1 className="text-lg font-semibold text-gray-900">BlockPlan</h1>
-            <nav className="flex items-center gap-4 text-sm text-gray-600">
-              <Link href="/tasks" className="font-medium text-blue-600" aria-current="page">
-                Tasks
-              </Link>
-              <Link href="/courses" className="hover:text-gray-900 transition-colors">
-                Courses
-              </Link>
-              <Link href="/settings" className="hover:text-gray-900 transition-colors">Settings</Link>
-            </nav>
-          </div>
-        </header>
+        <NavHeader />
         <main className="mx-auto max-w-3xl px-4 py-16 text-center">
           <div className="rounded-xl border border-gray-200 bg-white p-10">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-50">
@@ -134,17 +122,7 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="border-b border-gray-200 bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <h1 className="text-lg font-semibold text-gray-900">BlockPlan</h1>
-          <nav className="flex items-center gap-4 text-sm text-gray-600">
-            <Link href="/tasks" className="font-medium text-blue-600">
-              Tasks
-            </Link>
-            <Link href="/settings">Settings</Link>
-          </nav>
-        </div>
-      </header>
+      <NavHeader />
 
       <main className="mx-auto max-w-5xl px-4 py-8">
         <div className="mb-6 flex items-center justify-between">

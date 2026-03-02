@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import SignOutButton from "@/components/sign-out-button";
+import NavHeader from "./_components/NavHeader";
 import PlanGrid from "./_components/PlanGrid";
 
 interface RiskTask {
@@ -38,8 +37,6 @@ export default async function PlanPage() {
 
   // Compute risk tasks inline: tasks with no plan_blocks or insufficient planned minutes
   // relative to their due date and estimated time.
-  // Simplified: gather unique tasks that have blocks; flag those with status != done
-  // that have due_date before end of planning horizon (7 days from now) and insufficient coverage.
   const planningHorizonEnd = new Date();
   planningHorizonEnd.setDate(planningHorizonEnd.getDate() + 7);
 
@@ -110,33 +107,7 @@ export default async function PlanPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="border-b border-gray-200 bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <h1 className="text-lg font-semibold text-gray-900">BlockPlan</h1>
-          <nav className="flex items-center gap-4">
-            <Link
-              href="/dashboard"
-              className="text-sm text-gray-500 hover:text-gray-700"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/tasks"
-              className="text-sm text-gray-500 hover:text-gray-700"
-            >
-              Tasks
-            </Link>
-            <Link
-              href="/settings"
-              className="text-sm text-gray-500 hover:text-gray-700"
-            >
-              Settings
-            </Link>
-            <SignOutButton />
-          </nav>
-        </div>
-      </header>
+      <NavHeader />
 
       {/* Main Content */}
       <main className="mx-auto max-w-5xl px-4 py-8">

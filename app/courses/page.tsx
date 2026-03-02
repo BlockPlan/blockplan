@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import SignOutButton from "@/components/sign-out-button";
+import NavHeader from "@/app/plan/_components/NavHeader";
 import CourseList from "./_components/CourseList";
 import CourseForm from "./_components/CourseForm";
 
@@ -40,33 +39,7 @@ export default async function CoursesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="border-b border-gray-200 bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <h1 className="text-lg font-semibold text-gray-900">BlockPlan</h1>
-          <nav className="flex items-center gap-4 text-sm text-gray-600">
-            <Link href="/tasks" className="hover:text-gray-900 transition-colors">
-              Tasks
-            </Link>
-            <Link
-              href="/courses"
-              className="font-medium text-blue-600"
-              aria-current="page"
-            >
-              Courses
-            </Link>
-            <Link href="/settings" className="hover:text-gray-900 transition-colors">
-              Settings
-            </Link>
-          </nav>
-          <div className="flex items-center gap-3">
-            <span className="hidden sm:block text-sm text-gray-500">
-              {user.email}
-            </span>
-            <SignOutButton />
-          </div>
-        </div>
-      </header>
+      <NavHeader />
 
       {/* Main content */}
       <main className="mx-auto max-w-3xl px-4 py-8">
