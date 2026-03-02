@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { generatePlan } from "../actions";
 import PlanBlock from "./PlanBlock";
 import RiskBadge from "./RiskBadge";
+import ExportButton from "./ExportButton";
 
 interface RiskTask {
   taskId: string;
@@ -108,16 +109,19 @@ export default function PlanGrid({
 
   return (
     <div>
-      {/* Header row: title + generate button */}
+      {/* Header row: title + buttons */}
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-xl font-semibold text-gray-900">Your Plan</h2>
-        <button
-          onClick={handleGenerate}
-          disabled={isPending}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-60"
-        >
-          {isPending ? "Generating..." : "Generate Plan"}
-        </button>
+        <div className="flex items-center gap-2">
+          <ExportButton />
+          <button
+            onClick={handleGenerate}
+            disabled={isPending}
+            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-60"
+          >
+            {isPending ? "Generating..." : "Generate Plan"}
+          </button>
+        </div>
       </div>
 
       {/* No availability warning */}
