@@ -62,10 +62,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Views & Dashboard
 
-- [ ] **VIEW-01**: Weekly view shows blocks per day with assigned tasks
-- [ ] **VIEW-02**: Daily view shows top priorities and estimated time remaining today
-- [ ] **VIEW-03**: "Today" dashboard shows top 5 items, next scheduled block, and risk alerts
-- [ ] **VIEW-04**: User can mark plan blocks as done or missed from the view
+- [x] **VIEW-01**: Weekly view shows blocks per day with assigned tasks
+- [x] **VIEW-02**: Daily view shows top priorities and estimated time remaining today
+- [x] **VIEW-03**: "Today" dashboard shows top 5 items, next scheduled block, and risk alerts
+- [x] **VIEW-04**: User can mark plan blocks as done or missed from the view
 
 ### Auto-Reschedule
 
@@ -179,10 +179,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RESC-01 | Phase 4 | Complete |
 | RESC-02 | Phase 4 | Complete |
 | RESC-03 | Phase 4 | Complete |
-| VIEW-01 | Phase 5 | Pending |
-| VIEW-02 | Phase 5 | Pending |
-| VIEW-03 | Phase 5 | Pending |
-| VIEW-04 | Phase 5 | Pending |
+| VIEW-01 | Phase 5 | Complete |
+| VIEW-02 | Phase 5 | Complete |
+| VIEW-03 | Phase 5 | Complete |
+| VIEW-04 | Phase 5 | Complete |
 | STDY-01 | Phase 6 | Pending |
 | STDY-02 | Phase 6 | Pending |
 | STDY-03 | Phase 6 | Pending |

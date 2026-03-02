@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-25)
 
 **Core value:** Students always know exactly what to work on next and when — the plan adapts to them, not the other way around.
-**Current focus:** Phase 4 — Planning Engine
+**Current focus:** Phase 5 — Views and Dashboard (Complete)
 
 ## Current Position
 
-Phase: 4 of 7 (Planning Engine)
-Plan: 3 of 3 in current phase (04-01, 04-02, 04-03 complete; Phase 4 complete)
-Status: Phase 4 Complete — Ready for Phase 5
-Last activity: 2026-03-01 — Plan 04-03 executed (/plan route, Server Actions for generatePlan/markBlockDone/markBlockMissed, 7-day PlanGrid with optimistic UI, auto-reschedule with sonner toast, risk badges)
+Phase: 5 of 7 (Views and Dashboard)
+Plan: 3 of 3 in current phase (05-01, 05-02, 05-03 complete; Phase 5 complete)
+Status: Phase 5 Complete — Ready for Phase 6
+Last activity: 2026-03-02 — Phase 5 executed (NavHeader, /plan/day daily view, /dashboard with priorities/next block/risk alerts, cross-view revalidation)
 
-Progress: [████████████] 78%
+Progress: [██████████████] 85%
 
 ## Performance Metrics
 
