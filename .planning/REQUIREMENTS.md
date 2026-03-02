@@ -77,11 +77,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **STDY-01**: User can start a study session for exam or reading tasks
 - [ ] **STDY-02**: User can paste notes or chapter headings as study input
-- [ ] **STDY-03**: System generates brief bullet-point summary from pasted content
-- [ ] **STDY-04**: System generates key terms list from pasted content
-- [ ] **STDY-05**: System generates 8-12 practice questions (recall + conceptual) from pasted content
-- [ ] **STDY-06**: Study session works in mock mode (deterministic output) when no LLM API key is set
-- [ ] **STDY-07**: No solutions for graded assignments or essay completion are provided
+- [x] **STDY-03**: System generates brief bullet-point summary from pasted content
+- [x] **STDY-04**: System generates key terms list from pasted content
+- [x] **STDY-05**: System generates 8-12 practice questions (recall + conceptual) from pasted content
+- [x] **STDY-06**: Study session works in mock mode (deterministic output) when no LLM API key is set
+- [x] **STDY-07**: No solutions for graded assignments or essay completion are provided
 
 ### Calendar Export
 
@@ -185,11 +185,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VIEW-04 | Phase 5 | Complete |
 | STDY-01 | Phase 6 | Pending |
 | STDY-02 | Phase 6 | Pending |
-| STDY-03 | Phase 6 | Pending |
-| STDY-04 | Phase 6 | Pending |
-| STDY-05 | Phase 6 | Pending |
-| STDY-06 | Phase 6 | Pending |
-| STDY-07 | Phase 6 | Pending |
+| STDY-03 | Phase 6 | Complete |
+| STDY-04 | Phase 6 | Complete |
+| STDY-05 | Phase 6 | Complete |
+| STDY-06 | Phase 6 | Complete |
+| STDY-07 | Phase 6 | Complete |
 | CALX-01 | Phase 7 | Pending |
 | TASK-08 | Phase 7 | Pending |
 | TASK-09 | Phase 7 | Pending |
