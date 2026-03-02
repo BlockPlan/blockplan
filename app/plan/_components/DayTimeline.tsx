@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import PlanBlock from "./PlanBlock";
 
 interface PriorityTask {
@@ -131,13 +132,23 @@ export default function DayTimeline({
                       )}
                     </div>
                   </div>
-                  <span
-                    className={`flex-shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
-                      TYPE_BADGE_COLORS[task.type] ?? TYPE_BADGE_COLORS.other
-                    }`}
-                  >
-                    {task.type}
-                  </span>
+                  <div className="flex flex-shrink-0 items-center gap-2">
+                    {(task.type === "exam" || task.type === "reading") && (
+                      <Link
+                        href={`/study?task_id=${task.id}`}
+                        className="rounded px-2 py-0.5 text-xs font-medium text-blue-600 hover:bg-blue-50 hover:text-blue-800"
+                      >
+                        Study
+                      </Link>
+                    )}
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                        TYPE_BADGE_COLORS[task.type] ?? TYPE_BADGE_COLORS.other
+                      }`}
+                    >
+                      {task.type}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import TaskForm from "./TaskForm";
 import StatusToggle from "./StatusToggle";
 import DeleteConfirm from "./DeleteConfirm";
@@ -247,6 +248,15 @@ export default function TaskList({ tasks, courses }: TaskListProps) {
 
                 {/* Action buttons */}
                 <div className="flex flex-shrink-0 items-center gap-1">
+                  {(task.type === "exam" || task.type === "reading") && (
+                    <Link
+                      href={`/study?task_id=${task.id}`}
+                      className="rounded-lg px-2 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 hover:text-blue-800"
+                      title="Start study session"
+                    >
+                      Study
+                    </Link>
+                  )}
                   <button
                     onClick={() => setEditingTask(task)}
                     className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
