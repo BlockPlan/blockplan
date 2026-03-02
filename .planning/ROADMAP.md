@@ -111,7 +111,10 @@ Plans:
   2. System generates a bullet-point summary, key terms list, and 8-12 practice questions from the pasted content
   3. Study session works in mock mode with deterministic output when no LLM API key is configured
   4. No feature in the study session generates answers to graded assignments or essay content
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 06-01-PLAN.md — Study aid types, Zod schemas, LLM generation function, mock mode
+- [ ] 06-02-PLAN.md — Study session page UI, server action, task type validation, entry point buttons
 
 ### Phase 7: Export and Polish
 **Goal**: Users can export their plan to any calendar app and use BlockPlan on their phone — the app is complete and shippable
@@ -135,5 +138,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 3. Syllabus Pipeline | 3/3 | Complete   | 2026-03-01 |
 | 4. Planning Engine | 3/3 | Complete   | 2026-03-01 |
 | 5. Views and Dashboard | 3/3 | Complete   | 2026-03-02 |
-| 6. Study Sessions | TBD | Not started | - |
+| 6. Study Sessions | 0/2 | Planned | - |
 | 7. Export and Polish | TBD | Not started | - |
