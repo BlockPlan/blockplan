@@ -55,7 +55,7 @@ export default function PlannerSettingsForm({
             step={5}
             defaultValue={initialSettings.max_block_minutes}
             className={[
-              "w-28 rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500",
+              "w-28 rounded-lg border px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm",
               state.errors?.max_block_minutes
                 ? "border-red-300 bg-red-50 text-red-900"
                 : "border-gray-200 text-gray-900",
@@ -89,7 +89,7 @@ export default function PlannerSettingsForm({
             step={5}
             defaultValue={initialSettings.min_block_minutes}
             className={[
-              "w-28 rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500",
+              "w-28 rounded-lg border px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm",
               state.errors?.min_block_minutes
                 ? "border-red-300 bg-red-50 text-red-900"
                 : "border-gray-200 text-gray-900",
@@ -123,7 +123,7 @@ export default function PlannerSettingsForm({
             step={5}
             defaultValue={initialSettings.buffer_minutes}
             className={[
-              "w-28 rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500",
+              "w-28 rounded-lg border px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm",
               state.errors?.buffer_minutes
                 ? "border-red-300 bg-red-50 text-red-900"
                 : "border-gray-200 text-gray-900",

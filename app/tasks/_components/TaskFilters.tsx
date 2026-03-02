@@ -69,16 +69,16 @@ export default function TaskFilters({
 
   return (
     <div className="mb-6 rounded-xl border border-gray-200 bg-white p-4">
-      <div className="flex flex-wrap items-end gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:gap-4">
         {/* Course filter */}
-        <div className="min-w-[160px] flex-1">
+        <div className="w-full sm:min-w-[160px] sm:flex-1">
           <label className="mb-1 block text-xs font-medium text-gray-500 uppercase tracking-wide">
             Course
           </label>
           <select
             value={currentCourse ?? ""}
             onChange={(e) => updateParam("course", e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-base text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none sm:text-sm"
           >
             <option value="">All courses</option>
             {courses.map((c) => (
@@ -90,14 +90,14 @@ export default function TaskFilters({
         </div>
 
         {/* Type filter */}
-        <div className="min-w-[140px] flex-1">
+        <div className="w-full sm:min-w-[140px] sm:flex-1">
           <label className="mb-1 block text-xs font-medium text-gray-500 uppercase tracking-wide">
             Type
           </label>
           <select
             value={currentType ?? ""}
             onChange={(e) => updateParam("type", e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-base text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none sm:text-sm"
           >
             {TASK_TYPES.map((t) => (
               <option key={t.value} value={t.value}>
@@ -108,14 +108,14 @@ export default function TaskFilters({
         </div>
 
         {/* Status filter */}
-        <div className="min-w-[140px] flex-1">
+        <div className="w-full sm:min-w-[140px] sm:flex-1">
           <label className="mb-1 block text-xs font-medium text-gray-500 uppercase tracking-wide">
             Status
           </label>
           <select
             value={currentStatus ?? ""}
             onChange={(e) => updateParam("status", e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-base text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none sm:text-sm"
           >
             {TASK_STATUSES.map((s) => (
               <option key={s.value} value={s.value}>
@@ -126,14 +126,14 @@ export default function TaskFilters({
         </div>
 
         {/* Sort */}
-        <div className="min-w-[160px] flex-1">
+        <div className="w-full sm:min-w-[160px] sm:flex-1">
           <label className="mb-1 block text-xs font-medium text-gray-500 uppercase tracking-wide">
             Sort by
           </label>
           <select
             value={currentSort ?? "due_date"}
             onChange={(e) => updateParam("sort", e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-base text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none sm:text-sm"
           >
             {SORT_OPTIONS.map((s) => (
               <option key={s.value} value={s.value}>

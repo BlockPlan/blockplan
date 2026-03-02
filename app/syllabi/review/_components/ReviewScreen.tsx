@@ -106,12 +106,12 @@ function ItemForm({
           value={values.title}
           onChange={(e) => set("title", e.target.value)}
           required
-          className="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-base focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
           placeholder="Assignment title"
         />
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div>
           <label className="mb-1 block text-xs font-medium text-gray-700">
             Type
@@ -119,7 +119,7 @@ function ItemForm({
           <select
             value={values.type}
             onChange={(e) => set("type", e.target.value as ParsedItem["type"])}
-            className="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-base focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
           >
             <option value="assignment">Assignment</option>
             <option value="exam">Exam</option>
@@ -136,7 +136,7 @@ function ItemForm({
             type="date"
             value={values.dueDate}
             onChange={(e) => set("dueDate", e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-base focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
           />
         </div>
 
@@ -150,7 +150,7 @@ function ItemForm({
             max={1440}
             value={values.estimatedMinutes}
             onChange={(e) => set("estimatedMinutes", e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-base focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
             placeholder="60"
           />
         </div>
@@ -310,7 +310,7 @@ export default function ReviewScreen({ courseId, courseName }: ReviewScreenProps
       <header className="border-b border-gray-200 bg-white">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
           <h1 className="text-lg font-semibold text-gray-900">BlockPlan</h1>
-          <nav className="flex items-center gap-4 text-sm text-gray-600">
+          <nav className="hidden items-center gap-4 text-sm text-gray-600 sm:flex">
             <a href="/tasks" className="hover:text-gray-900 transition-colors">
               Tasks
             </a>
@@ -407,7 +407,7 @@ export default function ReviewScreen({ courseId, courseName }: ReviewScreenProps
         {(items.length > 0 || showAddForm) && (
           <>
             {/* Toolbar */}
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-gray-500">
                 {items.length} {items.length === 1 ? "item" : "items"} parsed
               </p>

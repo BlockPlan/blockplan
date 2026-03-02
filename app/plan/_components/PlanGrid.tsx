@@ -110,7 +110,7 @@ export default function PlanGrid({
   return (
     <div>
       {/* Header row: title + buttons */}
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-xl font-semibold text-gray-900">Your Plan</h2>
         <div className="flex items-center gap-2">
           <ExportButton />
@@ -138,7 +138,7 @@ export default function PlanGrid({
       )}
 
       {/* 7-day grid */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-7">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-7">
         {dayColumns.map((col) => (
           <div key={col.key} className="min-w-0">
             {/* Day header */}

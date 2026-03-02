@@ -115,7 +115,7 @@ export default function TaskForm({ task, courses, onSuccess }: TaskFormProps) {
             defaultValue={task?.title ?? ""}
             placeholder="e.g. Chapter 5 Reading"
             required
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-base text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none sm:text-sm"
           />
           {state.errors?.title && (
             <p className="mt-1 text-xs text-red-600">{state.errors.title[0]}</p>
@@ -134,7 +134,7 @@ export default function TaskForm({ task, courses, onSuccess }: TaskFormProps) {
             id="type"
             name="type"
             defaultValue={defaultType}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-base text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none sm:text-sm"
           >
             {TASK_TYPES.map((t) => (
               <option key={t.value} value={t.value}>
@@ -159,7 +159,7 @@ export default function TaskForm({ task, courses, onSuccess }: TaskFormProps) {
             id="course_id"
             name="course_id"
             defaultValue={task?.course_id ?? ""}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-base text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none sm:text-sm"
           >
             <option value="" disabled>
               Select a course
@@ -215,7 +215,7 @@ export default function TaskForm({ task, courses, onSuccess }: TaskFormProps) {
             max="1440"
             defaultValue={task?.estimated_minutes ?? ""}
             placeholder={`Default: ${DEFAULT_MINUTES[defaultType]}m for ${defaultType}`}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-base text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none sm:text-sm"
           />
           {state.errors?.estimated_minutes && (
             <p className="mt-1 text-xs text-red-600">
@@ -234,7 +234,7 @@ export default function TaskForm({ task, courses, onSuccess }: TaskFormProps) {
         <button
           type="submit"
           disabled={isPending}
-          className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          className="w-full rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 sm:w-auto"
         >
           {isPending
             ? isEdit

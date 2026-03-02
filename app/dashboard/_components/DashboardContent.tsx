@@ -201,7 +201,7 @@ export default function DashboardContent({
       )}
 
       {/* Quick Actions */}
-      <div className="mt-4 flex gap-3">
+      <div className="mt-4 flex flex-wrap gap-3">
         <Link
           href="/plan"
           className="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-3 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
