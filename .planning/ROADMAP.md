@@ -96,7 +96,11 @@ Plans:
   2. Daily view shows top priorities and estimated time remaining for the current day
   3. Today dashboard shows the top 5 items, next scheduled block, and any risk alerts
   4. User can mark individual blocks as done or missed directly from the weekly or daily view
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 05-01-PLAN.md — Shared NavHeader component, enhanced weekly view, cross-view revalidation
+- [ ] 05-02-PLAN.md — Daily view with timeline, priorities, and time remaining
+- [ ] 05-03-PLAN.md — Today dashboard with top 5 items, next block, risk alerts, landing page
 
 ### Phase 6: Study Sessions
 **Goal**: Users can generate study aids (summaries, key terms, practice questions) from pasted notes for exam and reading tasks
