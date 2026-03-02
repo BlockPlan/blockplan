@@ -9,6 +9,12 @@ export type TaskState = {
   errors?: Record<string, string[]>;
   error?: string;
   success?: boolean;
+  task?: {
+    id: string;
+    type: string;
+    estimated_minutes: number;
+    due_date: string | null;
+  };
 };
 
 // Create a new task
@@ -50,22 +56,36 @@ export async function createTask(
     return { error: "Invalid course selection" };
   }
 
-  const { error } = await supabase.from("tasks").insert({
-    user_id: user.id,
-    course_id,
-    title,
-    type,
-    status: "todo",
-    estimated_minutes: finalEstimatedMinutes,
-    due_date: due_date || null,
-  });
+  const { data: createdTask, error } = await supabase
+    .from("tasks")
+    .insert({
+      user_id: user.id,
+      course_id,
+      title,
+      type,
+      status: "todo",
+      estimated_minutes: finalEstimatedMinutes,
+      due_date: due_date || null,
+    })
+    .select("id, type, estimated_minutes, due_date")
+    .single();
 
   if (error) {
     return { error: "Failed to create task. Please try again." };
   }
 
   revalidatePath("/tasks");
-  return { success: true };
+  return {
+    success: true,
+    task: createdTask
+      ? {
+          id: createdTask.id as string,
+          type: createdTask.type as string,
+          estimated_minutes: createdTask.estimated_minutes as number,
+          due_date: createdTask.due_date as string | null,
+        }
+      : undefined,
+  };
 }
 
 // Update an existing task
@@ -171,4 +191,48 @@ export async function updateTaskStatus(
 
   revalidatePath("/tasks");
   return {};
+}
+
+// Create subtasks for a task (batch insert)
+export async function createSubtasks(
+  subtasks: Array<{
+    task_id: string;
+    title: string;
+    due_date: string | null;
+    estimated_minutes: number;
+    sort_order: number;
+  }>
+): Promise<{ success?: boolean; count?: number; error?: string }> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Not authenticated" };
+  }
+
+  if (subtasks.length === 0) {
+    return { success: true, count: 0 };
+  }
+
+  const rows = subtasks.map((s) => ({
+    user_id: user.id,
+    task_id: s.task_id,
+    title: s.title,
+    status: "todo" as const,
+    due_date: s.due_date,
+    estimated_minutes: s.estimated_minutes,
+    sort_order: s.sort_order,
+  }));
+
+  const { error } = await supabase.from("subtasks").insert(rows);
+
+  if (error) {
+    return { error: "Failed to create subtasks. Please try again." };
+  }
+
+  revalidatePath("/tasks");
+  return { success: true, count: subtasks.length };
 }

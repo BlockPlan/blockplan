@@ -1,8 +1,10 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { createTask, updateTask, TaskState } from "../actions";
 import { DEFAULT_MINUTES } from "@/lib/validations/task";
+import { shouldSuggestSubtasks } from "@/lib/services/subtask-suggestions";
+import SubtaskSuggestionDialog from "./SubtaskSuggestionDialog";
 
 interface Course {
   id: string;
@@ -50,15 +52,38 @@ export default function TaskForm({ task, courses, onSuccess }: TaskFormProps) {
 
   const formRef = useRef<HTMLFormElement>(null);
 
+  // State for subtask suggestion dialog
+  const [subtaskSuggestion, setSubtaskSuggestion] = useState<{
+    taskId: string;
+    dueDate: string;
+    estimatedMinutes: number;
+  } | null>(null);
+
   useEffect(() => {
-    if (state.success && onSuccess) {
-      onSuccess();
+    if (state.success) {
+      // Check if the created task qualifies for subtask suggestions
+      if (
+        !isEdit &&
+        state.task &&
+        state.task.due_date &&
+        shouldSuggestSubtasks(state.task.type, state.task.estimated_minutes)
+      ) {
+        setSubtaskSuggestion({
+          taskId: state.task.id,
+          dueDate: state.task.due_date,
+          estimatedMinutes: state.task.estimated_minutes,
+        });
+      }
+      if (onSuccess) {
+        onSuccess();
+      }
     }
-  }, [state.success, onSuccess]);
+  }, [state.success, state.task, isEdit, onSuccess]);
 
   const defaultType = task?.type ?? "assignment";
 
   return (
+    <>
     <form
       ref={formRef}
       action={formAction}
@@ -221,5 +246,15 @@ export default function TaskForm({ task, courses, onSuccess }: TaskFormProps) {
         </button>
       </div>
     </form>
+
+    {subtaskSuggestion && (
+      <SubtaskSuggestionDialog
+        taskId={subtaskSuggestion.taskId}
+        taskDueDate={subtaskSuggestion.dueDate}
+        taskEstimatedMinutes={subtaskSuggestion.estimatedMinutes}
+        onClose={() => setSubtaskSuggestion(null)}
+      />
+    )}
+    </>
   );
 }
