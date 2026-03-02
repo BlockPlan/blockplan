@@ -75,8 +75,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Study Session
 
-- [ ] **STDY-01**: User can start a study session for exam or reading tasks
-- [ ] **STDY-02**: User can paste notes or chapter headings as study input
+- [x] **STDY-01**: User can start a study session for exam or reading tasks
+- [x] **STDY-02**: User can paste notes or chapter headings as study input
 - [x] **STDY-03**: System generates brief bullet-point summary from pasted content
 - [x] **STDY-04**: System generates key terms list from pasted content
 - [x] **STDY-05**: System generates 8-12 practice questions (recall + conceptual) from pasted content
@@ -183,8 +183,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VIEW-02 | Phase 5 | Complete |
 | VIEW-03 | Phase 5 | Complete |
 | VIEW-04 | Phase 5 | Complete |
-| STDY-01 | Phase 6 | Pending |
-| STDY-02 | Phase 6 | Pending |
+| STDY-01 | Phase 6 | Complete |
+| STDY-02 | Phase 6 | Complete |
 | STDY-03 | Phase 6 | Complete |
 | STDY-04 | Phase 6 | Complete |
 | STDY-05 | Phase 6 | Complete |
