@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Planning Engine** - Availability windows, scheduler, and auto-reschedule (completed 2026-03-01)
 - [x] **Phase 5: Views and Dashboard** - Weekly view, daily view, today dashboard, and block completion (completed 2026-03-02)
 - [x] **Phase 6: Study Sessions** - LLM-powered study aids from pasted notes (completed 2026-03-02)
-- [ ] **Phase 7: Export and Polish** - .ics calendar export, mobile-responsive design, and MVP completion
+- [x] **Phase 7: Export and Polish** - .ics calendar export, mobile-responsive design, and MVP completion (completed 2026-03-02)
 
 ## Phase Details
 
@@ -126,9 +126,9 @@ Plans:
   3. All screens are usable on a 375px-wide mobile screen without horizontal scroll or overlapping elements
 **Plans**: 3 plans
 Plans:
-- [ ] 07-01-PLAN.md — .ics calendar export (API route + Export button on plan view)
-- [ ] 07-02-PLAN.md — Auto-suggested subtasks with work-back scheduling for large tasks
-- [ ] 07-03-PLAN.md — Mobile responsive audit and fixes across all screens
+- [x] 07-01-PLAN.md — .ics calendar export (API route + Export button on plan view)
+- [x] 07-02-PLAN.md — Auto-suggested subtasks with work-back scheduling for large tasks
+- [x] 07-03-PLAN.md — Mobile responsive audit and fixes across all screens
 
 ## Progress
 
@@ -143,4 +143,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 4. Planning Engine | 3/3 | Complete   | 2026-03-01 |
 | 5. Views and Dashboard | 3/3 | Complete   | 2026-03-02 |
 | 6. Study Sessions | 2/2 | Complete | 2026-03-02 |
-| 7. Export and Polish | 0/3 | Planned | - |
+| 7. Export and Polish | 3/3 | Complete | 2026-03-02 |
