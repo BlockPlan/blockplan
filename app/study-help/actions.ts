@@ -147,7 +147,7 @@ export async function generateStudyHelpAction(
       // If YouTube was the only input, return a helpful error
       if (!pastedText && storagePaths.length === 0) {
         return {
-          error: `Could not extract transcript from this YouTube video: ${errMsg}. Try pasting your notes or text directly instead.`,
+          error: "YouTube video transcripts can't be extracted from the server. To use this video, open it on YouTube → click '...' below the video → 'Show transcript' → copy the text → paste it in the notes field above.",
         };
       }
       // Otherwise continue with other inputs
