@@ -19,7 +19,16 @@ interface DayTimelineProps {
     start_time: string;
     end_time: string;
     status: "scheduled" | "done" | "missed";
-    tasks: { title: string; courses: { name: string } | null } | null;
+    task_id: string | null;
+    tasks: {
+      title: string;
+      type: "assignment" | "exam" | "reading" | "other";
+      taskStatus: "todo" | "doing" | "done";
+      estimated_minutes: number;
+      due_date: string | null;
+      course_id: string;
+      courses: { name: string } | null;
+    } | null;
   }>;
   priorityTasks: PriorityTask[];
   remainingMinutes: number;

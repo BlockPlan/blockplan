@@ -29,21 +29,21 @@ export default async function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-bg">
       <NavHeader />
 
       {/* Main Content */}
       <main className="mx-auto max-w-5xl px-4 py-12">
-        <h2 className="mb-8 text-2xl font-bold text-gray-900">Settings</h2>
+        <h2 className="page-title mb-8">Settings</h2>
 
         {/* Account Info */}
-        <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6">
+        <div className="mb-8 rounded-xl border border-gray-200 bg-white p-6 shadow-[var(--shadow-card)]">
           <h3 className="mb-2 text-lg font-semibold text-gray-900">Account</h3>
           <p className="text-sm text-gray-500">Signed in as {user.email}</p>
         </div>
 
         {/* Planning Preferences */}
-        <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6">
+        <div className="mb-8 rounded-xl border border-gray-200 bg-white p-6 shadow-[var(--shadow-card)]">
           <h3 className="mb-1 text-lg font-semibold text-gray-900">
             Planning Preferences
           </h3>
@@ -55,7 +55,7 @@ export default async function SettingsPage() {
         </div>
 
         {/* Delete Account Section */}
-        <div className="rounded-lg border border-red-200 bg-white p-6">
+        <div className="rounded-xl border border-red-200 bg-red-50/30 p-6 shadow-[var(--shadow-card)]">
           <h3 className="mb-2 text-lg font-semibold text-red-700">
             Delete Account
           </h3>

@@ -45,7 +45,7 @@ export default function StatusToggle({ taskId, currentStatus }: StatusToggleProp
       onClick={handleToggle}
       disabled={isPending}
       title={`Status: ${STATUS_LABELS[optimisticStatus]} — click to advance`}
-      className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors disabled:opacity-60 ${STATUS_STYLES[optimisticStatus]}`}
+      className={`rounded-full px-2.5 py-1 text-xs font-medium shadow-sm transition-all duration-150 disabled:opacity-60 ${STATUS_STYLES[optimisticStatus]}`}
     >
       {STATUS_LABELS[optimisticStatus]}
     </button>

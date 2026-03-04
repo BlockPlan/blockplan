@@ -38,13 +38,13 @@ export default async function CoursesPage() {
   const courseList = courses ?? [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-bg">
       <NavHeader />
 
       {/* Main content */}
       <main className="mx-auto max-w-3xl px-4 py-8">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Courses</h2>
+          <h2 className="page-title">Courses</h2>
           <p className="mt-1 text-sm text-gray-500">
             Manage your courses for{" "}
             <span className="font-medium text-gray-700">{term.name}</span>.
@@ -57,7 +57,7 @@ export default async function CoursesPage() {
         </div>
 
         {/* Add course form */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-[var(--shadow-card)]">
           <h3 className="mb-4 text-base font-semibold text-gray-900">
             Add a course
           </h3>

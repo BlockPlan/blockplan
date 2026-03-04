@@ -32,6 +32,10 @@ interface DashboardContentProps {
   riskTasks: RiskTask[];
   todayBlockCount: number;
   todayDoneCount: number;
+  todayTaskCount: number;
+  todayTaskDoneCount: number;
+  gpa: number | null;
+  gradedCount: number;
 }
 
 const TYPE_BADGE_COLORS: Record<string, string> = {
@@ -63,6 +67,10 @@ export default function DashboardContent({
   riskTasks,
   todayBlockCount,
   todayDoneCount,
+  todayTaskCount,
+  todayTaskDoneCount,
+  gpa,
+  gradedCount,
 }: DashboardContentProps) {
   const todayLabel = new Intl.DateTimeFormat(undefined, {
     weekday: "long",
@@ -71,42 +79,101 @@ export default function DashboardContent({
     year: "numeric",
   }).format(new Date());
 
-  const progressPercent =
+  const blockPercent =
     todayBlockCount > 0
       ? Math.round((todayDoneCount / todayBlockCount) * 100)
       : 0;
 
+  const taskPercent =
+    todayTaskCount > 0
+      ? Math.round((todayTaskDoneCount / todayTaskCount) * 100)
+      : 0;
+
+  const hasBlocks = todayBlockCount > 0;
+  const hasTasks = todayTaskCount > 0;
+
   return (
     <div>
       {/* Welcome card */}
-      <div className="mb-4 rounded-lg border border-gray-200 bg-white p-6">
-        <h2 className="text-xl font-semibold text-gray-900">Welcome back</h2>
+      <div className="mb-4 rounded-xl border border-gray-200 bg-white p-6 shadow-[var(--shadow-card)]">
+        <h2 className="text-xl font-semibold tracking-tight text-gray-900">Welcome back</h2>
         <p className="mt-1 text-sm text-gray-500">{todayLabel}</p>
-        {todayBlockCount > 0 && (
-          <div className="mt-4">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">
-                {todayDoneCount}/{todayBlockCount} blocks completed today
-              </span>
-              <span className="font-medium text-gray-900">
-                {progressPercent}%
-              </span>
-            </div>
-            <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-gray-200">
-              <div
-                className="h-2 rounded-full bg-blue-600 transition-all"
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
+
+        {(hasTasks || hasBlocks) && (
+          <div className={`mt-4 grid gap-4 ${hasTasks && hasBlocks ? "grid-cols-2" : "grid-cols-1"}`}>
+            {/* Tasks progress */}
+            {hasTasks && (
+              <div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">
+                    <span className="font-medium">{todayTaskDoneCount}/{todayTaskCount}</span> tasks completed
+                  </span>
+                  <span className="font-medium text-blue-600">
+                    {taskPercent}%
+                  </span>
+                </div>
+                <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-blue-100">
+                  <div
+                    className="h-2 rounded-full bg-blue-600 transition-all duration-500"
+                    style={{ width: `${taskPercent}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Blocks progress */}
+            {hasBlocks && (
+              <div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">
+                    <span className="font-medium">{todayDoneCount}/{todayBlockCount}</span> blocks done today
+                  </span>
+                  <span className="font-medium text-emerald-600">
+                    {blockPercent}%
+                  </span>
+                </div>
+                <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-emerald-100">
+                  <div
+                    className="h-2 rounded-full bg-emerald-600 transition-all duration-500"
+                    style={{ width: `${blockPercent}%` }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
 
+      {/* GPA card */}
+      {gradedCount > 0 && (
+        <div className="mb-4 rounded-xl border border-purple-200 bg-gradient-to-br from-purple-50 to-white p-5 shadow-[var(--shadow-card)]">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-purple-600">
+                Current GPA
+              </p>
+              <p className="mt-1 text-3xl font-bold text-gray-900">
+                {gpa !== null ? gpa.toFixed(2) : "–"}
+              </p>
+              <p className="mt-0.5 text-xs text-gray-500">
+                {gradedCount} assignment{gradedCount !== 1 ? "s" : ""} graded
+              </p>
+            </div>
+            <Link
+              href="/grades"
+              className="text-sm font-medium text-purple-600 transition-colors duration-150 hover:text-purple-800"
+            >
+              View Grades
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Main cards grid */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {/* Next Up card */}
-        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-          <p className="text-sm font-medium text-blue-700">Next Up</p>
+        <div className="rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100/50 p-5 shadow-[var(--shadow-card)]">
+          <p className="text-xs font-semibold uppercase tracking-wider text-blue-600">Next Up</p>
           {nextBlock ? (
             <div className="mt-2">
               <p className="font-semibold text-gray-900">
@@ -127,15 +194,15 @@ export default function DashboardContent({
           )}
           <Link
             href="/plan"
-            className="mt-3 inline-block text-sm text-blue-600 hover:text-blue-800"
+            className="mt-3 inline-block text-sm font-medium text-blue-600 transition-colors duration-150 hover:text-blue-800"
           >
             View Plan
           </Link>
         </div>
 
         {/* Top 5 Priorities card */}
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <p className="mb-3 text-sm font-medium text-gray-500">
+        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-[var(--shadow-card)]">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
             Top Priorities
           </p>
           {priorityTasks.length === 0 ? (
@@ -171,7 +238,7 @@ export default function DashboardContent({
           )}
           <Link
             href="/tasks"
-            className="mt-3 inline-block text-sm text-blue-600 hover:text-blue-800"
+            className="mt-3 inline-block text-sm font-medium text-blue-600 transition-colors duration-150 hover:text-blue-800"
           >
             View All Tasks
           </Link>
@@ -180,8 +247,8 @@ export default function DashboardContent({
 
       {/* Risk Alerts card */}
       {riskTasks.length > 0 && (
-        <div className="mt-4 rounded-lg border border-gray-200 bg-white p-4">
-          <p className="mb-3 text-sm font-medium text-gray-500">Risk Alerts</p>
+        <div className="mt-4 rounded-xl border border-gray-200 bg-white p-4 shadow-[var(--shadow-card)]">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Risk Alerts</p>
           <div className="flex flex-wrap gap-2">
             {riskTasks.map((rt) => (
               <RiskBadge
@@ -193,7 +260,7 @@ export default function DashboardContent({
           </div>
           <Link
             href="/plan"
-            className="mt-3 inline-block text-sm text-blue-600 hover:text-blue-800"
+            className="mt-3 inline-block text-sm font-medium text-blue-600 transition-colors duration-150 hover:text-blue-800"
           >
             View Plan
           </Link>
@@ -204,19 +271,19 @@ export default function DashboardContent({
       <div className="mt-4 flex flex-wrap gap-3">
         <Link
           href="/plan"
-          className="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-3 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          className="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-center text-sm font-medium text-gray-700 shadow-[var(--shadow-card)] transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] hover:border-gray-300"
         >
           Weekly Plan
         </Link>
         <Link
           href="/plan/day"
-          className="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-3 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          className="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-center text-sm font-medium text-gray-700 shadow-[var(--shadow-card)] transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] hover:border-gray-300"
         >
           Daily View
         </Link>
         <Link
           href="/tasks"
-          className="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-3 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          className="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-center text-sm font-medium text-gray-700 shadow-[var(--shadow-card)] transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] hover:border-gray-300"
         >
           All Tasks
         </Link>

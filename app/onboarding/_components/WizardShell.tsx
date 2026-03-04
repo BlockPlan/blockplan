@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import StepTerm from "./StepTerm";
 import StepCourses from "./StepCourses";
 import StepAvailability from "./StepAvailability";
@@ -46,13 +46,15 @@ export default function WizardShell({
     setCurrentStep(3);
   }
 
-  function handleCourseAdded(course: Course) {
-    setCurrentCourses((prev) => [...prev, course]);
-  }
+  const handleCourseAdded = useCallback((course: Course) => {
+    setCurrentCourses((prev) =>
+      prev.some((c) => c.id === course.id) ? prev : [...prev, course]
+    );
+  }, []);
 
-  function handleCourseDeleted(courseId: string) {
+  const handleCourseDeleted = useCallback((courseId: string) => {
     setCurrentCourses((prev) => prev.filter((c) => c.id !== courseId));
-  }
+  }, []);
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -69,7 +71,7 @@ export default function WizardShell({
                 <div className="flex flex-col items-center">
                   <div
                     className={[
-                      "flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold transition-colors",
+                      "flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold transition-all duration-300",
                       isCompleted
                         ? "bg-blue-600 text-white"
                         : isCurrent
@@ -113,7 +115,7 @@ export default function WizardShell({
                 {index < STEPS.length - 1 && (
                   <div
                     className={[
-                      "mx-2 mt-[-18px] h-0.5 flex-1 transition-colors",
+                      "mx-2 mt-[-18px] h-0.5 flex-1 transition-colors duration-300",
                       currentStep > step.number
                         ? "bg-blue-600"
                         : "bg-gray-200",
@@ -128,7 +130,7 @@ export default function WizardShell({
       </nav>
 
       {/* Step Content */}
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-8">
+      <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-[var(--shadow-card)] sm:p-8">
         {currentStep === 1 && (
           <StepTerm onSuccess={handleTermCreated} />
         )}

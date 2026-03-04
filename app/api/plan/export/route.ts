@@ -16,7 +16,7 @@ export async function GET() {
     .from("user_profiles")
     .select("timezone")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   const timezone = (profile?.timezone as string | null) ?? "America/Boise";
 

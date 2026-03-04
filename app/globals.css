@@ -10,6 +10,12 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Shadow tokens */
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --shadow-nav: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  --shadow-dialog: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +28,70 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ---- Page background ---- */
+.page-bg {
+  @apply min-h-screen;
+  background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%);
+}
+
+/* ---- Typography ---- */
+.page-title {
+  @apply text-2xl font-bold tracking-tight text-gray-900;
+}
+
+.section-title {
+  @apply text-lg font-semibold text-gray-900;
+}
+
+/* ---- Shared button styles ---- */
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium
+    transition-all duration-150 active:scale-[0.98] focus-visible:outline-none
+    focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
+    bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium
+    transition-all duration-150 active:scale-[0.98] focus-visible:outline-none
+    focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
+    border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-300;
+}
+
+.btn-danger {
+  @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium
+    transition-all duration-150 active:scale-[0.98] focus-visible:outline-none
+    focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
+    bg-red-600 text-white hover:bg-red-700;
+}
+
+/* ---- Shared input styles ---- */
+.input {
+  @apply w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-base text-gray-900
+    placeholder-gray-400 transition-colors duration-150
+    focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20
+    sm:text-sm;
+}
+
+/* ---- Dialog/modal styling ---- */
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+}
+
+dialog[open] {
+  animation: dialog-enter 150ms ease-out;
+}
+
+@keyframes dialog-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

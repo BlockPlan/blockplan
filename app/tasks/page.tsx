@@ -41,7 +41,7 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
   // If user has no courses, show a helpful message
   if (courseList.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="page-bg">
         <NavHeader />
         <main className="mx-auto max-w-3xl px-4 py-16 text-center">
           <div className="rounded-xl border border-gray-200 bg-white p-10">
@@ -120,13 +120,48 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
     });
   }
 
+  // Fetch subtasks for all tasks
+  const taskIds = taskList.map((t) => t.id as string);
+  const { data: subtasks } = taskIds.length > 0
+    ? await supabase
+        .from("subtasks")
+        .select("id, title, status, due_date, estimated_minutes, sort_order, task_id")
+        .eq("user_id", user.id)
+        .in("task_id", taskIds)
+        .order("sort_order", { ascending: true })
+    : { data: [] };
+
+  // Group subtasks by task_id
+  const subtasksByTask: Record<string, Array<{
+    id: string;
+    title: string;
+    status: string;
+    due_date: string | null;
+    estimated_minutes: number;
+    sort_order: number;
+    task_id: string;
+  }>> = {};
+  for (const s of subtasks ?? []) {
+    const taskId = s.task_id as string;
+    if (!subtasksByTask[taskId]) subtasksByTask[taskId] = [];
+    subtasksByTask[taskId].push({
+      id: s.id as string,
+      title: s.title as string,
+      status: s.status as string,
+      due_date: s.due_date as string | null,
+      estimated_minutes: s.estimated_minutes as number,
+      sort_order: s.sort_order as number,
+      task_id: taskId,
+    });
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-bg">
       <NavHeader />
 
       <main className="mx-auto max-w-5xl px-4 py-8">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">Tasks</h2>
+          <h2 className="page-title">Tasks</h2>
         </div>
 
         <TaskFilters
@@ -137,7 +172,7 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
           currentSort={sort}
         />
 
-        <TaskList tasks={taskList} courses={courseList} />
+        <TaskList tasks={taskList} courses={courseList} subtasksByTask={subtasksByTask} />
       </main>
     </div>
   );

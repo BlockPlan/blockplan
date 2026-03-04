@@ -159,7 +159,7 @@ function ItemForm({
       <div className="flex gap-2">
         <button
           type="submit"
-          className="rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+          className="btn-primary"
         >
           {saveLabel}
         </button>
@@ -296,7 +296,7 @@ export default function ReviewScreen({ courseId, courseName }: ReviewScreenProps
   // Loading state before sessionStorage is read
   if (!loaded) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="page-bg">
         <div className="flex min-h-[60vh] items-center justify-center">
           <p className="text-sm text-gray-500">Loading...</p>
         </div>
@@ -305,7 +305,7 @@ export default function ReviewScreen({ courseId, courseName }: ReviewScreenProps
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-bg">
       {/* Header */}
       <header className="border-b border-gray-200 bg-white">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
@@ -370,7 +370,7 @@ export default function ReviewScreen({ courseId, courseName }: ReviewScreenProps
             <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <button
                 onClick={() => setShowAddForm(true)}
-                className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                className="btn-primary"
               >
                 <svg
                   className="mr-1.5 h-4 w-4"
@@ -437,7 +437,7 @@ export default function ReviewScreen({ courseId, courseName }: ReviewScreenProps
                 <button
                   onClick={handleConfirmAll}
                   disabled={items.length === 0 || isConfirming}
-                  className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="btn-primary disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isConfirming ? (
                     <>
@@ -611,7 +611,7 @@ export default function ReviewScreen({ courseId, courseName }: ReviewScreenProps
                 <button
                   onClick={handleConfirmAll}
                   disabled={items.length === 0 || isConfirming}
-                  className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="btn-primary disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isConfirming
                     ? "Saving..."

@@ -37,11 +37,37 @@ export const taskSchema = z.object({
     .string()
     .uuid("Must be a valid course ID")
     .min(1, "Course is required"),
+  notes: z.string().max(5000, "Notes must be 5000 characters or less").optional(),
+  grade: z
+    .string()
+    .optional()
+    .transform((val) => (val && val.trim() !== "" ? Number(val) : undefined))
+    .pipe(z.number().min(0, "Grade cannot be negative").optional()),
+  points: z
+    .string()
+    .optional()
+    .transform((val) => (val && val.trim() !== "" ? Number(val) : undefined))
+    .pipe(z.number().min(0.01, "Points must be greater than 0").optional()),
+  weight: z
+    .string()
+    .optional()
+    .transform((val) => (val && val.trim() !== "" ? Number(val) : undefined))
+    .pipe(z.number().min(0, "Weight cannot be negative").optional()),
+  reminder_minutes_before: z
+    .string()
+    .optional()
+    .transform((val) => (val && val.trim() !== "" ? Number(val) : undefined))
+    .pipe(z.number().int().min(0).max(10080, "Max 1 week").optional()),
 });
 
 // Schema for updating an existing task (all optional, id required)
 export const taskUpdateSchema = z.object({
   id: z.string().uuid("Must be a valid task ID"),
+  status: z
+    .enum(["todo", "doing", "done"], {
+      invalid_type_error: "Invalid status",
+    })
+    .optional(),
   title: z
     .string()
     .min(1, "Title is required")
@@ -66,6 +92,27 @@ export const taskUpdateSchema = z.object({
         .optional()
     ),
   course_id: z.string().uuid("Must be a valid course ID").optional(),
+  notes: z.string().max(5000, "Notes must be 5000 characters or less").optional(),
+  grade: z
+    .string()
+    .optional()
+    .transform((val) => (val && val.trim() !== "" ? Number(val) : undefined))
+    .pipe(z.number().min(0, "Grade cannot be negative").optional()),
+  points: z
+    .string()
+    .optional()
+    .transform((val) => (val && val.trim() !== "" ? Number(val) : undefined))
+    .pipe(z.number().min(0.01, "Points must be greater than 0").optional()),
+  weight: z
+    .string()
+    .optional()
+    .transform((val) => (val && val.trim() !== "" ? Number(val) : undefined))
+    .pipe(z.number().min(0, "Weight cannot be negative").optional()),
+  reminder_minutes_before: z
+    .string()
+    .optional()
+    .transform((val) => (val && val.trim() !== "" ? Number(val) : undefined))
+    .pipe(z.number().int().min(0).max(10080, "Max 1 week").optional()),
 });
 
 // Inferred TypeScript types

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { AvailabilityRule } from "@/lib/validations/availability";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -338,10 +338,9 @@ export default function AvailabilityGrid({
           {Array.from({ length: SLOT_COUNT }, (_, slot) => {
             const showLabel = slot % 2 === 0; // show label on the hour
             return (
-              <>
+              <React.Fragment key={`row-${slot}`}>
                 {/* Time label */}
                 <div
-                  key={`label-${slot}`}
                   className="pr-1 text-right text-xs text-gray-400 leading-none"
                   style={{ height: "20px", lineHeight: "20px" }}
                 >
@@ -383,7 +382,7 @@ export default function AvailabilityGrid({
                     />
                   );
                 })}
-              </>
+              </React.Fragment>
             );
           })}
         </div>

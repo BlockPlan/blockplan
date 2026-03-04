@@ -34,7 +34,7 @@ export default async function SyllabiUploadPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-bg">
       <header className="border-b border-gray-200 bg-white">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
           <h1 className="text-lg font-semibold text-gray-900">BlockPlan</h1>

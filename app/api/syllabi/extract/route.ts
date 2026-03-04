@@ -93,13 +93,22 @@ export async function POST(request: NextRequest) {
     const termStartDate = new Date(term.start_date);
     const termContext = `Term: ${term.name}, starts ${term.start_date}`;
 
+    // Debug: log extracted text so we can see what the parser is working with
+    console.log("[extract] PDF text length:", result.text.length);
+    console.log("[extract] First 1000 chars of extracted text:", result.text.slice(0, 1000));
+
     const [ruleItems, llmItems] = await Promise.all([
       Promise.resolve(parseWithRules(result.text, termStartDate)),
       parseWithLLM(result.text, termContext),
     ]);
 
+    console.log("[extract] Rule-based items:", ruleItems.length);
+    console.log("[extract] LLM items:", llmItems.length);
+
     // Merge results (LLM preferred over rule-based duplicates)
     const mergedItems = mergeParserResults(ruleItems, llmItems);
+
+    console.log("[extract] Merged items:", mergedItems.length);
 
     return NextResponse.json({
       items: mergedItems,

@@ -37,7 +37,7 @@ export default function DeleteConfirm({ task, onClose }: DeleteConfirmProps) {
     <dialog
       ref={dialogRef}
       onClose={handleClose}
-      className="rounded-2xl border border-gray-200 p-0 shadow-xl backdrop:bg-black/40"
+      className="rounded-2xl border-0 p-0 shadow-[var(--shadow-dialog)] ring-1 ring-gray-900/5"
     >
       <div className="p-6">
         <h3 className="mb-2 text-base font-semibold text-gray-900">
@@ -52,14 +52,14 @@ export default function DeleteConfirm({ task, onClose }: DeleteConfirmProps) {
           <button
             onClick={handleClose}
             disabled={isPending}
-            className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+            className="btn-secondary disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={handleConfirm}
             disabled={isPending}
-            className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+            className="btn-danger disabled:opacity-50"
           >
             {isPending ? "Deleting..." : "Delete task"}
           </button>

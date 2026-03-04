@@ -4,6 +4,10 @@ import { startOfDay, endOfDay } from "date-fns";
 import { tz } from "@date-fns/tz";
 import NavHeader from "@/app/plan/_components/NavHeader";
 import DashboardContent from "./_components/DashboardContent";
+import ReminderInit from "@/app/_components/ReminderInit";
+import NotificationPermissionBanner from "@/app/_components/NotificationPermissionBanner";
+import { computeCourseGrade, computeGPA, type GradableTask } from "@/lib/services/grade-calculator";
+import { DEFAULT_GRADING_SCALE } from "@/lib/validations/grade";
 
 interface RiskTask {
   taskId: string;
@@ -157,6 +161,16 @@ export default async function DashboardPage() {
   const todayBlockCount = safeToday.length;
   const todayDoneCount = safeToday.filter((b) => b.status === "done").length;
 
+  // Overall task completion counts (all tasks for this user)
+  const { data: allTaskRows } = await supabase
+    .from("tasks")
+    .select("id, status")
+    .eq("user_id", user.id);
+
+  const safeAllTasks = allTaskRows ?? [];
+  const totalTaskCount = safeAllTasks.length;
+  const totalTaskDoneCount = safeAllTasks.filter((t) => t.status === "done").length;
+
   // Map priority tasks
   const safePriorities = (priorityTasks ?? []).map((t) => ({
     id: t.id as string,
@@ -167,18 +181,76 @@ export default async function DashboardPage() {
     courses: t.courses as unknown as { name: string } | null,
   }));
 
+  // ── GPA computation ────────────────────────────────────────────────────
+  const { data: gpaCourses } = await supabase
+    .from("courses")
+    .select("id, name, grading_scale")
+    .eq("user_id", user.id);
+
+  const { data: gpaTasks } = await supabase
+    .from("tasks")
+    .select("id, title, type, grade, points, weight, course_id")
+    .eq("user_id", user.id);
+
+  const tasksByCourse = new Map<string, GradableTask[]>();
+  for (const t of gpaTasks ?? []) {
+    const cid = t.course_id as string;
+    const existing = tasksByCourse.get(cid) ?? [];
+    existing.push({
+      id: t.id as string,
+      title: t.title as string,
+      type: t.type as string,
+      grade: t.grade as number | null,
+      points: t.points as number | null,
+      weight: t.weight as number | null,
+    });
+    tasksByCourse.set(cid, existing);
+  }
+
+  const courseGrades = (gpaCourses ?? []).map((c) => {
+    const scale = (c.grading_scale as Record<string, number>) ?? DEFAULT_GRADING_SCALE;
+    return computeCourseGrade(c.id as string, c.name as string, tasksByCourse.get(c.id as string) ?? [], scale);
+  });
+
+  const gpaResult = computeGPA(courseGrades);
+
+  // ── Reminder tasks for client-side scheduling ────────────────────────
+  const { data: reminderRows } = await supabase
+    .from("tasks")
+    .select("id, title, due_date, reminder_minutes_before, course_id, courses(name)")
+    .eq("user_id", user.id)
+    .neq("status", "done")
+    .not("reminder_minutes_before", "is", null)
+    .not("due_date", "is", null);
+
+  const reminderTasks = (reminderRows ?? [])
+    .filter((t) => t.reminder_minutes_before != null && t.reminder_minutes_before > 0)
+    .map((t) => ({
+      id: t.id as string,
+      title: t.title as string,
+      due_date: t.due_date as string,
+      reminder_minutes_before: t.reminder_minutes_before as number,
+      courseName: (t.courses as unknown as { name: string } | null)?.name ?? null,
+    }));
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-bg">
       <NavHeader />
 
       <main className="mx-auto max-w-5xl px-4 py-8">
+        <NotificationPermissionBanner />
         <DashboardContent
           nextBlock={nextBlock}
           priorityTasks={safePriorities}
           riskTasks={riskTasks}
           todayBlockCount={todayBlockCount}
           todayDoneCount={todayDoneCount}
+          todayTaskCount={totalTaskCount}
+          todayTaskDoneCount={totalTaskDoneCount}
+          gpa={gpaResult.gpa}
+          gradedCount={gpaResult.totalGraded}
         />
+        <ReminderInit tasks={reminderTasks} />
       </main>
     </div>
   );

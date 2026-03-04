@@ -19,8 +19,14 @@ interface PlanBlockRow {
   start_time: string;
   end_time: string;
   status: "scheduled" | "done" | "missed";
+  task_id: string | null;
   tasks: {
     title: string;
+    type: "assignment" | "exam" | "reading" | "other";
+    taskStatus: "todo" | "doing" | "done";
+    estimated_minutes: number;
+    due_date: string | null;
+    course_id: string;
     courses: {
       name: string;
     } | null;
@@ -43,7 +49,7 @@ function getDayLabel(isoString: string): string {
 
 function getDateKey(isoString: string): string {
   const d = new Date(isoString);
-  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 function buildDayColumns(blocks: PlanBlockRow[]): Array<{ key: string; label: string; blocks: PlanBlockRow[] }> {
@@ -54,7 +60,7 @@ function buildDayColumns(blocks: PlanBlockRow[]): Array<{ key: string; label: st
   for (let i = 0; i < 7; i++) {
     const date = new Date(today);
     date.setDate(today.getDate() + i);
-    const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
     const label = new Intl.DateTimeFormat(undefined, {
       weekday: "short",
       month: "short",

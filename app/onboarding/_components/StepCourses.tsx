@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState, useTransition } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { addCourse, deleteCourse, type CourseState } from "../actions";
 
 type Course = {
@@ -48,14 +48,16 @@ export default function StepCourses({
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
+  const lastProcessedCourseId = useRef<string | null>(null);
 
   // Reset form on successful course add
   useEffect(() => {
-    if (state.success && state.course) {
-      onCourseAdded(state.course as Course);
+    const course = state.course as Course | undefined;
+    if (state.success && course && course.id !== lastProcessedCourseId.current) {
+      lastProcessedCourseId.current = course.id;
+      onCourseAdded(course);
       setMeetingTimes([]);
       setShowMeetingTimes(false);
-      // Reset the form inputs (using key-based reset handled below)
     }
   }, [state.success, state.course, onCourseAdded]);
 

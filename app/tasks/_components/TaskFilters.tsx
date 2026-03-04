@@ -68,7 +68,7 @@ export default function TaskFilters({
   const hasActiveFilters = currentCourse || currentType || currentStatus;
 
   return (
-    <div className="mb-6 rounded-xl border border-gray-200 bg-white p-4">
+    <div className="mb-6 rounded-xl border border-gray-200 bg-white p-4 shadow-[var(--shadow-card)]">
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:gap-4">
         {/* Course filter */}
         <div className="w-full sm:min-w-[160px] sm:flex-1">
@@ -78,7 +78,7 @@ export default function TaskFilters({
           <select
             value={currentCourse ?? ""}
             onChange={(e) => updateParam("course", e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-base text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none sm:text-sm"
+            className="input cursor-pointer"
           >
             <option value="">All courses</option>
             {courses.map((c) => (
@@ -97,7 +97,7 @@ export default function TaskFilters({
           <select
             value={currentType ?? ""}
             onChange={(e) => updateParam("type", e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-base text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none sm:text-sm"
+            className="input cursor-pointer"
           >
             {TASK_TYPES.map((t) => (
               <option key={t.value} value={t.value}>
@@ -115,7 +115,7 @@ export default function TaskFilters({
           <select
             value={currentStatus ?? ""}
             onChange={(e) => updateParam("status", e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-base text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none sm:text-sm"
+            className="input cursor-pointer"
           >
             {TASK_STATUSES.map((s) => (
               <option key={s.value} value={s.value}>
@@ -133,7 +133,7 @@ export default function TaskFilters({
           <select
             value={currentSort ?? "due_date"}
             onChange={(e) => updateParam("sort", e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-base text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none sm:text-sm"
+            className="input cursor-pointer"
           >
             {SORT_OPTIONS.map((s) => (
               <option key={s.value} value={s.value}>
@@ -147,7 +147,7 @@ export default function TaskFilters({
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+            className="btn-secondary"
           >
             Clear filters
           </button>

@@ -41,7 +41,7 @@ export default async function StudyPage({
   // Only allow exam and reading tasks
   if (task.type !== "exam" && task.type !== "reading") {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="page-bg">
         <NavHeader />
         <main className="mx-auto max-w-2xl px-4 py-8">
           <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-center">
@@ -65,7 +65,7 @@ export default async function StudyPage({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-bg">
       <NavHeader />
       <main className="mx-auto max-w-2xl px-4 py-8">
         <StudySession taskId={task.id} taskTitle={task.title} />
