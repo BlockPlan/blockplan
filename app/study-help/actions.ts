@@ -109,8 +109,15 @@ export async function generateStudyHelpAction(
         contentParts.push({ type: "image", image: dataUrl });
       }
     } catch (err) {
-      console.error(`[study-help] Failed to process file ${storagePath}:`, err);
-      // Continue with other files — don't fail the entire request
+      const errMsg = err instanceof Error ? err.message : String(err);
+      console.error(`[study-help] Failed to process file ${storagePath}:`, errMsg);
+      // If this was the only input, return a helpful error
+      if (!pastedText && storagePaths.length === 1 && !videoUrl) {
+        return {
+          error: `Could not process the uploaded file: ${errMsg}. Try pasting text directly instead.`,
+        };
+      }
+      // Otherwise continue with other files
     }
   }
 
@@ -135,8 +142,15 @@ export async function generateStudyHelpAction(
         });
       }
     } catch (err) {
-      console.error("[study-help] Failed to extract YouTube transcript:", err);
-      // Continue with other inputs — don't fail the entire request
+      const errMsg = err instanceof Error ? err.message : String(err);
+      console.error("[study-help] Failed to extract YouTube transcript:", errMsg);
+      // If YouTube was the only input, return a helpful error
+      if (!pastedText && storagePaths.length === 0) {
+        return {
+          error: `Could not extract transcript from this YouTube video: ${errMsg}. Try pasting your notes or text directly instead.`,
+        };
+      }
+      // Otherwise continue with other inputs
     }
   }
 

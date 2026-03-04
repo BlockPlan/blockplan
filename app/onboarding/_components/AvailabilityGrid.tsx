@@ -46,26 +46,6 @@ type CellState = {
   label?: string;
 };
 
-// BYU-Idaho typical preset: Mon–Fri, 7–9 AM and 7–10 PM as "available"
-// Mon=1, Fri=5
-// 7:00 AM = slot (7-6)*2=2, 9:00 AM = slot (9-6)*2=6 (exclusive end = 5)
-// 7:00 PM = slot (19-6)*2=26, 10:00 PM = slot (22-6)*2=32 (exclusive end = 31)
-function buildByuPreset(): Map<CellKey, CellState> {
-  const cells = new Map<CellKey, CellState>();
-  const weekdays = [1, 2, 3, 4, 5]; // Mon–Fri
-  for (const day of weekdays) {
-    // 7:00–9:00 AM
-    for (let slot = 2; slot < 6; slot++) {
-      cells.set(`${day}-${slot}`, { type: "available" });
-    }
-    // 7:00–10:00 PM
-    for (let slot = 26; slot < 32; slot++) {
-      cells.set(`${day}-${slot}`, { type: "available" });
-    }
-  }
-  return cells;
-}
-
 // Merge consecutive same-type cells in the same day into ranges
 function cellsToRules(cells: Map<CellKey, CellState>): AvailabilityRule[] {
   const rules: AvailabilityRule[] = [];
@@ -207,10 +187,6 @@ export default function AvailabilityGrid({
     isDragging.current = false;
   }
 
-  function applyByuPreset() {
-    setCells(buildByuPreset());
-  }
-
   function clearAll() {
     setCells(new Map());
   }
@@ -275,15 +251,8 @@ export default function AvailabilityGrid({
           </div>
         )}
 
-        {/* Preset and clear */}
+        {/* Clear button */}
         <div className="ml-auto flex gap-2">
-          <button
-            type="button"
-            onClick={applyByuPreset}
-            className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            BYU-Idaho typical
-          </button>
           <button
             type="button"
             onClick={clearAll}
