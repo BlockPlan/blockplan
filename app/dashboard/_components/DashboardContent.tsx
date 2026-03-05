@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import RiskBadge from "@/app/plan/_components/RiskBadge";
-import StudySuggestionsCard from "./StudySuggestionsCard";
-import type { SuggestionResult } from "@/lib/services/study-suggestions";
 
 interface NextBlock {
   id: string;
@@ -39,7 +37,6 @@ interface DashboardContentProps {
   todayTaskDoneCount: number;
   gpa: number | null;
   gradedCount: number;
-  suggestionResult: SuggestionResult;
 }
 
 const TYPE_BADGE_COLORS: Record<string, string> = {
@@ -75,7 +72,6 @@ export default function DashboardContent({
   todayTaskDoneCount,
   gpa,
   gradedCount,
-  suggestionResult,
 }: DashboardContentProps) {
   const todayLabel = new Intl.DateTimeFormat(undefined, {
     weekday: "long",
@@ -149,9 +145,6 @@ export default function DashboardContent({
           </div>
         )}
       </div>
-
-      {/* Study Suggestions */}
-      <StudySuggestionsCard result={suggestionResult} />
 
       {/* GPA card */}
       {gradedCount > 0 && (

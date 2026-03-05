@@ -8,9 +8,7 @@ import ReminderInit from "@/app/_components/ReminderInit";
 import NotificationPermissionBanner from "@/app/_components/NotificationPermissionBanner";
 import { computeCourseGrade, computeGPA, type GradableTask } from "@/lib/services/grade-calculator";
 import { DEFAULT_GRADING_SCALE } from "@/lib/validations/grade";
-import { computeStudySuggestions } from "@/lib/services/study-suggestions";
 import { DEFAULT_PLANNER_SETTINGS } from "@/lib/validations/planner";
-import type { AvailabilityRule } from "@/lib/services/scheduler";
 
 interface RiskTask {
   taskId: string;
@@ -247,55 +245,6 @@ export default async function DashboardPage() {
       courseName: (t.courses as unknown as { name: string } | null)?.name ?? null,
     }));
 
-  // ── Study suggestions ─────────────────────────────────────────────────
-  const { data: availRules } = await supabase
-    .from("availability_rules")
-    .select("day_of_week, start_time, end_time, rule_type")
-    .eq("user_id", user.id);
-
-  // Fetch all incomplete tasks for suggestions (reuse format)
-  const { data: allIncompleteTasks } = await supabase
-    .from("tasks")
-    .select("id, title, type, due_date, estimated_minutes, status, course_id, courses(name)")
-    .eq("user_id", user.id)
-    .neq("status", "done");
-
-  // Build course lookup map
-  const courseLookup = new Map<string, string>();
-  for (const t of allIncompleteTasks ?? []) {
-    if (t.course_id && t.courses) {
-      courseLookup.set(
-        t.course_id as string,
-        (t.courses as unknown as { name: string }).name
-      );
-    }
-  }
-
-  // Build blocks array for suggestions
-  const blocksForSuggestions = (allBlocks ?? []).map((b) => ({
-    id: b.id as string,
-    task_id: (b.task_id as string | null),
-    start_time: b.start_time as string,
-    end_time: b.end_time as string,
-    status: b.status as string,
-  }));
-
-  const suggestionResult = computeStudySuggestions({
-    tasks: (allIncompleteTasks ?? []).map((t) => ({
-      id: t.id as string,
-      title: t.title as string,
-      course_id: t.course_id as string,
-      due_date: t.due_date as string | null,
-      estimated_minutes: (t.estimated_minutes as number) ?? 30,
-      status: t.status as string,
-    })),
-    availabilityRules: (availRules ?? []) as AvailabilityRule[],
-    settings: plannerSettings,
-    timezone,
-    existingBlocks: blocksForSuggestions,
-    courseLookup,
-  });
-
   return (
     <div className="page-bg">
       <NavHeader />
@@ -312,7 +261,7 @@ export default async function DashboardPage() {
           todayTaskDoneCount={totalTaskDoneCount}
           gpa={gpaResult.gpa}
           gradedCount={gpaResult.totalGraded}
-          suggestionResult={suggestionResult}
+
         />
         <ReminderInit tasks={reminderTasks} />
       </main>
