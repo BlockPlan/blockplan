@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import NavHeader from "@/app/plan/_components/NavHeader";
-import StudyHelpResults from "../_components/StudyHelpResults";
+import SessionDetailClient from "./_components/SessionDetailClient";
 import type { StudyHelp } from "@/lib/study-help/types";
 import Link from "next/link";
 
@@ -55,7 +55,8 @@ export default async function StudyHelpSessionPage({
         {session.description && (
           <p className="mb-4 text-sm text-gray-600">{session.description}</p>
         )}
-        <StudyHelpResults
+        <SessionDetailClient
+          sessionId={session.id as string}
           data={session.data as StudyHelp}
           courseName={courseName}
         />

@@ -159,6 +159,112 @@ export async function generateStudyHelpAction(
 }
 
 // ---------------------------------------------------------------------------
+// Create a manual study help session (flashcards and/or quiz)
+// ---------------------------------------------------------------------------
+
+export async function createManualSession(fields: {
+  title: string;
+  courseId?: string;
+  flashcards: { front: string; back: string }[];
+  quiz: { question: string; options: string[]; correctIndex: number; explanation: string }[];
+}): Promise<{ sessionId?: string; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const title = fields.title.trim();
+  if (!title) return { error: "Title is required." };
+
+  if (fields.flashcards.length === 0 && fields.quiz.length === 0) {
+    return { error: "Add at least one flashcard or quiz question." };
+  }
+
+  // Build full StudyHelp object with empty sections for non-manual parts
+  const data: StudyHelp = {
+    summary: [],
+    keyTerms: [],
+    flashcards: fields.flashcards.filter((c) => c.front.trim() || c.back.trim()),
+    quiz: fields.quiz.filter((q) => q.question.trim()),
+    practiceTest: [],
+  };
+
+  const { data: inserted, error } = await supabase
+    .from("study_help_sessions")
+    .insert({
+      user_id: user.id,
+      course_id: fields.courseId || null,
+      title,
+      data,
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    return { error: "Failed to create session." };
+  }
+
+  revalidatePath("/study-help/history");
+  return { sessionId: inserted?.id as string };
+}
+
+// ---------------------------------------------------------------------------
+// Update the study help data (flashcards, quiz, etc.) on an existing session
+// ---------------------------------------------------------------------------
+
+export async function updateStudyHelpData(
+  sessionId: string,
+  updates: {
+    flashcards?: { front: string; back: string }[];
+    quiz?: { question: string; options: string[]; correctIndex: number; explanation: string }[];
+  }
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  // Fetch existing data to merge
+  const { data: session } = await supabase
+    .from("study_help_sessions")
+    .select("data")
+    .eq("id", sessionId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!session) return { error: "Session not found." };
+
+  const existingData = session.data as StudyHelp;
+  const merged: StudyHelp = {
+    ...existingData,
+    ...(updates.flashcards !== undefined && {
+      flashcards: updates.flashcards.filter((c) => c.front.trim() || c.back.trim()),
+    }),
+    ...(updates.quiz !== undefined && {
+      quiz: updates.quiz.filter((q) => q.question.trim()),
+    }),
+  };
+
+  const { error } = await supabase
+    .from("study_help_sessions")
+    .update({ data: merged })
+    .eq("id", sessionId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { error: "Failed to update session data." };
+  }
+
+  revalidatePath("/study-help/history");
+  revalidatePath(`/study-help/${sessionId}`);
+  return {};
+}
+
+// ---------------------------------------------------------------------------
 // Update a saved study help session (title and/or description)
 // ---------------------------------------------------------------------------
 

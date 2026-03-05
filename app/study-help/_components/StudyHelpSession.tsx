@@ -40,12 +40,20 @@ export default function StudyHelpSession({
           Upload PDFs or photos of your textbook, or paste your notes. AI will
           generate flashcards, quizzes, practice tests, and more.
         </p>
-        <a
-          href="/study-help/history"
-          className="mt-2 inline-block text-sm text-blue-600 hover:underline"
-        >
-          View saved sessions &rarr;
-        </a>
+        <div className="mt-2 flex gap-4">
+          <a
+            href="/study-help/history"
+            className="text-sm text-blue-600 hover:underline"
+          >
+            View saved sessions &rarr;
+          </a>
+          <a
+            href="/study-help/create"
+            className="text-sm text-blue-600 hover:underline"
+          >
+            Create your own &rarr;
+          </a>
+        </div>
       </div>
 
       {/* Input form */}
