@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import NavHeader from "@/app/plan/_components/NavHeader";
 import UploadForm from "./_components/UploadForm";
 
 interface Course {
@@ -35,22 +36,7 @@ export default async function SyllabiUploadPage() {
 
   return (
     <div className="page-bg">
-      <header className="border-b border-gray-200 bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <h1 className="text-lg font-semibold text-gray-900">BlockPlan</h1>
-          <nav className="flex items-center gap-4 text-sm text-gray-600">
-            <Link href="/tasks" className="hover:text-gray-900 transition-colors">
-              Tasks
-            </Link>
-            <Link href="/courses" className="hover:text-gray-900 transition-colors">
-              Courses
-            </Link>
-            <Link href="/settings" className="hover:text-gray-900 transition-colors">
-              Settings
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <NavHeader />
 
       <main className="mx-auto max-w-2xl px-4 py-10">
         <div className="mb-8">

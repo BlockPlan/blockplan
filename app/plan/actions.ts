@@ -161,7 +161,6 @@ export async function generatePlan() {
   }
 
   revalidatePath("/plan");
-  revalidatePath("/plan/day");
   revalidatePath("/dashboard");
 
   return {
@@ -197,7 +196,6 @@ export async function markBlockDone(blockId: string) {
     .eq("user_id", user.id);
 
   revalidatePath("/plan");
-  revalidatePath("/plan/day");
   revalidatePath("/dashboard");
 
   return { success: true };
@@ -224,7 +222,6 @@ export async function resetBlockStatus(blockId: string) {
     .eq("user_id", user.id);
 
   revalidatePath("/plan");
-  revalidatePath("/plan/day");
   revalidatePath("/dashboard");
 
   return { success: true };
@@ -280,7 +277,6 @@ export async function markBlockMissed(blockId: string) {
   }
 
   revalidatePath("/plan");
-  revalidatePath("/plan/day");
   revalidatePath("/dashboard");
 
   return { success: true, rescheduledCount: newResult.blocks.length };
