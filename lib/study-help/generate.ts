@@ -44,14 +44,7 @@ export async function generateStudyHelp(
 
   const courseContext = courseName ? `Course: ${courseName}. ` : "";
 
-  // Detect if any content is a video transcript
-  const hasVideoTranscript = contentParts.some(
-    (p) => p.type === "text" && p.text.startsWith("[YouTube Video Transcript]")
-  );
-
-  const sourceDescription = hasVideoTranscript
-    ? "content that may include YouTube video transcripts, text notes, and/or images of textbook pages. Video transcripts are auto-generated captions — they may contain filler words, repeated phrases, and informal language. Focus on extracting the actual educational content, key concepts, and factual information from the transcript rather than following its exact wording."
-    : "text and/or images of textbook pages.";
+  const sourceDescription = "text and/or images of textbook pages.";
 
   const systemMessage = [
     "You are a study aid generator for college students.",

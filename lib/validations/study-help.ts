@@ -17,18 +17,3 @@ export const studyHelpUploadRequestSchema = z.object({
 });
 
 export type StudyHelpUploadRequest = z.infer<typeof studyHelpUploadRequestSchema>;
-
-// ---------------------------------------------------------------------------
-// YouTube URL validation
-// ---------------------------------------------------------------------------
-
-export const youtubeUrlSchema = z
-  .string()
-  .url("Must be a valid URL")
-  .refine(
-    (url) =>
-      /^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)/.test(
-        url
-      ),
-    { message: "Must be a valid YouTube video URL" }
-  );

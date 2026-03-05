@@ -37,9 +37,8 @@ export default function StudyHelpSession({
       <div className="mb-6">
         <h1 className="page-title">AI Study Help</h1>
         <p className="mt-1 text-sm text-gray-500">
-          Upload PDFs or photos of your textbook, paste a YouTube video link,
-          or paste your notes. AI will generate flashcards, quizzes, practice
-          tests, and more.
+          Upload PDFs or photos of your textbook, or paste your notes. AI will
+          generate flashcards, quizzes, practice tests, and more.
         </p>
       </div>
 
@@ -80,24 +79,6 @@ export default function StudyHelpSession({
             Upload files
           </label>
           <FileUploader onFilesChange={handleFilesChange} />
-        </div>
-
-        {/* YouTube video URL */}
-        <div className="mb-4">
-          <label
-            htmlFor="videoUrl"
-            className="mb-1 block text-sm font-medium text-gray-700"
-          >
-            YouTube video link{" "}
-            <span className="text-gray-400">(optional)</span>
-          </label>
-          <input
-            type="url"
-            id="videoUrl"
-            name="videoUrl"
-            placeholder="https://www.youtube.com/watch?v=..."
-            className="input"
-          />
         </div>
 
         {/* Text input area */}
