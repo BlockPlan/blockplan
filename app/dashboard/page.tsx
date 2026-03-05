@@ -144,6 +144,7 @@ export default async function DashboardPage() {
         taskTitle: (
           nextScheduledBlock.tasks as {
             title: string;
+            due_date: string | null;
             courses: { name: string } | null;
           }
         )?.title ?? "Unknown task",
@@ -151,9 +152,18 @@ export default async function DashboardPage() {
           (
             nextScheduledBlock.tasks as {
               title: string;
+              due_date: string | null;
               courses: { name: string } | null;
             }
           )?.courses?.name ?? null,
+        dueDate:
+          (
+            nextScheduledBlock.tasks as {
+              title: string;
+              due_date: string | null;
+              courses: { name: string } | null;
+            }
+          )?.due_date ?? null,
       }
     : null;
 

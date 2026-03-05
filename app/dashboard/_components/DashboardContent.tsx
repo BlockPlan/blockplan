@@ -9,6 +9,7 @@ interface NextBlock {
   end_time: string;
   taskTitle: string;
   courseName: string | null;
+  dueDate: string | null;
 }
 
 interface PriorityTask {
@@ -107,6 +108,7 @@ export default function DashboardContent({
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-600">
                     <span className="font-medium">{todayTaskDoneCount}/{todayTaskCount}</span> tasks completed
+                    <span className="text-gray-400"> · all courses</span>
                   </span>
                   <span className="font-medium text-blue-600">
                     {taskPercent}%
@@ -188,6 +190,11 @@ export default function DashboardContent({
                 {formatTime(nextBlock.start_time)} -{" "}
                 {formatTime(nextBlock.end_time)}
               </p>
+              {nextBlock.dueDate && (
+                <p className="mt-0.5 text-xs text-gray-400">
+                  Due {formatDueDate(nextBlock.dueDate)}
+                </p>
+              )}
             </div>
           ) : (
             <p className="mt-2 text-sm text-gray-500">No upcoming blocks</p>
@@ -210,9 +217,10 @@ export default function DashboardContent({
           ) : (
             <div className="flex flex-col gap-2">
               {priorityTasks.map((task) => (
-                <div
+                <Link
                   key={task.id}
-                  className="flex items-center justify-between gap-2"
+                  href={`/tasks?highlight=${task.id}`}
+                  className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 -mx-2 transition-colors hover:bg-gray-50"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-gray-900">
@@ -232,7 +240,7 @@ export default function DashboardContent({
                   >
                     {task.type}
                   </span>
-                </div>
+                </Link>
               ))}
             </div>
           )}
