@@ -14,7 +14,7 @@ export default async function StudyHelpHistoryPage() {
 
   const { data: sessions } = await supabase
     .from("study_help_sessions")
-    .select("id, title, course_id, created_at")
+    .select("id, title, description, course_id, created_at")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 

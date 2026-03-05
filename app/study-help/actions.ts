@@ -159,6 +159,41 @@ export async function generateStudyHelpAction(
 }
 
 // ---------------------------------------------------------------------------
+// Update a saved study help session (title and/or description)
+// ---------------------------------------------------------------------------
+
+export async function updateStudyHelpSession(
+  sessionId: string,
+  fields: { title?: string; description?: string }
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const updates: Record<string, string> = {};
+  if (fields.title !== undefined) updates.title = fields.title.trim();
+  if (fields.description !== undefined) updates.description = fields.description.trim();
+
+  if (Object.keys(updates).length === 0) return {};
+
+  const { error } = await supabase
+    .from("study_help_sessions")
+    .update(updates)
+    .eq("id", sessionId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { error: "Failed to update session." };
+  }
+
+  revalidatePath("/study-help/history");
+  return {};
+}
+
+// ---------------------------------------------------------------------------
 // Delete a saved study help session
 // ---------------------------------------------------------------------------
 
