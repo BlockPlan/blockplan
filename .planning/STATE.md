@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-25)
 
 **Core value:** Students always know exactly what to work on next and when — the plan adapts to them, not the other way around.
-**Current focus:** Phase 6 — Study Sessions (Complete)
+**Current focus:** Phase 8 — Integration Fixes (Complete)
 
 ## Current Position
 
-Phase: 6 of 7 (Study Sessions)
-Plan: 2 of 2 in current phase (06-01, 06-02 complete; Phase 6 complete)
-Status: Phase 6 Complete — Ready for Phase 7
-Last activity: 2026-03-02 — Phase 6 executed (study aid Zod schemas, AI SDK generation with mock fallback, study session UI at /study, entry points on exam/reading tasks)
+Phase: 8 of 8 (Integration Fixes)
+Plan: 1 of 1 in current phase (08-01 complete; Phase 8 complete)
+Status: Phase 8 Complete — v1.0 milestone achieved, all 45 requirements complete
+Last activity: 2026-03-05 — Phase 8 executed (study session links on exam/reading tasks in CalendarView, NavHeader on upload page, dead code removed, REQUIREMENTS.md fully updated)
 
-Progress: [████████████████] 95%
+Progress: [████████████████████] 100%
 
 ## Performance Metrics
 
@@ -82,6 +82,8 @@ Recent decisions affecting current work:
 - [Phase 04-03]: _runScheduler() private helper extracted — shared by generatePlan and markBlockMissed to avoid ~60 lines of duplication
 - [Phase 04-03]: markBlockMissed deletes only 'scheduled' blocks before reinserting — preserves done/missed history
 - [Phase 04-03]: router.refresh() after markBlockMissed to trigger Server Component re-render for new scheduled blocks
+- [Phase 08-01]: stopPropagation on Study Link click — TaskCard is a button with onClick; nested Link needs stopPropagation to prevent edit modal from firing on Study navigation
+- [Phase 08-01]: Keep Link import in upload page — bottom "add tasks manually" link still uses it after removing custom header
 
 ### Pending Todos
 
@@ -93,6 +95,6 @@ None — Phase 4 blocker resolved: scheduler algorithm implemented and tested.
 
 ## Session Continuity
 
-Last session: 2026-03-02
-Stopped at: Completed 06-02-PLAN.md (study session page, server action with task type validation, entry points on exam/reading tasks — Phase 6 complete)
+Last session: 2026-03-05
+Stopped at: Completed 08-01-PLAN.md (study session entry points on CalendarView, NavHeader on upload page, dead code removed, all v1 requirements complete — Phase 8 complete)
 Resume file: None

@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Views and Dashboard** - Weekly view, daily view, today dashboard, and block completion (completed 2026-03-02)
 - [x] **Phase 6: Study Sessions** - LLM-powered study aids from pasted notes (completed 2026-03-02)
 - [x] **Phase 7: Export and Polish** - .ics calendar export, mobile-responsive design, and MVP completion (completed 2026-03-02)
-- [ ] **Phase 8: Integration Fixes and Cleanup** - Close audit gaps, fix orphaned integration points, remove dead code
+- [x] **Phase 8: Integration Fixes and Cleanup** - Close audit gaps, fix orphaned integration points, remove dead code (completed 2026-03-05)
 
 ## Phase Details
 
@@ -159,4 +159,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 5. Views and Dashboard | 3/3 | Complete   | 2026-03-02 |
 | 6. Study Sessions | 2/2 | Complete | 2026-03-02 |
 | 7. Export and Polish | 3/3 | Complete | 2026-03-02 |
-| 8. Integration Fixes | 0/1 | Planned | - |
+| 8. Integration Fixes | 1/1 | Complete   | 2026-03-05 |
