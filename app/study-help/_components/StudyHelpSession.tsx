@@ -40,6 +40,12 @@ export default function StudyHelpSession({
           Upload PDFs or photos of your textbook, or paste your notes. AI will
           generate flashcards, quizzes, practice tests, and more.
         </p>
+        <a
+          href="/study-help/history"
+          className="mt-2 inline-block text-sm text-blue-600 hover:underline"
+        >
+          View saved sessions &rarr;
+        </a>
       </div>
 
       {/* Input form */}
@@ -164,7 +170,17 @@ export default function StudyHelpSession({
 
       {/* Results */}
       {state.data && (
-        <StudyHelpResults data={state.data} courseName={state.courseName} />
+        <>
+          {state.sessionId && (
+            <p className="mt-4 text-xs text-green-600">
+              &#10003; Saved to{" "}
+              <a href="/study-help/history" className="underline">
+                history
+              </a>
+            </p>
+          )}
+          <StudyHelpResults data={state.data} courseName={state.courseName} />
+        </>
       )}
     </div>
   );

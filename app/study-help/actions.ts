@@ -7,6 +7,7 @@ import {
   imageToBase64,
 } from "@/lib/study-help/extract";
 import type { StudyHelp } from "@/lib/study-help/types";
+import { revalidatePath } from "next/cache";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -17,6 +18,7 @@ export type StudyHelpState = {
   data?: StudyHelp;
   isMock?: boolean;
   courseName?: string;
+  sessionId?: string;
 };
 
 // ---------------------------------------------------------------------------
@@ -119,9 +121,67 @@ export async function generateStudyHelpAction(
   // Generate study help
   try {
     const { data, isMock } = await generateStudyHelp(contentParts, courseName);
-    return { data, isMock, courseName };
+
+    // Auto-save to database (non-blocking — user gets results even if save fails)
+    let sessionId: string | undefined;
+    try {
+      const now = new Date();
+      const dateLabel = now.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+      const title = courseName
+        ? `${courseName} — ${dateLabel}`
+        : `Study Session — ${dateLabel}`;
+
+      const { data: inserted } = await supabase
+        .from("study_help_sessions")
+        .insert({
+          user_id: user.id,
+          course_id: courseId || null,
+          title,
+          data,
+        })
+        .select("id")
+        .single();
+
+      sessionId = inserted?.id as string | undefined;
+    } catch (saveErr) {
+      console.error("[study-help] Failed to save session:", saveErr);
+    }
+
+    return { data, isMock, courseName, sessionId };
   } catch (err) {
     console.error("[study-help] Generation failed:", err);
     return { error: "Failed to generate study materials. Please try again." };
   }
+}
+
+// ---------------------------------------------------------------------------
+// Delete a saved study help session
+// ---------------------------------------------------------------------------
+
+export async function deleteStudyHelpSession(
+  sessionId: string
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const { error } = await supabase
+    .from("study_help_sessions")
+    .delete()
+    .eq("id", sessionId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { error: "Failed to delete session." };
+  }
+
+  revalidatePath("/study-help/history");
+  return {};
 }
