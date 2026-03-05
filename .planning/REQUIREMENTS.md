@@ -9,11 +9,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Authentication
 
-- [ ] **AUTH-01**: User can sign up with email and password
-- [ ] **AUTH-02**: User can sign in with email and password
-- [ ] **AUTH-03**: User session persists across browser refresh
-- [ ] **AUTH-04**: User can sign out from any page
-- [ ] **AUTH-05**: User can delete their account and all associated data
+- [x] **AUTH-01**: User can sign up with email and password
+- [x] **AUTH-02**: User can sign in with email and password
+- [x] **AUTH-03**: User session persists across browser refresh
+- [x] **AUTH-04**: User can sign out from any page
+- [x] **AUTH-05**: User can delete their account and all associated data
 
 ### Onboarding
 
@@ -46,8 +46,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **TASK-05**: User can edit any task's fields
 - [x] **TASK-06**: User can delete tasks
 - [x] **TASK-07**: User can mark tasks as done
-- [ ] **TASK-08**: For large tasks (papers/projects), system auto-suggests subtasks (outline, first draft, revise, final submit)
-- [ ] **TASK-09**: Subtasks have work-back scheduling from the parent due date
+- [x] **TASK-08**: For large tasks (papers/projects), system auto-suggests subtasks (outline, first draft, revise, final submit)
+- [x] **TASK-09**: Subtasks have work-back scheduling from the parent due date
 - [x] **TASK-10**: User can view all tasks across courses with filtering and sorting
 
 ### Planning Engine
@@ -62,7 +62,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Views & Dashboard
 
-- [x] **VIEW-01**: Weekly view shows blocks per day with assigned tasks
+- [ ] **VIEW-01**: Weekly view shows blocks per day with assigned tasks
 - [x] **VIEW-02**: Daily view shows top priorities and estimated time remaining today
 - [x] **VIEW-03**: "Today" dashboard shows top 5 items, next scheduled block, and risk alerts
 - [x] **VIEW-04**: User can mark plan blocks as done or missed from the view
@@ -76,7 +76,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Study Session
 
 - [x] **STDY-01**: User can start a study session for exam or reading tasks
-- [x] **STDY-02**: User can paste notes or chapter headings as study input
+- [ ] **STDY-02**: User can paste notes or chapter headings as study input
 - [x] **STDY-03**: System generates brief bullet-point summary from pasted content
 - [x] **STDY-04**: System generates key terms list from pasted content
 - [x] **STDY-05**: System generates 8-12 practice questions (recall + conceptual) from pasted content
@@ -85,17 +85,17 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Calendar Export
 
-- [ ] **CALX-01**: User can export their plan as an .ics file download
+- [x] **CALX-01**: User can export their plan as an .ics file download
 
 ### Security & Privacy
 
-- [ ] **SECU-01**: PDFs are stored in private per-user storage buckets
-- [ ] **SECU-02**: No cross-user data access (RLS on all tables)
-- [ ] **SECU-03**: All timestamps stored as TIMESTAMPTZ (timezone-aware)
+- [x] **SECU-01**: PDFs are stored in private per-user storage buckets
+- [x] **SECU-02**: No cross-user data access (RLS on all tables)
+- [x] **SECU-03**: All timestamps stored as TIMESTAMPTZ (timezone-aware)
 
 ### Responsive Design
 
-- [ ] **RESP-01**: All screens are responsive and usable on mobile (375px+)
+- [x] **RESP-01**: All screens are responsive and usable on mobile (375px+)
 
 ## v2 Requirements
 
@@ -137,14 +137,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
-| AUTH-02 | Phase 1 | Pending |
-| AUTH-03 | Phase 1 | Pending |
-| AUTH-04 | Phase 1 | Pending |
-| AUTH-05 | Phase 1 | Pending |
-| SECU-01 | Phase 1 | Pending |
-| SECU-02 | Phase 1 | Pending |
-| SECU-03 | Phase 1 | Pending |
+| AUTH-01 | Phase 1 | Complete |
+| AUTH-02 | Phase 1 | Complete |
+| AUTH-03 | Phase 1 | Complete |
+| AUTH-04 | Phase 1 | Complete |
+| AUTH-05 | Phase 1 | Complete |
+| SECU-01 | Phase 1 | Complete |
+| SECU-02 | Phase 1 | Complete |
+| SECU-03 | Phase 1 | Complete |
 | ONBD-01 | Phase 2 | Complete |
 | ONBD-02 | Phase 2 | Complete |
 | ONBD-03 | Phase 2 | Complete |
@@ -179,21 +179,21 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RESC-01 | Phase 4 | Complete |
 | RESC-02 | Phase 4 | Complete |
 | RESC-03 | Phase 4 | Complete |
-| VIEW-01 | Phase 5 | Complete |
+| VIEW-01 | Phase 8 | Pending |
 | VIEW-02 | Phase 5 | Complete |
 | VIEW-03 | Phase 5 | Complete |
 | VIEW-04 | Phase 5 | Complete |
 | STDY-01 | Phase 6 | Complete |
-| STDY-02 | Phase 6 | Complete |
+| STDY-02 | Phase 8 | Pending |
 | STDY-03 | Phase 6 | Complete |
 | STDY-04 | Phase 6 | Complete |
 | STDY-05 | Phase 6 | Complete |
 | STDY-06 | Phase 6 | Complete |
 | STDY-07 | Phase 6 | Complete |
-| CALX-01 | Phase 7 | Pending |
-| TASK-08 | Phase 7 | Pending |
-| TASK-09 | Phase 7 | Pending |
-| RESP-01 | Phase 7 | Pending |
+| CALX-01 | Phase 7 | Complete |
+| TASK-08 | Phase 7 | Complete |
+| TASK-09 | Phase 7 | Complete |
+| RESP-01 | Phase 7 | Complete |
 
 **Coverage:**
 - v1 requirements: 45 total
@@ -202,4 +202,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-28*
-*Last updated: 2026-02-28 after roadmap creation — all 45 requirements mapped*
+*Last updated: 2026-03-05 after v1.0 milestone audit — VIEW-01, STDY-02 reassigned to Phase 8; 12 stale checkboxes updated*

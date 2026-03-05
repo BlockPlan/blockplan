@@ -19,6 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Views and Dashboard** - Weekly view, daily view, today dashboard, and block completion (completed 2026-03-02)
 - [x] **Phase 6: Study Sessions** - LLM-powered study aids from pasted notes (completed 2026-03-02)
 - [x] **Phase 7: Export and Polish** - .ics calendar export, mobile-responsive design, and MVP completion (completed 2026-03-02)
+- [ ] **Phase 8: Integration Fixes and Cleanup** - Close audit gaps, fix orphaned integration points, remove dead code
 
 ## Phase Details
 
@@ -130,6 +131,20 @@ Plans:
 - [x] 07-02-PLAN.md — Auto-suggested subtasks with work-back scheduling for large tasks
 - [x] 07-03-PLAN.md — Mobile responsive audit and fixes across all screens
 
+### Phase 8: Integration Fixes and Cleanup
+**Goal**: Close all audit gaps from v1.0 milestone audit — fix orphaned integration points, remove dead code, update documentation
+**Depends on**: Phase 7
+**Requirements**: VIEW-01, STDY-02
+**Gap Closure**: Closes gaps from v1.0-MILESTONE-AUDIT.md
+**Success Criteria** (what must be TRUE):
+  1. CalendarView DayView shows study session entry points for exam/reading tasks (STDY-02)
+  2. Upload page uses shared NavHeader component (VIEW-01)
+  3. Dead code removed (PlanGrid.tsx, DayTimeline.tsx, stale revalidatePath calls)
+  4. REQUIREMENTS.md checkboxes and traceability table fully up to date
+**Plans**: 1 plan
+Plans:
+- [ ] 08-01-PLAN.md — Fix integration gaps, remove dead code, update documentation
+
 ## Progress
 
 **Execution Order:**
@@ -144,3 +159,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 5. Views and Dashboard | 3/3 | Complete   | 2026-03-02 |
 | 6. Study Sessions | 2/2 | Complete | 2026-03-02 |
 | 7. Export and Polish | 3/3 | Complete | 2026-03-02 |
+| 8. Integration Fixes | 0/1 | Planned | - |
