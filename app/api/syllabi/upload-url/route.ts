@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { uploadRequestSchema } from "@/lib/validations/syllabus";
 
 export async function POST(request: NextRequest) {
@@ -51,8 +52,9 @@ export async function POST(request: NextRequest) {
     // Construct storage path: userId/courseId/timestamp-filename
     const storagePath = `${user.id}/${courseId}/${Date.now()}-${filename}`;
 
-    // Generate signed upload URL
-    const { data, error } = await supabase.storage
+    // Generate signed upload URL (requires service role key)
+    const adminClient = createAdminClient();
+    const { data, error } = await adminClient.storage
       .from("syllabi")
       .createSignedUploadUrl(storagePath);
 
