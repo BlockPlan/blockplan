@@ -25,6 +25,7 @@ export interface PlannerSettings {
   max_block_minutes: number; // default 90
   min_block_minutes: number; // default 25
   buffer_minutes: number;    // default 10
+  backward_planning?: boolean; // default false
 }
 
 export interface ScheduledBlock {
@@ -164,6 +165,9 @@ function classifyRisk(
  * 3. Walk windows, fitting tasks into blocks respecting max/min block length
  *    and buffer time. Tasks are split across blocks if they exceed max_block.
  * 4. Tasks not fully placed go into unscheduled; all are risk-classified.
+ *
+ * When backward_planning is enabled, work is spread evenly across the days
+ * between now and each task's due date instead of front-loading.
  */
 export function generateSchedule(
   tasks: SchedulableTask[],
@@ -195,7 +199,81 @@ export function generateSchedule(
   // 3. Build availability windows
   const windows = buildAvailabilityWindows(availabilityRules, userTimezone, planStart);
 
-  // 4. Greedy bin packing
+  // 4. Build daily quotas when backward planning is enabled
+  //    Maps task_id → Map<dayIndex, minutesAllowedToday>
+  const dailyQuota = new Map<string, Map<number, number>>();
+  const dailyScheduled = new Map<string, Map<number, number>>();
+
+  if (settings.backward_planning) {
+    const planStartDay = startOfDay(planStart, { in: tz(userTimezone) });
+
+    for (const task of sorted) {
+      if (!task.due_date || task.estimated_minutes <= 0) continue;
+
+      const dueDate = new Date(task.due_date);
+      if (dueDate <= planStart) continue; // overdue — no backward planning
+
+      // Count available days (0-indexed from planStart) up to due date (max 7)
+      const availableDays: number[] = [];
+      for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+        const dayDate = addDays(planStartDay, dayOffset);
+        if (dayDate >= dueDate) break;
+
+        // Check if this day has any availability windows
+        const dayOfWeek = getDay(dayDate, { in: tz(userTimezone) });
+        const hasWindows = availabilityRules.some(
+          (r) => r.day_of_week === dayOfWeek && r.rule_type === 'available',
+        );
+        if (hasWindows) {
+          availableDays.push(dayOffset);
+        }
+      }
+
+      if (availableDays.length === 0) continue;
+
+      // Spread estimated minutes evenly across available days
+      const perDay = Math.ceil(task.estimated_minutes / availableDays.length);
+      const quotaMap = new Map<number, number>();
+      for (const dayIdx of availableDays) {
+        quotaMap.set(dayIdx, perDay);
+      }
+      dailyQuota.set(task.id, quotaMap);
+      dailyScheduled.set(task.id, new Map());
+    }
+  }
+
+  // Helper: get day index for a given time
+  const planStartDay = startOfDay(planStart, { in: tz(userTimezone) });
+  function getDayIndex(time: Date): number {
+    const diff = time.getTime() - planStartDay.getTime();
+    return Math.floor(diff / (24 * 60 * 60 * 1000));
+  }
+
+  // Modified findNextTask for backward planning: skips tasks that have hit
+  // their daily quota for the current day
+  function findNextTaskForWindow(
+    sortedTasks: SchedulableTask[],
+    remainingMap: Map<string, number>,
+    dayIndex: number,
+  ): SchedulableTask | null {
+    for (const task of sortedTasks) {
+      if ((remainingMap.get(task.id) ?? 0) <= 0) continue;
+
+      if (settings.backward_planning) {
+        const quota = dailyQuota.get(task.id);
+        if (quota) {
+          const dayMax = quota.get(dayIndex) ?? 0;
+          const dayUsed = dailyScheduled.get(task.id)?.get(dayIndex) ?? 0;
+          if (dayUsed >= dayMax) continue; // hit daily quota, skip to next task
+        }
+      }
+
+      return task;
+    }
+    return null;
+  }
+
+  // 5. Greedy bin packing (with optional daily quota enforcement)
   const blocks: ScheduledBlock[] = [];
   let cursorTime: Date = planStart;
 
@@ -208,25 +286,36 @@ export function generateSchedule(
     // Skip window if cursor is already past it
     if (cursorTime >= window.end) continue;
 
+    const windowDayIndex = getDayIndex(window.start);
+
     // Pack as many task chunks into this window as possible
     while (cursorTime < window.end) {
-      const task = findNextTask(sorted, remaining);
-      if (!task) break; // All tasks placed
+      const task = findNextTaskForWindow(sorted, remaining, windowDayIndex);
+      if (!task) break; // All tasks placed or all hit daily quota
 
       const taskRemaining = remaining.get(task.id)!;
       const windowAvailable = differenceInMinutes(window.end, cursorTime);
 
-      // Block duration = min(task remaining, max block, window available)
-      const blockDuration = Math.min(
+      // When backward planning, also cap at daily remaining quota
+      let maxForBlock = Math.min(
         taskRemaining,
         settings.max_block_minutes,
         windowAvailable,
       );
 
-      // Respect minimum block length — skip if not enough room
-      if (blockDuration < settings.min_block_minutes) break;
+      if (settings.backward_planning) {
+        const quota = dailyQuota.get(task.id);
+        if (quota) {
+          const dayMax = quota.get(windowDayIndex) ?? taskRemaining;
+          const dayUsed = dailyScheduled.get(task.id)?.get(windowDayIndex) ?? 0;
+          maxForBlock = Math.min(maxForBlock, dayMax - dayUsed);
+        }
+      }
 
-      const blockEnd = addMinutes(cursorTime, blockDuration);
+      // Respect minimum block length — skip if not enough room
+      if (maxForBlock < settings.min_block_minutes) break;
+
+      const blockEnd = addMinutes(cursorTime, maxForBlock);
 
       blocks.push({
         task_id: task.id,
@@ -234,17 +323,24 @@ export function generateSchedule(
         end_time: new Date(blockEnd),
       });
 
-      remaining.set(task.id, taskRemaining - blockDuration);
+      remaining.set(task.id, taskRemaining - maxForBlock);
+
+      // Track daily usage for backward planning
+      if (settings.backward_planning) {
+        const dayMap = dailyScheduled.get(task.id) ?? new Map<number, number>();
+        dayMap.set(windowDayIndex, (dayMap.get(windowDayIndex) ?? 0) + maxForBlock);
+        dailyScheduled.set(task.id, dayMap);
+      }
 
       // Advance cursor past block + buffer
       cursorTime = addMinutes(blockEnd, settings.buffer_minutes);
     }
   }
 
-  // 5. Any task with remaining minutes > 0 is unscheduled
+  // 6. Any task with remaining minutes > 0 is unscheduled
   const unscheduled = sorted.filter((t) => (remaining.get(t.id) ?? 0) > 0);
 
-  // 6. Classify risk:
+  // 7. Classify risk:
   //    - All unscheduled tasks get a risk classification.
   //    - Additionally, tasks with a past due date (overdue) are always at risk
   //      even if they were successfully scheduled (they are already late).

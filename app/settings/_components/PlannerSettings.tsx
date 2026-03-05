@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState, useActionState } from "react";
 import {
   savePlannerSettings,
   type PlannerSettingsActionState,
@@ -16,6 +16,9 @@ const initialState: PlannerSettingsActionState = {};
 export default function PlannerSettingsForm({
   initialSettings,
 }: PlannerSettingsProps) {
+  const [backwardPlanning, setBackwardPlanning] = useState(
+    initialSettings.backward_planning ?? false
+  );
   const [state, formAction, isPending] = useActionState(
     savePlannerSettings,
     initialState
@@ -137,6 +140,32 @@ export default function PlannerSettingsForm({
           </p>
         )}
         <p className="mt-1 text-xs text-gray-400">Range: 0–30 minutes</p>
+      </div>
+
+      {/* Backward Planning Toggle */}
+      <div className="flex items-center justify-between rounded-lg border border-gray-200 px-4 py-3">
+        <div>
+          <p className="text-sm font-medium text-gray-700">Backward Planning</p>
+          <p className="mt-0.5 text-xs text-gray-400">
+            Spread work evenly across days leading up to due dates
+          </p>
+        </div>
+        <input type="hidden" name="backward_planning" value={backwardPlanning ? "true" : "false"} />
+        <button
+          type="button"
+          role="switch"
+          aria-checked={backwardPlanning}
+          onClick={() => setBackwardPlanning((v) => !v)}
+          className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+            backwardPlanning ? "bg-blue-600" : "bg-gray-200"
+          }`}
+        >
+          <span
+            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+              backwardPlanning ? "translate-x-5" : "translate-x-0"
+            }`}
+          />
+        </button>
       </div>
 
       <div>

@@ -41,6 +41,7 @@ export async function savePlannerSettings(
     max_block_minutes: Number(formData.get("max_block_minutes")),
     min_block_minutes: Number(formData.get("min_block_minutes")),
     buffer_minutes: Number(formData.get("buffer_minutes")),
+    backward_planning: formData.get("backward_planning") === "true",
   };
 
   const parsed = plannerSettingsSchema.safeParse(raw);
