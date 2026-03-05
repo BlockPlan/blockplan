@@ -21,7 +21,7 @@ export default async function StudyHelpSessionPage({
 
   const { data: session } = await supabase
     .from("study_help_sessions")
-    .select("id, title, description, data, course_id")
+    .select("id, title, description, data, course_id, share_token")
     .eq("id", id)
     .eq("user_id", user.id)
     .single();
@@ -59,6 +59,7 @@ export default async function StudyHelpSessionPage({
           sessionId={session.id as string}
           data={session.data as StudyHelp}
           courseName={courseName}
+          shareToken={(session.share_token as string | null) ?? null}
         />
       </main>
     </div>

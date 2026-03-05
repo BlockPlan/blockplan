@@ -2,7 +2,12 @@
 
 import { useState, useTransition, useRef, useEffect } from "react";
 import Link from "next/link";
-import { deleteStudyHelpSession, updateStudyHelpSession } from "../../actions";
+import {
+  deleteStudyHelpSession,
+  updateStudyHelpSession,
+  shareStudyHelpSession,
+  unshareStudyHelpSession,
+} from "../../actions";
 
 interface Session {
   id: string;
@@ -10,6 +15,7 @@ interface Session {
   description: string | null;
   course_id: string | null;
   created_at: string;
+  share_token: string | null;
 }
 
 export default function StudyHelpHistoryList({
@@ -24,6 +30,8 @@ export default function StudyHelpHistoryList({
   const [isPending, startTransition] = useTransition();
   const [localSessions, setLocalSessions] = useState(sessions);
   const titleInputRef = useRef<HTMLInputElement>(null);
+  const [sharingId, setSharingId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (editingId && titleInputRef.current) {
@@ -67,6 +75,46 @@ export default function StudyHelpHistoryList({
       setLocalSessions((prev) => prev.filter((s) => s.id !== idToDelete));
       setDeletingId(null);
     });
+  };
+
+  const handleShare = (session: Session) => {
+    if (session.share_token) {
+      // Already shared — show the link
+      setSharingId(session.id);
+      setCopied(false);
+      return;
+    }
+    startTransition(async () => {
+      const result = await shareStudyHelpSession(session.id);
+      if (result.shareToken) {
+        setLocalSessions((prev) =>
+          prev.map((s) =>
+            s.id === session.id ? { ...s, share_token: result.shareToken! } : s
+          )
+        );
+        setSharingId(session.id);
+        setCopied(false);
+      }
+    });
+  };
+
+  const handleUnshare = (sessionId: string) => {
+    startTransition(async () => {
+      await unshareStudyHelpSession(sessionId);
+      setLocalSessions((prev) =>
+        prev.map((s) =>
+          s.id === sessionId ? { ...s, share_token: null } : s
+        )
+      );
+      setSharingId(null);
+    });
+  };
+
+  const copyShareLink = (token: string) => {
+    const url = `${window.location.origin}/study-help/shared/${token}`;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   if (localSessions.length === 0) {
@@ -169,6 +217,30 @@ export default function StudyHelpHistoryList({
                   </p>
                 </Link>
                 <div className="ml-4 flex flex-shrink-0 gap-2">
+                  {/* Share button */}
+                  <button
+                    onClick={() => handleShare(session)}
+                    className={`${
+                      session.share_token
+                        ? "text-emerald-500 hover:text-emerald-600"
+                        : "text-gray-400 hover:text-blue-500"
+                    }`}
+                    title={session.share_token ? "Shared — click to manage" : "Share"}
+                  >
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                      />
+                    </svg>
+                  </button>
                   {/* Edit button */}
                   <button
                     onClick={() => startEditing(session)}
@@ -208,6 +280,39 @@ export default function StudyHelpHistoryList({
                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                       />
                     </svg>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Share link panel */}
+            {sharingId === session.id && session.share_token && (
+              <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    readOnly
+                    value={`${typeof window !== "undefined" ? window.location.origin : ""}/study-help/shared/${session.share_token}`}
+                    className="flex-1 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs text-gray-700 focus:outline-none"
+                    onFocus={(e) => e.target.select()}
+                  />
+                  <button
+                    onClick={() => copyShareLink(session.share_token!)}
+                    className="flex-shrink-0 rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700"
+                  >
+                    {copied ? "Copied!" : "Copy"}
+                  </button>
+                </div>
+                <div className="mt-2 flex items-center justify-between">
+                  <span className="text-xs text-emerald-700">
+                    Anyone with this link can view
+                  </span>
+                  <button
+                    onClick={() => handleUnshare(session.id)}
+                    disabled={isPending}
+                    className="text-xs font-medium text-red-600 hover:text-red-700 disabled:opacity-50"
+                  >
+                    Stop sharing
                   </button>
                 </div>
               </div>
