@@ -62,7 +62,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Views & Dashboard
 
-- [ ] **VIEW-01**: Weekly view shows blocks per day with assigned tasks
+- [x] **VIEW-01**: Weekly view shows blocks per day with assigned tasks
 - [x] **VIEW-02**: Daily view shows top priorities and estimated time remaining today
 - [x] **VIEW-03**: "Today" dashboard shows top 5 items, next scheduled block, and risk alerts
 - [x] **VIEW-04**: User can mark plan blocks as done or missed from the view
@@ -76,7 +76,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Study Session
 
 - [x] **STDY-01**: User can start a study session for exam or reading tasks
-- [ ] **STDY-02**: User can paste notes or chapter headings as study input
+- [x] **STDY-02**: User can paste notes or chapter headings as study input
 - [x] **STDY-03**: System generates brief bullet-point summary from pasted content
 - [x] **STDY-04**: System generates key terms list from pasted content
 - [x] **STDY-05**: System generates 8-12 practice questions (recall + conceptual) from pasted content
@@ -179,12 +179,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RESC-01 | Phase 4 | Complete |
 | RESC-02 | Phase 4 | Complete |
 | RESC-03 | Phase 4 | Complete |
-| VIEW-01 | Phase 8 | Pending |
+| VIEW-01 | Phase 8 | Complete |
 | VIEW-02 | Phase 5 | Complete |
 | VIEW-03 | Phase 5 | Complete |
 | VIEW-04 | Phase 5 | Complete |
 | STDY-01 | Phase 6 | Complete |
-| STDY-02 | Phase 8 | Pending |
+| STDY-02 | Phase 8 | Complete |
 | STDY-03 | Phase 6 | Complete |
 | STDY-04 | Phase 6 | Complete |
 | STDY-05 | Phase 6 | Complete |
@@ -202,4 +202,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-28*
-*Last updated: 2026-03-05 after v1.0 milestone audit — VIEW-01, STDY-02 reassigned to Phase 8; 12 stale checkboxes updated*
+*Last updated: 2026-03-05 after Phase 8 integration fixes — all v1 requirements complete*
