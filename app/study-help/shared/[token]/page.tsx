@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { notFound } from "next/navigation";
+import { redirect, notFound } from "next/navigation";
+import NavHeader from "@/app/plan/_components/NavHeader";
 import type { StudyHelp } from "@/lib/study-help/types";
 import Link from "next/link";
 import SharedSessionView from "./_components/SharedSessionView";
@@ -12,7 +13,13 @@ export default async function SharedStudyHelpPage({
   const { token } = await params;
   const supabase = await createClient();
 
-  // Fetch session by share token (no user_id check — this is public)
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) redirect("/auth");
+
+  // Fetch session by share token (any authenticated user can view)
   const { data: session } = await supabase
     .from("study_help_sessions")
     .select("id, title, description, data, course_id, share_token")
@@ -33,23 +40,23 @@ export default async function SharedStudyHelpPage({
   }
 
   return (
-    <div className="page-bg min-h-screen">
-      {/* Simple branded header for public pages */}
-      <header className="border-b border-gray-200 bg-white">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-          <Link href="/" className="text-lg font-bold text-gray-900">
-            BlockPlan
-          </Link>
+    <div className="page-bg">
+      <NavHeader />
+      <main className="mx-auto max-w-3xl px-4 py-8">
+        <div className="mb-4">
           <Link
-            href="/auth"
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+            href="/study-help/history"
+            className="text-sm text-blue-600 hover:underline"
           >
-            Sign Up Free
+            &larr; Back to My Sessions
           </Link>
         </div>
-      </header>
-
-      <main className="mx-auto max-w-3xl px-4 py-8">
+        <div className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700">
+          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+          </svg>
+          Shared with you
+        </div>
         <h1 className="page-title mb-2">{session.title}</h1>
         {session.description && (
           <p className="mb-4 text-sm text-gray-600">
@@ -61,22 +68,6 @@ export default async function SharedStudyHelpPage({
         )}
 
         <SharedSessionView data={session.data as StudyHelp} />
-
-        {/* CTA banner */}
-        <div className="mt-8 rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-white p-6 text-center">
-          <p className="text-lg font-semibold text-gray-900">
-            Made with BlockPlan
-          </p>
-          <p className="mt-1 text-sm text-gray-500">
-            Turn your syllabi into study plans, flashcards, and quizzes — automatically.
-          </p>
-          <Link
-            href="/auth"
-            className="mt-4 inline-block rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-          >
-            Get Started Free
-          </Link>
-        </div>
       </main>
     </div>
   );
