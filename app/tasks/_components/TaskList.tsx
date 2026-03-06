@@ -257,7 +257,7 @@ export default function TaskList({ tasks, courses, subtasksByTask = {} }: TaskLi
 
                   {/* Notes preview */}
                   {task.notes && (
-                    <p className="mt-0.5 text-xs text-gray-400 truncate max-w-md">
+                    <p className="mt-0.5 text-xs text-gray-400 truncate max-w-[200px] sm:max-w-md">
                       {task.notes}
                     </p>
                   )}
@@ -299,11 +299,11 @@ export default function TaskList({ tasks, courses, subtasksByTask = {} }: TaskLi
                 </div>
 
                 {/* Action buttons */}
-                <div className="flex flex-shrink-0 items-center gap-1">
+                <div className="flex flex-shrink-0 items-center gap-1.5">
                   {(task.type === "exam" || task.type === "reading") && (
                     <Link
                       href={`/study?task_id=${task.id}`}
-                      className="rounded-lg px-2 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 hover:text-blue-800"
+                      className="rounded-lg px-2.5 py-2 text-xs font-medium text-blue-600 hover:bg-blue-50 hover:text-blue-800"
                       title="Start study session"
                     >
                       Study
@@ -311,7 +311,7 @@ export default function TaskList({ tasks, courses, subtasksByTask = {} }: TaskLi
                   )}
                   <button
                     onClick={() => setEditingTask(task)}
-                    className="rounded-lg p-1.5 text-gray-400 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-600"
+                    className="rounded-lg p-2 text-gray-400 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-600"
                     title="Edit task"
                   >
                     <svg
@@ -330,7 +330,7 @@ export default function TaskList({ tasks, courses, subtasksByTask = {} }: TaskLi
                   </button>
                   <button
                     onClick={() => setDeletingTask(task)}
-                    className="rounded-lg p-1.5 text-gray-400 transition-colors duration-150 hover:bg-red-50 hover:text-red-500"
+                    className="rounded-lg p-2 text-gray-400 transition-colors duration-150 hover:bg-red-50 hover:text-red-500"
                     title="Delete task"
                   >
                     <svg

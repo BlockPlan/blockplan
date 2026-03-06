@@ -150,10 +150,10 @@ export default function TourTooltip({
       {/* Tooltip card */}
       <div
         ref={tooltipRef}
-        className="absolute z-10 w-72 rounded-xl bg-white p-4 shadow-xl"
+        className="absolute z-10 w-72 max-w-[calc(100vw-2rem)] rounded-xl bg-white p-4 shadow-xl"
         style={{
           top,
-          left,
+          left: Math.max(16, Math.min(left, typeof window !== "undefined" ? window.innerWidth - 16 : left)),
           transform:
             step.position === "bottom"
               ? "translateX(-50%)"

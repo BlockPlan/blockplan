@@ -111,7 +111,7 @@ export default function PlanBlock({ block, onEditTask }: PlanBlockProps) {
             onClick={(e) => { e.stopPropagation(); handleReset(); }}
             disabled={isPending}
             title="Undo — mark as not done"
-            className="flex-shrink-0 rounded p-0.5 text-green-400 transition-colors duration-150 hover:bg-green-100 hover:text-green-700 disabled:opacity-40"
+            className="flex-shrink-0 rounded p-1.5 text-green-400 transition-colors duration-150 hover:bg-green-100 hover:text-green-700 disabled:opacity-40"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
@@ -148,7 +148,7 @@ export default function PlanBlock({ block, onEditTask }: PlanBlockProps) {
             onClick={(e) => { e.stopPropagation(); handleReset(); }}
             disabled={isPending}
             title="Undo — mark as not missed"
-            className="flex-shrink-0 rounded p-0.5 text-gray-400 transition-colors duration-150 hover:bg-gray-200 hover:text-gray-600 disabled:opacity-40"
+            className="flex-shrink-0 rounded p-1.5 text-gray-400 transition-colors duration-150 hover:bg-gray-200 hover:text-gray-600 disabled:opacity-40"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
@@ -192,13 +192,13 @@ export default function PlanBlock({ block, onEditTask }: PlanBlockProps) {
             )}
           </div>
         </div>
-        <div className="flex flex-shrink-0 gap-1">
+        <div className="flex flex-shrink-0 gap-1.5">
           {/* Mark done */}
           <button
             onClick={handleDone}
             disabled={isPending}
             title="Mark done"
-            className="rounded p-0.5 text-gray-400 transition-colors duration-150 hover:bg-green-100 hover:text-green-600 disabled:opacity-40"
+            className="rounded p-1.5 text-gray-400 transition-colors duration-150 hover:bg-green-100 hover:text-green-600 disabled:opacity-40"
           >
             <svg
               className="h-4 w-4"
@@ -218,7 +218,7 @@ export default function PlanBlock({ block, onEditTask }: PlanBlockProps) {
             onClick={handleMissed}
             disabled={isPending}
             title="Mark missed"
-            className="rounded p-0.5 text-gray-400 transition-colors duration-150 hover:bg-red-100 hover:text-red-600 disabled:opacity-40"
+            className="rounded p-1.5 text-gray-400 transition-colors duration-150 hover:bg-red-100 hover:text-red-600 disabled:opacity-40"
           >
             <svg
               className="h-4 w-4"

@@ -35,7 +35,7 @@ export default function FlashcardViewer({ flashcards }: { flashcards: Flashcard[
         className="mx-auto block w-full max-w-md cursor-pointer"
       >
         <div
-          className="relative h-56 w-full"
+          className="relative h-44 w-full sm:h-56"
           style={{ perspective: "1000px" }}
         >
           <div

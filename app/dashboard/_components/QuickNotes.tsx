@@ -116,7 +116,7 @@ export default function QuickNotes({ initialNotes }: QuickNotesProps) {
               </div>
               <button
                 onClick={() => handleDelete(note.id)}
-                className="flex-shrink-0 rounded p-1 text-gray-300 transition-colors hover:bg-red-50 hover:text-red-500 opacity-0 group-hover:opacity-100"
+                className="flex-shrink-0 rounded p-2 text-gray-300 transition-colors hover:bg-red-50 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
                 aria-label="Delete note"
               >
                 <svg

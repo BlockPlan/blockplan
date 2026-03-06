@@ -26,7 +26,7 @@ function NavLink({
       <Link
         href={href}
         onClick={onClick}
-        className={`rounded-lg px-3 py-2 text-sm transition-colors duration-150 ${
+        className={`rounded-lg px-4 py-2.5 text-sm transition-colors duration-150 ${
           isActive
             ? "bg-blue-50 font-medium text-blue-600"
             : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"

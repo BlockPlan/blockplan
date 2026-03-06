@@ -234,6 +234,20 @@ const sections = [
       "Enter grades as you get them back to track your GPA.",
     ],
   },
+  {
+    title: "Mobile Tips",
+    icon: "📱",
+    description:
+      "BlockPlan is designed to work great on your phone. Here are some tips for the best mobile experience.",
+    steps: [
+      "Use the hamburger menu (three lines) in the top-right to navigate between pages on mobile.",
+      "Flashcards and study mode are optimized for phone screens — swipe through cards and tap to flip.",
+      "All buttons and interactive elements are sized for easy tapping — no need to pinch and zoom.",
+      "The calendar defaults to a single-column view on mobile so you can see your full schedule without scrolling sideways.",
+      "Quick actions on the Dashboard stack vertically on smaller screens for easier tapping.",
+      "Delete buttons on notes and tasks are always visible on touch screens (no hover required).",
+    ],
+  },
 ];
 
 export default function HelpPage() {

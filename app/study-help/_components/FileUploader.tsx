@@ -273,7 +273,7 @@ export default function FileUploader({ onFilesChange }: FileUploaderProps) {
                     e.stopPropagation();
                     removeFile(file.storagePath);
                   }}
-                  className="text-gray-400 hover:text-red-500"
+                  className="rounded p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
                   title="Remove"
                 >
                   <svg

@@ -311,7 +311,7 @@ export default function AvailabilityGrid({
                 {/* Time label */}
                 <div
                   className="pr-1 text-right text-xs text-gray-400 leading-none"
-                  style={{ height: "20px", lineHeight: "20px" }}
+                  style={{ height: "28px", lineHeight: "28px" }}
                 >
                   {showLabel ? slotLabel(slot) : ""}
                 </div>
@@ -342,7 +342,7 @@ export default function AvailabilityGrid({
                         "border cursor-pointer transition-colors",
                         cellColor,
                       ].join(" ")}
-                      style={{ height: "20px" }}
+                      style={{ height: "28px" }}
                       aria-label={
                         state
                           ? `${DAY_FULL[day]} ${slotToTime(slot)} ${state.type}${state.label ? ` ${state.label}` : ""}`

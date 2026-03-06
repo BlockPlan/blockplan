@@ -412,7 +412,7 @@ export default function FlashcardStudyMode({
         className="mx-auto block w-full cursor-pointer"
       >
         <div
-          className="relative h-64 w-full"
+          className="relative h-48 w-full sm:h-64"
           style={{ perspective: "1000px" }}
         >
           <div

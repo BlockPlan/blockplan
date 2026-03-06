@@ -101,7 +101,7 @@ export default function DashboardContent({
         <p className="mt-1 text-sm text-gray-500">{todayLabel}</p>
 
         {(hasTasks || hasBlocks) && (
-          <div className={`mt-4 grid gap-4 ${hasTasks && hasBlocks ? "grid-cols-2" : "grid-cols-1"}`}>
+          <div className={`mt-4 grid gap-4 ${hasTasks && hasBlocks ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"}`}>
             {/* Tasks progress */}
             {hasTasks && (
               <div>
@@ -339,7 +339,7 @@ export default function DashboardContent({
       )}
 
       {/* Quick Actions */}
-      <div className="mt-4 flex flex-wrap gap-3">
+      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Link
           href="/plan"
           className="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-center text-sm font-medium text-gray-700 shadow-[var(--shadow-card)] transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] hover:border-gray-300"

@@ -229,7 +229,7 @@ function InlineGradeForm({
         min="0"
         defaultValue={currentGrade ?? ""}
         placeholder="Score"
-        className="input w-20 py-1 text-sm"
+        className="input w-16 sm:w-20 py-1 text-sm"
         autoFocus
       />
       <span className="text-gray-400">/</span>
@@ -240,7 +240,7 @@ function InlineGradeForm({
         min="0.01"
         defaultValue={currentPoints ?? ""}
         placeholder="Max"
-        className="input w-20 py-1 text-sm"
+        className="input w-16 sm:w-20 py-1 text-sm"
       />
       <input
         name="weight"

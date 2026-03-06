@@ -53,7 +53,7 @@ export default function PracticeTestViewer({
               {/* Reveal button */}
               <button
                 onClick={() => toggleReveal(i)}
-                className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-800"
+                className="mt-2 inline-block rounded-lg py-2 text-sm font-medium text-blue-600 hover:text-blue-800"
               >
                 {revealed.has(i) ? "Hide Suggested Answer" : "Show Suggested Answer"}
               </button>

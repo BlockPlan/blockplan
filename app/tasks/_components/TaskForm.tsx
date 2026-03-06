@@ -325,7 +325,7 @@ export default function TaskForm({ task, courses, onSuccess }: TaskFormProps) {
                     id="recurrence_end_date"
                     name="recurrence_end_date"
                     type="date"
-                    className="input w-48"
+                    className="input w-full sm:w-48"
                   />
                 </div>
               </div>
@@ -366,7 +366,7 @@ export default function TaskForm({ task, courses, onSuccess }: TaskFormProps) {
           <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
             Grading (optional)
           </p>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div>
               <label
                 htmlFor="points"
