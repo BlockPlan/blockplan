@@ -29,7 +29,7 @@ const tiers = [
   },
   {
     name: "Pro",
-    price: "$4.99",
+    price: "$1.99",
     period: "/month",
     description: "Supercharge your study routine with AI and smart scheduling.",
     cta: "Upgrade to Pro",
@@ -49,7 +49,7 @@ const tiers = [
   },
   {
     name: "MAX",
-    price: "$9.99",
+    price: "$5",
     period: "/month",
     description: "The ultimate academic toolkit — no limits, no compromises.",
     cta: "Go MAX",
