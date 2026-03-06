@@ -305,7 +305,7 @@ export default function StudyHelpHistoryList({
                 </div>
                 <div className="mt-2 flex items-center justify-between">
                   <span className="text-xs text-emerald-700">
-                    Anyone with this link can view
+                    Anyone with a BlockPlan account can view
                   </span>
                   <button
                     onClick={() => handleUnshare(session.id)}

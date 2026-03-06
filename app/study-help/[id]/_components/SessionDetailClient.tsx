@@ -140,7 +140,7 @@ export default function SessionDetailClient({
           </div>
           <div className="mt-2 flex items-center justify-between">
             <span className="text-xs text-emerald-700">
-              Anyone with this link can view this study set
+              Anyone with a BlockPlan account can view this study set
             </span>
             <button
               onClick={handleUnshare}
