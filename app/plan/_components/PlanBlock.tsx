@@ -101,7 +101,7 @@ export default function PlanBlock({ block, onEditTask, draggable }: PlanBlockPro
         tabIndex={onEditTask ? 0 : undefined}
         onKeyDown={onEditTask ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onEditTask(); } } : undefined}
       >
-        <p className="line-clamp-2 text-xs font-medium leading-tight text-green-700 line-through">
+        <p className="text-xs font-medium leading-tight text-green-700 line-through">
           {taskTitle}
         </p>
         <div className="mt-0.5 flex items-center justify-between">
@@ -134,7 +134,7 @@ export default function PlanBlock({ block, onEditTask, draggable }: PlanBlockPro
         tabIndex={onEditTask ? 0 : undefined}
         onKeyDown={onEditTask ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onEditTask(); } } : undefined}
       >
-        <p className="line-clamp-2 text-xs font-medium leading-tight text-gray-500 line-through">
+        <p className="text-xs font-medium leading-tight text-gray-500 line-through">
           {taskTitle}
         </p>
         <div className="mt-0.5 flex items-center justify-between">
