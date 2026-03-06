@@ -76,6 +76,7 @@ export default function NavHeader() {
           <NavLink href="/syllabi/upload" dataTour="nav-upload-syllabus">Upload Syllabus</NavLink>
           <NavLink href="/settings">Settings</NavLink>
           <NavLink href="/help">Help</NavLink>
+          <NavLink href="/pricing">Pricing</NavLink>
           <SignOutButton />
         </nav>
 
@@ -143,6 +144,9 @@ export default function NavHeader() {
             </NavLink>
             <NavLink href="/help" onClick={closeMenu} mobile>
               Help
+            </NavLink>
+            <NavLink href="/pricing" onClick={closeMenu} mobile>
+              Pricing
             </NavLink>
           </div>
           <div className="mt-2 border-t border-gray-100 pt-2">
