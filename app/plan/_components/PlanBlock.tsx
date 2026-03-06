@@ -117,6 +117,9 @@ export default function PlanBlock({ block, onEditTask, draggable }: PlanBlockPro
             </svg>
           </button>
         </div>
+        {courseName && (
+          <p className="truncate text-[10px] leading-tight text-green-400">{courseName}</p>
+        )}
       </div>
     );
   }
@@ -150,6 +153,9 @@ export default function PlanBlock({ block, onEditTask, draggable }: PlanBlockPro
             </svg>
           </button>
         </div>
+        {courseName && (
+          <p className="truncate text-[10px] leading-tight text-gray-400">{courseName}</p>
+        )}
       </div>
     );
   }
@@ -199,16 +205,10 @@ export default function PlanBlock({ block, onEditTask, draggable }: PlanBlockPro
         </p>
       </div>
 
-      {/* Info row — time · course · status | actions */}
+      {/* Info row — time + status | actions */}
       <div className="mt-0.5 flex items-center justify-between gap-1">
         <p className="flex min-w-0 items-center gap-1 text-[10px] leading-tight text-gray-500">
           <span className="whitespace-nowrap">{timeRange}</span>
-          {courseName && (
-            <>
-              <span className="text-gray-300">·</span>
-              <span className="truncate">{courseName}</span>
-            </>
-          )}
           {statusIndicator && (
             <span className={`inline-flex items-center rounded-full px-1 py-px text-[9px] font-medium leading-none ${statusIndicator.className}`}>
               {statusIndicator.icon}
@@ -238,6 +238,9 @@ export default function PlanBlock({ block, onEditTask, draggable }: PlanBlockPro
           </button>
         </div>
       </div>
+      {courseName && (
+        <p className="truncate text-[10px] leading-tight text-gray-400">{courseName}</p>
+      )}
     </div>
   );
 }
