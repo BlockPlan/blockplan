@@ -129,6 +129,10 @@ const sections = [
       'Click "Save Session" to keep a study set for later review.',
       'Click "View saved sessions" to browse your study help history.',
       "From the history page, click any session to review, edit, or share it.",
+      'In the Flashcards tab, click "Study Mode" to start an interactive study session.',
+      "In Study Mode, flip each card then mark it as \"Got It\" or \"Still Learning\".",
+      "Use keyboard shortcuts: Space to flip, → for Got It, ← for Still Learning, Esc to exit.",
+      "After reviewing all cards, see your score and optionally review only the cards you missed.",
     ],
   },
   {

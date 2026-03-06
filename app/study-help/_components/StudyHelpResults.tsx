@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { StudyHelp } from "@/lib/study-help/types";
 import FlashcardViewer from "./FlashcardViewer";
+import FlashcardStudyMode from "./FlashcardStudyMode";
 import QuizViewer from "./QuizViewer";
 import PracticeTestViewer from "./PracticeTestViewer";
 
@@ -24,6 +25,7 @@ export default function StudyHelpResults({
   courseName?: string;
 }) {
   const [activeTab, setActiveTab] = useState<TabKey>("summary");
+  const [studyMode, setStudyMode] = useState(false);
 
   return (
     <div className="mt-8">
@@ -83,10 +85,27 @@ export default function StudyHelpResults({
         )}
 
         {activeTab === "flashcards" && (
-          <div className="rounded-xl border border-gray-200 bg-white p-5">
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">Flashcards</h2>
-            <FlashcardViewer flashcards={data.flashcards} />
-          </div>
+          studyMode ? (
+            <FlashcardStudyMode
+              flashcards={data.flashcards}
+              onExit={() => setStudyMode(false)}
+            />
+          ) : (
+            <div className="rounded-xl border border-gray-200 bg-white p-5">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-900">Flashcards</h2>
+                {data.flashcards.length > 0 && (
+                  <button
+                    onClick={() => setStudyMode(true)}
+                    className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                  >
+                    <span>📖</span> Study Mode
+                  </button>
+                )}
+              </div>
+              <FlashcardViewer flashcards={data.flashcards} />
+            </div>
+          )
         )}
 
         {activeTab === "quiz" && (
