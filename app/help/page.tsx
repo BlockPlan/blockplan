@@ -137,6 +137,8 @@ const sections = [
       "For saved sessions, your progress is remembered across sessions using a Leitner box system (New → Learning → Familiar → Strong → Mastered).",
       "Harder cards (lower mastery) appear first when you start Study Mode, so you focus on what you need most.",
       "A mastery breakdown on the results screen shows how many cards are at each level.",
+      'Click "Export PDF" on any saved session to download a printable PDF of your study materials.',
+      "Choose which sections to include (summary, key terms, flashcards, quiz, practice test) before exporting.",
     ],
   },
   {

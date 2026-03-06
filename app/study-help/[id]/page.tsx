@@ -57,6 +57,7 @@ export default async function StudyHelpSessionPage({
         )}
         <SessionDetailClient
           sessionId={session.id as string}
+          title={session.title as string}
           data={session.data as StudyHelp}
           courseName={courseName}
           shareToken={(session.share_token as string | null) ?? null}

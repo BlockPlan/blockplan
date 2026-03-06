@@ -10,9 +10,11 @@ import {
 } from "@/app/study-help/actions";
 import StudyHelpResults from "@/app/study-help/_components/StudyHelpResults";
 import SessionEditor from "@/app/study-help/_components/SessionEditor";
+import ExportPdfModal from "@/app/study-help/_components/ExportPdfModal";
 
 interface SessionDetailClientProps {
   sessionId: string;
+  title: string;
   data: StudyHelp;
   courseName?: string;
   shareToken: string | null;
@@ -20,11 +22,13 @@ interface SessionDetailClientProps {
 
 export default function SessionDetailClient({
   sessionId,
+  title,
   data,
   courseName,
   shareToken: initialShareToken,
 }: SessionDetailClientProps) {
   const [editing, setEditing] = useState(false);
+  const [showExport, setShowExport] = useState(false);
   const [shareToken, setShareToken] = useState(initialShareToken);
   const [showSharePanel, setShowSharePanel] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -103,6 +107,12 @@ export default function SessionDetailClient({
           {isPending ? "Sharing..." : shareToken ? "Shared" : "Share"}
         </button>
         <button
+          onClick={() => setShowExport(true)}
+          className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+        >
+          Export PDF
+        </button>
+        <button
           onClick={() => setEditing(true)}
           className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
         >
@@ -144,6 +154,15 @@ export default function SessionDetailClient({
       )}
 
       <StudyHelpResults data={data} courseName={courseName} sessionId={sessionId} />
+
+      {showExport && (
+        <ExportPdfModal
+          data={data}
+          title={title}
+          courseName={courseName}
+          onClose={() => setShowExport(false)}
+        />
+      )}
     </div>
   );
 }
