@@ -16,6 +16,8 @@ const sections = [
       "Risk alerts appear when tasks are overdue or at risk of falling behind.",
       "Enable browser reminders from the banner at the top to get notifications before due dates.",
       'Use the quick action buttons at the bottom to jump to Weekly Plan, Daily View, or All Tasks.',
+      'First time? A guided tour will walk you through the key features when you first visit the Dashboard. You can skip it anytime.',
+      'New users will also see a "Getting Started" card with step-by-step setup instructions that disappears once you add tasks.',
     ],
   },
   {
@@ -222,6 +224,7 @@ const sections = [
     steps: [
       "Sign in with your account (or create one on the auth page).",
       "Complete the onboarding flow — set your timezone and study preferences.",
+      "A guided tour will automatically start on your first visit to the Dashboard — follow along to learn the key features, or skip it if you prefer.",
       'Go to Courses and add your classes for the semester (e.g., "English 206", "Math 105").',
       "Upload your syllabi to auto-import assignments, or manually add tasks on the Tasks page.",
       "Set due dates and estimated time for each task.",

@@ -71,7 +71,7 @@ export default function QuickNotes({ initialNotes }: QuickNotesProps) {
   }
 
   return (
-    <div className="mb-4 rounded-xl border border-gray-200 bg-white p-5 shadow-[var(--shadow-card)]">
+    <div data-tour="quick-notes" className="mb-4 rounded-xl border border-gray-200 bg-white p-5 shadow-[var(--shadow-card)]">
       <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
         Quick Notes
       </p>

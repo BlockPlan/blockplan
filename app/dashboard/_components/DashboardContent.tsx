@@ -96,7 +96,7 @@ export default function DashboardContent({
   return (
     <div>
       {/* Welcome card */}
-      <div className="mb-4 rounded-xl border border-gray-200 bg-white p-6 shadow-[var(--shadow-card)]">
+      <div data-tour="dashboard-welcome" className="mb-4 rounded-xl border border-gray-200 bg-white p-6 shadow-[var(--shadow-card)]">
         <h2 className="text-xl font-semibold tracking-tight text-gray-900">Welcome back</h2>
         <p className="mt-1 text-sm text-gray-500">{todayLabel}</p>
 
@@ -168,6 +168,69 @@ export default function DashboardContent({
               View Grades
             </Link>
           </div>
+        </div>
+      )}
+
+      {/* Getting Started — shown for brand-new users */}
+      {!hasTasks && !hasBlocks && (
+        <div className="mb-4 rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-white p-6 shadow-[var(--shadow-card)]">
+          <h3 className="text-lg font-semibold text-gray-900">
+            Getting Started
+          </h3>
+          <p className="mt-1 mb-5 text-sm text-gray-500">
+            Set up your planner in three quick steps:
+          </p>
+          <ol className="space-y-4">
+            <li className="flex items-start gap-3">
+              <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-600">
+                1
+              </span>
+              <div>
+                <p className="text-sm font-medium text-gray-900">Add your courses</p>
+                <p className="text-sm text-gray-500">
+                  Head to{" "}
+                  <Link href="/courses" className="font-medium text-blue-600 hover:underline">
+                    Courses
+                  </Link>{" "}
+                  and add each class you&apos;re taking this semester.
+                </p>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-600">
+                2
+              </span>
+              <div>
+                <p className="text-sm font-medium text-gray-900">Create tasks or upload a syllabus</p>
+                <p className="text-sm text-gray-500">
+                  Add assignments on the{" "}
+                  <Link href="/tasks" className="font-medium text-blue-600 hover:underline">
+                    Tasks
+                  </Link>{" "}
+                  page, or{" "}
+                  <Link href="/syllabi/upload" className="font-medium text-blue-600 hover:underline">
+                    Upload a Syllabus
+                  </Link>{" "}
+                  to auto-import them.
+                </p>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-600">
+                3
+              </span>
+              <div>
+                <p className="text-sm font-medium text-gray-900">Generate your study plan</p>
+                <p className="text-sm text-gray-500">
+                  Go to the{" "}
+                  <Link href="/plan" className="font-medium text-blue-600 hover:underline">
+                    Calendar
+                  </Link>{" "}
+                  and click &ldquo;Generate Plan&rdquo; to auto-schedule study blocks.
+                </p>
+              </div>
+            </li>
+          </ol>
         </div>
       )}
 

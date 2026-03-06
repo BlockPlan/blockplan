@@ -10,11 +10,13 @@ function NavLink({
   children,
   onClick,
   mobile,
+  dataTour,
 }: {
   href: string;
   children: React.ReactNode;
   onClick?: () => void;
   mobile?: boolean;
+  dataTour?: string;
 }) {
   const pathname = usePathname();
   const isActive = pathname === href || pathname.startsWith(href + "/");
@@ -39,6 +41,7 @@ function NavLink({
     <Link
       href={href}
       onClick={onClick}
+      data-tour={dataTour}
       className={`relative py-1 text-sm transition-colors duration-150 ${
         isActive
           ? "font-medium text-blue-600 after:absolute after:-bottom-[13px] after:left-0 after:right-0 after:h-0.5 after:rounded-full after:bg-blue-600"
@@ -65,12 +68,12 @@ export default function NavHeader() {
         {/* Desktop nav */}
         <nav className="hidden items-center gap-5 sm:flex">
           <NavLink href="/dashboard">Dashboard</NavLink>
-          <NavLink href="/plan">Calendar</NavLink>
-          <NavLink href="/tasks">Tasks</NavLink>
+          <NavLink href="/plan" dataTour="nav-calendar">Calendar</NavLink>
+          <NavLink href="/tasks" dataTour="nav-tasks">Tasks</NavLink>
           <NavLink href="/grades">Grades</NavLink>
-          <NavLink href="/study-help">Study Help</NavLink>
+          <NavLink href="/study-help" dataTour="nav-study-help">Study Help</NavLink>
           <NavLink href="/courses">Courses</NavLink>
-          <NavLink href="/syllabi/upload">Upload Syllabus</NavLink>
+          <NavLink href="/syllabi/upload" dataTour="nav-upload-syllabus">Upload Syllabus</NavLink>
           <NavLink href="/settings">Settings</NavLink>
           <NavLink href="/help">Help</NavLink>
           <SignOutButton />

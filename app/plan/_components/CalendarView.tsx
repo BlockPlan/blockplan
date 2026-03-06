@@ -555,9 +555,20 @@ function DayView({
 
       {/* Empty state */}
       {tasks.length === 0 && subtasks.length === 0 && blocks.length === 0 && (
-        <p className="rounded-lg border border-gray-200 bg-white px-4 py-8 text-center text-sm text-gray-400">
-          Nothing scheduled for this day
-        </p>
+        <div className="rounded-lg border border-gray-200 bg-white px-6 py-8 text-center">
+          <p className="text-sm text-gray-400">Nothing scheduled for this day</p>
+          <p className="mt-2 text-sm text-gray-500">
+            Add tasks with due dates, then click{" "}
+            <span className="font-medium text-gray-700">&ldquo;Generate Plan&rdquo;</span>{" "}
+            to create your study schedule.
+          </p>
+          <Link
+            href="/tasks"
+            className="mt-3 inline-block text-sm font-medium text-blue-600 hover:underline"
+          >
+            Go to Tasks &rarr;
+          </Link>
+        </div>
       )}
     </div>
   );
