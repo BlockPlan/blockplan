@@ -133,6 +133,10 @@ const sections = [
       "In Study Mode, flip each card then mark it as \"Got It\" or \"Still Learning\".",
       "Use keyboard shortcuts: Space to flip, → for Got It, ← for Still Learning, Esc to exit.",
       "After reviewing all cards, see your score and optionally review only the cards you missed.",
+      "Spaced repetition is built in — cards you mark \"Still Learning\" reappear sooner during the session.",
+      "For saved sessions, your progress is remembered across sessions using a Leitner box system (New → Learning → Familiar → Strong → Mastered).",
+      "Harder cards (lower mastery) appear first when you start Study Mode, so you focus on what you need most.",
+      "A mastery breakdown on the results screen shows how many cards are at each level.",
     ],
   },
   {

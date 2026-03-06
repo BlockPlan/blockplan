@@ -20,9 +20,11 @@ type TabKey = (typeof TABS)[number]["key"];
 export default function StudyHelpResults({
   data,
   courseName,
+  sessionId,
 }: {
   data: StudyHelp;
   courseName?: string;
+  sessionId?: string;
 }) {
   const [activeTab, setActiveTab] = useState<TabKey>("summary");
   const [studyMode, setStudyMode] = useState(false);
@@ -88,6 +90,7 @@ export default function StudyHelpResults({
           studyMode ? (
             <FlashcardStudyMode
               flashcards={data.flashcards}
+              sessionId={sessionId}
               onExit={() => setStudyMode(false)}
             />
           ) : (

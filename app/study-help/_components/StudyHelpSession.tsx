@@ -187,7 +187,7 @@ export default function StudyHelpSession({
               </a>
             </p>
           )}
-          <StudyHelpResults data={state.data} courseName={state.courseName} />
+          <StudyHelpResults data={state.data} courseName={state.courseName} sessionId={state.sessionId} />
         </>
       )}
     </div>

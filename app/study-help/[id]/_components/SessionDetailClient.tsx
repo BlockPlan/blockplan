@@ -143,7 +143,7 @@ export default function SessionDetailClient({
         </div>
       )}
 
-      <StudyHelpResults data={data} courseName={courseName} />
+      <StudyHelpResults data={data} courseName={courseName} sessionId={sessionId} />
     </div>
   );
 }

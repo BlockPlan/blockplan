@@ -364,6 +364,103 @@ export async function unshareStudyHelpSession(
 // Delete a saved study help session
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Flashcard spaced-repetition helpers
+// ---------------------------------------------------------------------------
+
+export interface CardProgress {
+  box: number;
+  reviewCount: number;
+  lastReviewed: string | null;
+}
+
+export async function getFlashcardProgress(
+  sessionId: string
+): Promise<{ progress: Record<number, CardProgress>; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { progress: {}, error: "Not authenticated" };
+
+  const { data: rows, error } = await supabase
+    .from("flashcard_reviews")
+    .select("card_index, box, review_count, last_reviewed")
+    .eq("user_id", user.id)
+    .eq("session_id", sessionId);
+
+  if (error) return { progress: {}, error: "Failed to load progress." };
+
+  const progress: Record<number, CardProgress> = {};
+  for (const r of rows ?? []) {
+    progress[r.card_index as number] = {
+      box: r.box as number,
+      reviewCount: r.review_count as number,
+      lastReviewed: r.last_reviewed as string | null,
+    };
+  }
+  return { progress };
+}
+
+export async function saveFlashcardResults(
+  sessionId: string,
+  results: { cardIndex: number; result: "got_it" | "learning" }[]
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  // Fetch existing progress to compute new box values
+  const { data: existing } = await supabase
+    .from("flashcard_reviews")
+    .select("card_index, box, review_count")
+    .eq("user_id", user.id)
+    .eq("session_id", sessionId);
+
+  const existingMap = new Map<number, { box: number; reviewCount: number }>();
+  for (const r of existing ?? []) {
+    existingMap.set(r.card_index as number, {
+      box: r.box as number,
+      reviewCount: r.review_count as number,
+    });
+  }
+
+  const now = new Date().toISOString();
+
+  const upserts = results.map((r) => {
+    const prev = existingMap.get(r.cardIndex);
+    const prevBox = prev?.box ?? 1;
+    const prevCount = prev?.reviewCount ?? 0;
+    const newBox =
+      r.result === "got_it" ? Math.min(prevBox + 1, 5) : 1;
+
+    return {
+      user_id: user.id,
+      session_id: sessionId,
+      card_index: r.cardIndex,
+      box: newBox,
+      review_count: prevCount + 1,
+      last_reviewed: now,
+    };
+  });
+
+  const { error } = await supabase
+    .from("flashcard_reviews")
+    .upsert(upserts, { onConflict: "user_id,session_id,card_index" });
+
+  if (error) return { error: "Failed to save results." };
+
+  return {};
+}
+
+// ---------------------------------------------------------------------------
+// Delete a saved study help session
+// ---------------------------------------------------------------------------
+
 export async function deleteStudyHelpSession(
   sessionId: string
 ): Promise<{ error?: string }> {

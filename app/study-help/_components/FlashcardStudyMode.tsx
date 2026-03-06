@@ -1,25 +1,87 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type { Flashcard } from "@/lib/study-help/types";
+import {
+  getFlashcardProgress,
+  saveFlashcardResults,
+  type CardProgress,
+} from "@/app/study-help/actions";
 
 type CardResult = "got_it" | "learning";
 
+const BOX_LABELS: Record<number, string> = {
+  1: "New",
+  2: "Learning",
+  3: "Familiar",
+  4: "Strong",
+  5: "Mastered",
+};
+
+const BOX_COLORS: Record<number, string> = {
+  1: "bg-red-100 text-red-700",
+  2: "bg-amber-100 text-amber-700",
+  3: "bg-yellow-100 text-yellow-700",
+  4: "bg-blue-100 text-blue-700",
+  5: "bg-emerald-100 text-emerald-700",
+};
+
+interface StudyCard {
+  flashcard: Flashcard;
+  originalIndex: number; // index in the original flashcards array (for DB key)
+}
+
 interface FlashcardStudyModeProps {
   flashcards: Flashcard[];
+  sessionId?: string;
   onExit: () => void;
 }
 
 export default function FlashcardStudyMode({
   flashcards,
+  sessionId,
   onExit,
 }: FlashcardStudyModeProps) {
-  const [studyCards, setStudyCards] = useState<Flashcard[]>(flashcards);
+  const [studyCards, setStudyCards] = useState<StudyCard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [results, setResults] = useState<Map<number, CardResult>>(new Map());
-  const [phase, setPhase] = useState<"studying" | "results">("studying");
+  const [phase, setPhase] = useState<"loading" | "studying" | "results">(
+    sessionId ? "loading" : "studying"
+  );
   const [round, setRound] = useState(1);
+  const [cardProgress, setCardProgress] = useState<Record<number, CardProgress>>({});
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  // Track cards that need re-queuing within the session
+  const requeueBuffer = useRef<StudyCard[]>([]);
+
+  // Build initial study cards (sorted by box for spaced repetition)
+  useEffect(() => {
+    if (sessionId) {
+      // Load progress from DB then sort
+      getFlashcardProgress(sessionId).then(({ progress }) => {
+        setCardProgress(progress);
+        const cards = flashcards.map((f, i) => ({
+          flashcard: f,
+          originalIndex: i,
+        }));
+        // Sort: lower box first (harder cards first)
+        cards.sort((a, b) => {
+          const boxA = progress[a.originalIndex]?.box ?? 1;
+          const boxB = progress[b.originalIndex]?.box ?? 1;
+          return boxA - boxB;
+        });
+        setStudyCards(cards);
+        setPhase("studying");
+      });
+    } else {
+      // No session — just use cards in order
+      setStudyCards(flashcards.map((f, i) => ({ flashcard: f, originalIndex: i })));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const card = studyCards[currentIndex];
   const reviewed = results.size;
@@ -29,23 +91,42 @@ export default function FlashcardStudyMode({
     (result: CardResult) => {
       if (phase !== "studying") return;
 
+      const currentCard = studyCards[currentIndex];
+
       setResults((prev) => {
         const next = new Map(prev);
         next.set(currentIndex, result);
         return next;
       });
 
+      // Within-session re-queue: if "learning", insert card back ~4 positions later
+      if (result === "learning") {
+        const insertPos = Math.min(currentIndex + 4, studyCards.length);
+        // Only re-queue if we haven't already re-queued this card too many times
+        const timesQueued = requeueBuffer.current.filter(
+          (c) => c.originalIndex === currentCard.originalIndex
+        ).length;
+        if (timesQueued < 2) {
+          requeueBuffer.current.push(currentCard);
+          setStudyCards((prev) => {
+            const next = [...prev];
+            next.splice(insertPos, 0, { ...currentCard });
+            return next;
+          });
+        }
+      }
+
       setFlipped(false);
 
-      if (currentIndex + 1 < total) {
-        // Small delay so flip resets visually before advancing
+      // Check if we've reached the end (account for any cards that may have been inserted)
+      const newTotal = studyCards.length + (result === "learning" ? 1 : 0);
+      if (currentIndex + 1 < newTotal) {
         setTimeout(() => setCurrentIndex((i) => i + 1), 150);
       } else {
-        // All cards reviewed — show results
         setTimeout(() => setPhase("results"), 150);
       }
     },
-    [currentIndex, total, phase]
+    [currentIndex, studyCards, phase]
   );
 
   const handleFlip = useCallback(() => {
@@ -55,6 +136,7 @@ export default function FlashcardStudyMode({
   // Keyboard shortcuts
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
+      if (phase === "loading") return;
       if (phase !== "studying") {
         if (e.key === "Escape") onExit();
         return;
@@ -83,33 +165,102 @@ export default function FlashcardStudyMode({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [phase, flipped, handleFlip, markCard, onExit]);
 
-  // Results calculations
-  const gotItCount = Array.from(results.values()).filter(
+  // Results calculations — deduplicate by originalIndex (take last result for re-queued cards)
+  const uniqueResults = new Map<number, CardResult>();
+  for (const [idx, result] of results) {
+    const origIdx = studyCards[idx]?.originalIndex;
+    if (origIdx !== undefined) {
+      uniqueResults.set(origIdx, result);
+    }
+  }
+
+  const gotItCount = Array.from(uniqueResults.values()).filter(
     (r) => r === "got_it"
   ).length;
-  const learningCount = Array.from(results.values()).filter(
+  const learningCount = Array.from(uniqueResults.values()).filter(
     (r) => r === "learning"
   ).length;
-  const percent = total > 0 ? Math.round((gotItCount / total) * 100) : 0;
+  const uniqueTotal = uniqueResults.size;
+  const percent = uniqueTotal > 0 ? Math.round((gotItCount / uniqueTotal) * 100) : 0;
+
+  // Save results to DB when reaching results phase
+  useEffect(() => {
+    if (phase !== "results" || !sessionId || saving || saved) return;
+
+    setSaving(true);
+    const resultArray = Array.from(uniqueResults.entries()).map(
+      ([cardIndex, result]) => ({ cardIndex, result })
+    );
+    saveFlashcardResults(sessionId, resultArray).then(() => {
+      setSaving(false);
+      setSaved(true);
+      // Update local progress state for display
+      setCardProgress((prev) => {
+        const next = { ...prev };
+        for (const { cardIndex, result } of resultArray) {
+          const prevBox = next[cardIndex]?.box ?? 1;
+          next[cardIndex] = {
+            box: result === "got_it" ? Math.min(prevBox + 1, 5) : 1,
+            reviewCount: (next[cardIndex]?.reviewCount ?? 0) + 1,
+            lastReviewed: new Date().toISOString(),
+          };
+        }
+        return next;
+      });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
   function reviewMissed() {
-    const missedCards = studyCards.filter((_, i) => results.get(i) === "learning");
+    const missedOriginalIndices = new Set<number>();
+    for (const [origIdx, result] of uniqueResults) {
+      if (result === "learning") missedOriginalIndices.add(origIdx);
+    }
+    const missedCards = flashcards
+      .map((f, i) => ({ flashcard: f, originalIndex: i }))
+      .filter((c) => missedOriginalIndices.has(c.originalIndex));
     if (missedCards.length === 0) return;
+    // Sort by box (lower first)
+    missedCards.sort((a, b) => {
+      const boxA = cardProgress[a.originalIndex]?.box ?? 1;
+      const boxB = cardProgress[b.originalIndex]?.box ?? 1;
+      return boxA - boxB;
+    });
     setStudyCards(missedCards);
     setCurrentIndex(0);
     setFlipped(false);
     setResults(new Map());
+    requeueBuffer.current = [];
     setPhase("studying");
     setRound((r) => r + 1);
+    setSaved(false);
   }
 
   function restartAll() {
-    setStudyCards(flashcards);
+    const cards = flashcards.map((f, i) => ({ flashcard: f, originalIndex: i }));
+    cards.sort((a, b) => {
+      const boxA = cardProgress[a.originalIndex]?.box ?? 1;
+      const boxB = cardProgress[b.originalIndex]?.box ?? 1;
+      return boxA - boxB;
+    });
+    setStudyCards(cards);
     setCurrentIndex(0);
     setFlipped(false);
     setResults(new Map());
+    requeueBuffer.current = [];
     setPhase("studying");
     setRound(1);
+    setSaved(false);
+  }
+
+  // ── Loading Screen ──────────────────────────────────────────────────
+  if (phase === "loading") {
+    return (
+      <div className="mx-auto max-w-md py-16 text-center">
+        <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600" />
+        <p className="text-sm text-gray-500">Loading your progress...</p>
+      </div>
+    );
   }
 
   // ── Results Screen ──────────────────────────────────────────────────
@@ -127,8 +278,13 @@ export default function FlashcardStudyMode({
             {round > 1 ? `Round ${round} Complete!` : "Study Session Complete!"}
           </h3>
           <p className="mt-1 text-sm text-gray-500">
-            {gotItCount} of {total} cards mastered
+            {gotItCount} of {uniqueTotal} cards mastered
           </p>
+          {sessionId && (
+            <p className="mt-1 text-xs text-gray-400">
+              {saving ? "Saving progress..." : saved ? "✓ Progress saved" : ""}
+            </p>
+          )}
         </div>
 
         {/* Score bar */}
@@ -161,6 +317,29 @@ export default function FlashcardStudyMode({
           </div>
         </div>
 
+        {/* Mastery breakdown (only for saved sessions) */}
+        {sessionId && (
+          <div className="mb-6 rounded-xl border border-gray-200 bg-white p-5">
+            <p className="mb-3 text-sm font-medium text-gray-700">Card Mastery</p>
+            <div className="flex flex-wrap gap-2">
+              {[1, 2, 3, 4, 5].map((box) => {
+                const count = Array.from(uniqueResults.keys()).filter(
+                  (idx) => (cardProgress[idx]?.box ?? 1) === box
+                ).length;
+                if (count === 0) return null;
+                return (
+                  <span
+                    key={box}
+                    className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${BOX_COLORS[box]}`}
+                  >
+                    {BOX_LABELS[box]} ({count})
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Actions */}
         <div className="flex flex-col gap-3">
           {learningCount > 0 && (
@@ -189,6 +368,8 @@ export default function FlashcardStudyMode({
   }
 
   // ── Study Screen ────────────────────────────────────────────────────
+  const currentBox = card ? (cardProgress[card.originalIndex]?.box ?? 1) : 1;
+
   return (
     <div className="mx-auto max-w-md">
       {/* Header with progress */}
@@ -199,12 +380,21 @@ export default function FlashcardStudyMode({
         >
           ✕ Exit
         </button>
-        <p className="text-sm font-medium text-gray-600">
-          {reviewed + 1} of {total}
-          {round > 1 && (
-            <span className="ml-1 text-xs text-amber-500">Round {round}</span>
+        <div className="flex items-center gap-2">
+          {sessionId && (
+            <span
+              className={`rounded-full px-2 py-0.5 text-xs font-medium ${BOX_COLORS[currentBox]}`}
+            >
+              {BOX_LABELS[currentBox]}
+            </span>
           )}
-        </p>
+          <p className="text-sm font-medium text-gray-600">
+            {Math.min(reviewed + 1, total)} of {total}
+            {round > 1 && (
+              <span className="ml-1 text-xs text-amber-500">Round {round}</span>
+            )}
+          </p>
+        </div>
       </div>
 
       {/* Progress bar */}
@@ -242,7 +432,7 @@ export default function FlashcardStudyMode({
                   Question
                 </p>
                 <p className="text-lg font-medium text-gray-900">
-                  {card.front}
+                  {card?.flashcard.front}
                 </p>
                 <p className="mt-4 text-xs text-gray-400">
                   Click or press Space to flip
@@ -262,7 +452,7 @@ export default function FlashcardStudyMode({
                 <p className="mb-2 text-xs font-medium uppercase text-green-500">
                   Answer
                 </p>
-                <p className="text-base text-gray-800">{card.back}</p>
+                <p className="text-base text-gray-800">{card?.flashcard.back}</p>
                 <p className="mt-4 text-xs text-gray-400">
                   Rate your knowledge below
                 </p>
