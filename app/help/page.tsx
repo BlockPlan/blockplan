@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import NavHeader from "@/app/plan/_components/NavHeader";
 
 const sections = [
@@ -249,6 +250,11 @@ const sections = [
     ],
   },
 ];
+
+export const metadata: Metadata = {
+  title: "Help | BlockPlan",
+  description: "Learn how to use BlockPlan",
+};
 
 export default function HelpPage() {
   return (

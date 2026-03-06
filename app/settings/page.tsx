@@ -1,9 +1,15 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import NavHeader from "@/app/plan/_components/NavHeader";
 import DeleteAccountForm from "@/components/delete-account-form";
 import PlannerSettingsForm from "@/app/settings/_components/PlannerSettings";
 import { DEFAULT_PLANNER_SETTINGS, type PlannerSettings } from "@/lib/validations/planner";
+
+export const metadata: Metadata = {
+  title: "Settings | BlockPlan",
+  description: "Configure your planner preferences",
+};
 
 export default async function SettingsPage() {
   const supabase = await createClient();

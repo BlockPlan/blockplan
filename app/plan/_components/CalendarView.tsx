@@ -1020,6 +1020,8 @@ export default function CalendarView({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [editingTask, setEditingTask] = useState<TaskRow | null>(null);
+  const [showConfirmGenerate, setShowConfirmGenerate] = useState(false);
+  const confirmDialogRef = useRef<HTMLDialogElement>(null);
 
   // Initialize from URL params
   const initialView = (searchParams.get("view") as ViewMode) || "week";
@@ -1132,7 +1134,10 @@ export default function CalendarView({
           <div className="flex items-center gap-2">
             <ExportButton />
             <button
-              onClick={handleGenerate}
+              onClick={() => {
+                setShowConfirmGenerate(true);
+                setTimeout(() => confirmDialogRef.current?.showModal(), 0);
+              }}
               disabled={isPending}
               className="btn-primary disabled:opacity-60"
             >
@@ -1256,6 +1261,49 @@ export default function CalendarView({
           courses={courses}
           onClose={() => setEditingTask(null)}
         />
+      )}
+
+      {/* ---- Generate Plan Confirmation Dialog ---- */}
+      {showConfirmGenerate && (
+        <dialog
+          ref={confirmDialogRef}
+          className="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-0 shadow-[var(--shadow-dialog)] ring-1 ring-gray-900/5 backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+          onClose={() => setShowConfirmGenerate(false)}
+        >
+          <div className="px-6 py-5">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Regenerate Plan?
+            </h3>
+            <p className="mt-2 text-sm text-gray-600">
+              This will replace all your currently scheduled blocks with a new
+              plan. Done and missed blocks will be kept.
+            </p>
+            <div className="mt-5 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  confirmDialogRef.current?.close();
+                  setShowConfirmGenerate(false);
+                }}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={() => {
+                  confirmDialogRef.current?.close();
+                  setShowConfirmGenerate(false);
+                  handleGenerate();
+                }}
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-60"
+              >
+                {isPending ? "Generating..." : "Generate"}
+              </button>
+            </div>
+          </div>
+        </dialog>
       )}
     </div>
   );

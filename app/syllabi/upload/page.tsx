@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -8,6 +9,11 @@ interface Course {
   id: string;
   name: string;
 }
+
+export const metadata: Metadata = {
+  title: "Upload Syllabus | BlockPlan",
+  description: "Import tasks from your course syllabus",
+};
 
 export default async function SyllabiUploadPage() {
   const supabase = await createClient();

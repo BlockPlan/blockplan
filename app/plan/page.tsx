@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import NavHeader from "./_components/NavHeader";
 import CalendarView from "./_components/CalendarView";
+
+export const metadata: Metadata = {
+  title: "Calendar | BlockPlan",
+  description: "View and manage your study schedule",
+};
 
 interface RiskTask {
   taskId: string;

@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import NavHeader from "@/app/plan/_components/NavHeader";
 import CourseList from "./_components/CourseList";
 import CourseForm from "./_components/CourseForm";
+
+export const metadata: Metadata = {
+  title: "Courses | BlockPlan",
+  description: "Manage your enrolled courses",
+};
 
 export default async function CoursesPage() {
   const supabase = await createClient();

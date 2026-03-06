@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import NavHeader from "@/app/plan/_components/NavHeader";
@@ -8,6 +9,11 @@ import {
   type GradableTask,
 } from "@/lib/services/grade-calculator";
 import { DEFAULT_GRADING_SCALE } from "@/lib/validations/grade";
+
+export const metadata: Metadata = {
+  title: "Grades | BlockPlan",
+  description: "Track your course grades and GPA",
+};
 
 export default async function GradesPage() {
   const supabase = await createClient();

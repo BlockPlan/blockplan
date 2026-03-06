@@ -1,9 +1,15 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import NavHeader from "@/app/plan/_components/NavHeader";
 import TaskList from "./_components/TaskList";
 import TaskFilters from "./_components/TaskFilters";
+
+export const metadata: Metadata = {
+  title: "Tasks | BlockPlan",
+  description: "Track your assignments, exams, and readings",
+};
 
 interface TasksPageProps {
   searchParams: Promise<{

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { startOfDay, endOfDay } from "date-fns";
@@ -10,6 +11,11 @@ import NotificationPermissionBanner from "@/app/_components/NotificationPermissi
 import { computeCourseGrade, computeGPA, type GradableTask } from "@/lib/services/grade-calculator";
 import { DEFAULT_GRADING_SCALE } from "@/lib/validations/grade";
 import { DEFAULT_PLANNER_SETTINGS } from "@/lib/validations/planner";
+
+export const metadata: Metadata = {
+  title: "Dashboard | BlockPlan",
+  description: "Your study schedule and progress at a glance",
+};
 
 interface RiskTask {
   taskId: string;

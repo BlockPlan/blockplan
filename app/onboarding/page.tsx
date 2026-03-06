@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import WizardShell from "./_components/WizardShell";
 import SignOutButton from "@/components/sign-out-button";
+
+export const metadata: Metadata = {
+  title: "Get Started | BlockPlan",
+  description: "Set up your study schedule",
+};
 
 export default async function OnboardingPage() {
   const supabase = await createClient();
