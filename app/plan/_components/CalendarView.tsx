@@ -721,12 +721,12 @@ function WeekView({
                     >
                       <div className="flex items-center gap-1">
                         <span className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${isDone ? "bg-gray-400" : colors.dot}`} />
-                        <p className={["truncate text-xs font-medium", isDone ? "text-gray-400 line-through" : colors.text].join(" ")}>
+                        <p className={["text-sm font-semibold leading-snug", isDone ? "text-gray-400 line-through" : colors.text].join(" ")}>
                           {task.title}
                         </p>
                       </div>
                       {task.courseName && (
-                        <p className="mt-0.5 truncate text-[10px] text-gray-400 pl-3">
+                        <p className="mt-0.5 text-xs text-gray-400 pl-3">
                           {task.courseName}
                         </p>
                       )}

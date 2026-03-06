@@ -102,7 +102,7 @@ export default function PlanBlock({ block, onEditTask, draggable }: PlanBlockPro
       >
         <div className="flex items-start justify-between gap-1">
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-medium text-green-700 line-through">
+            <p className="text-sm font-semibold leading-snug text-green-700 line-through">
               {taskTitle}
             </p>
             <p className="mt-0.5 text-xs text-green-500">{timeRange}</p>
@@ -139,7 +139,7 @@ export default function PlanBlock({ block, onEditTask, draggable }: PlanBlockPro
       >
         <div className="flex items-start justify-between gap-1">
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-medium text-gray-500 line-through">
+            <p className="text-sm font-semibold leading-snug text-gray-500 line-through">
               {taskTitle}
             </p>
             <p className="mt-0.5 text-xs text-gray-400">{timeRange}</p>
@@ -201,7 +201,7 @@ export default function PlanBlock({ block, onEditTask, draggable }: PlanBlockPro
           tabIndex={onEditTask ? 0 : undefined}
           onKeyDown={onEditTask ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onEditTask(); } } : undefined}
         >
-          <p className="truncate text-xs font-medium text-gray-900">
+          <p className="text-sm font-semibold leading-snug text-gray-900">
             {taskTitle}
             {onEditTask && (
               <svg className="ml-1 inline h-3 w-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -212,7 +212,7 @@ export default function PlanBlock({ block, onEditTask, draggable }: PlanBlockPro
           <p className="mt-0.5 text-xs text-gray-500">{timeRange}</p>
           <div className="mt-0.5 flex items-center gap-1.5">
             {courseName && (
-              <span className="truncate text-xs text-gray-400">{courseName}</span>
+              <span className="text-xs text-gray-400">{courseName}</span>
             )}
             {statusIndicator && (
               <span className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium leading-none ${statusIndicator.className}`}>
