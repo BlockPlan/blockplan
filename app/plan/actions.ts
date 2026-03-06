@@ -281,3 +281,95 @@ export async function markBlockMissed(blockId: string) {
 
   return { success: true, rescheduledCount: newResult.blocks.length };
 }
+
+// ---------------------------------------------------------------------------
+// moveBlock — drag-and-drop: move a block to a different date (same time-of-day)
+// ---------------------------------------------------------------------------
+
+export async function moveBlock(blockId: string, newDateKey: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false as const, error: "Not authenticated" };
+  }
+
+  // Fetch current block times
+  const { data: block } = await supabase
+    .from("plan_blocks")
+    .select("start_time, end_time, status")
+    .eq("id", blockId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!block) {
+    return { success: false as const, error: "Block not found" };
+  }
+
+  if (block.status !== "scheduled") {
+    return { success: false as const, error: "Only scheduled blocks can be moved" };
+  }
+
+  const oldStart = new Date(block.start_time as string);
+  const oldEnd = new Date(block.end_time as string);
+
+  // Parse the target date (YYYY-MM-DD) and shift times
+  const [year, month, day] = newDateKey.split("-").map(Number);
+  const newStart = new Date(oldStart);
+  newStart.setFullYear(year, month - 1, day);
+  const newEnd = new Date(oldEnd);
+  newEnd.setFullYear(year, month - 1, day);
+
+  // Save previous times for undo
+  const previousStartTime = oldStart.toISOString();
+  const previousEndTime = oldEnd.toISOString();
+
+  await supabase
+    .from("plan_blocks")
+    .update({
+      start_time: newStart.toISOString(),
+      end_time: newEnd.toISOString(),
+    })
+    .eq("id", blockId)
+    .eq("user_id", user.id);
+
+  revalidatePath("/plan");
+  revalidatePath("/dashboard");
+
+  return { success: true as const, previousStartTime, previousEndTime };
+}
+
+// ---------------------------------------------------------------------------
+// undoMoveBlock — restore a block to its previous times after a drag-and-drop
+// ---------------------------------------------------------------------------
+
+export async function undoMoveBlock(
+  blockId: string,
+  previousStartTime: string,
+  previousEndTime: string,
+) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false, error: "Not authenticated" };
+  }
+
+  await supabase
+    .from("plan_blocks")
+    .update({
+      start_time: previousStartTime,
+      end_time: previousEndTime,
+    })
+    .eq("id", blockId)
+    .eq("user_id", user.id);
+
+  revalidatePath("/plan");
+  revalidatePath("/dashboard");
+
+  return { success: true };
+}

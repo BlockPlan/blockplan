@@ -3,6 +3,7 @@
 import { useOptimistic, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useDraggable } from "@dnd-kit/core";
 import { markBlockDone, markBlockMissed, resetBlockStatus } from "../actions";
 
 type BlockStatus = "scheduled" | "done" | "missed";
@@ -29,7 +30,10 @@ interface PlanBlockData {
 interface PlanBlockProps {
   block: PlanBlockData;
   onEditTask?: () => void;
+  draggable?: boolean;
 }
+
+export { type PlanBlockData };
 
 function formatTimeRange(start: string, end: string): string {
   const fmt = new Intl.DateTimeFormat(undefined, {
@@ -40,12 +44,19 @@ function formatTimeRange(start: string, end: string): string {
   return `${fmt.format(new Date(start))}–${fmt.format(new Date(end))}`;
 }
 
-export default function PlanBlock({ block, onEditTask }: PlanBlockProps) {
+export default function PlanBlock({ block, onEditTask, draggable }: PlanBlockProps) {
   const router = useRouter();
   const [optimisticStatus, setOptimisticStatus] = useOptimistic<BlockStatus>(
     block.status,
   );
   const [isPending, startTransition] = useTransition();
+
+  const isDraggableBlock = draggable && block.status === "scheduled";
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: block.id,
+    data: { block },
+    disabled: !isDraggableBlock,
+  });
 
   const taskTitle = block.tasks?.title ?? "Unknown task";
   const taskStatus = block.tasks?.taskStatus ?? "todo";
@@ -160,8 +171,34 @@ export default function PlanBlock({ block, onEditTask }: PlanBlockProps) {
   }
 
   return (
-    <div className="rounded-lg border border-blue-200 bg-white px-3 py-2 shadow-sm transition-shadow duration-200 hover:shadow">
+    <div
+      ref={isDraggableBlock ? setNodeRef : undefined}
+      className={[
+        "rounded-lg border border-blue-200 bg-white px-3 py-2 shadow-sm transition-shadow duration-200 hover:shadow",
+        isDragging ? "opacity-50" : "",
+      ].join(" ")}
+      style={isDragging ? { zIndex: 50 } : undefined}
+    >
       <div className="flex items-start justify-between gap-1">
+        {/* Drag handle */}
+        {isDraggableBlock && (
+          <button
+            type="button"
+            className="mt-0.5 flex-shrink-0 cursor-grab touch-none rounded p-0.5 text-gray-300 hover:text-gray-500 active:cursor-grabbing"
+            {...listeners}
+            {...attributes}
+            aria-label="Drag to reschedule"
+          >
+            <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor">
+              <circle cx="5" cy="3" r="1.5" />
+              <circle cx="11" cy="3" r="1.5" />
+              <circle cx="5" cy="8" r="1.5" />
+              <circle cx="11" cy="8" r="1.5" />
+              <circle cx="5" cy="13" r="1.5" />
+              <circle cx="11" cy="13" r="1.5" />
+            </svg>
+          </button>
+        )}
         <div
           className={[
             "min-w-0 flex-1",

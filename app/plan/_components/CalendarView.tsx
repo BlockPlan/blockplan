@@ -22,7 +22,18 @@ import {
   parseISO,
 } from "date-fns";
 import Link from "next/link";
-import { generatePlan } from "../actions";
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  useDroppable,
+  type DragEndEvent,
+  type DragStartEvent,
+} from "@dnd-kit/core";
+import { generatePlan, moveBlock, undoMoveBlock } from "../actions";
 import PlanBlock from "./PlanBlock";
 import RiskBadge from "./RiskBadge";
 import ExportButton from "./ExportButton";
@@ -574,6 +585,26 @@ function DayView({
   );
 }
 
+// ---------------------------------------------------------------------------
+// Droppable day column wrapper for drag-and-drop in Week view
+// ---------------------------------------------------------------------------
+
+function DroppableDayColumn({ dateKey, children }: { dateKey: string; children: React.ReactNode }) {
+  const { isOver, setNodeRef } = useDroppable({ id: dateKey });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={[
+        "min-w-0 rounded-lg transition-colors duration-150",
+        isOver ? "bg-blue-50 ring-2 ring-blue-300 ring-inset" : "",
+      ].join(" ")}
+    >
+      {children}
+    </div>
+  );
+}
+
 function WeekView({
   date,
   blocksByDate,
@@ -595,111 +626,188 @@ function WeekView({
     end: addDays(weekStart, 6),
   });
 
+  const [activeBlock, setActiveBlock] = useState<PlanBlockRow | null>(null);
+
+  // Configure sensors: pointer (desktop) + touch (mobile with long-press)
+  const pointerSensor = useSensor(PointerSensor, {
+    activationConstraint: { distance: 8 },
+  });
+  const touchSensor = useSensor(TouchSensor, {
+    activationConstraint: { delay: 200, tolerance: 5 },
+  });
+  const sensors = useSensors(pointerSensor, touchSensor);
+
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    const block = event.active.data.current?.block as PlanBlockRow | undefined;
+    if (block) setActiveBlock(block);
+  }, []);
+
+  const handleDragEnd = useCallback(async (event: DragEndEvent) => {
+    setActiveBlock(null);
+
+    const { active, over } = event;
+    if (!over) return;
+
+    const blockId = active.id as string;
+    const targetDateKey = over.id as string;
+
+    // Get the block's current date key
+    const block = active.data.current?.block as PlanBlockRow | undefined;
+    if (!block) return;
+    const currentDateKey = getDateKey(new Date(block.start_time));
+
+    // Don't move if dropped on the same day
+    if (currentDateKey === targetDateKey) return;
+
+    const targetDayName = format(new Date(targetDateKey + "T12:00:00"), "EEEE");
+
+    const result = await moveBlock(blockId, targetDateKey);
+    if (result.success) {
+      toast(`Block moved to ${targetDayName}`, {
+        action: {
+          label: "Undo",
+          onClick: async () => {
+            await undoMoveBlock(blockId, result.previousStartTime!, result.previousEndTime!);
+            toast("Move undone");
+          },
+        },
+      });
+    } else {
+      toast.error(result.error ?? "Failed to move block");
+    }
+  }, []);
+
+  const handleDragCancel = useCallback(() => {
+    setActiveBlock(null);
+  }, []);
+
   return (
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-7">
-      {days.map((day) => {
-        const key = getDateKey(day);
-        const blocks = blocksByDate.get(key) ?? [];
-        const tasks = tasksByDate.get(key) ?? [];
-        const subtasks = subtasksByDate.get(key) ?? [];
-        const today = isToday(day);
-        const hasContent = blocks.length > 0 || tasks.length > 0 || subtasks.length > 0;
+    <DndContext
+      sensors={sensors}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
+    >
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-7">
+        {days.map((day) => {
+          const key = getDateKey(day);
+          const blocks = blocksByDate.get(key) ?? [];
+          const tasks = tasksByDate.get(key) ?? [];
+          const subtasks = subtasksByDate.get(key) ?? [];
+          const today = isToday(day);
+          const hasContent = blocks.length > 0 || tasks.length > 0 || subtasks.length > 0;
 
-        return (
-          <div key={key} className="min-w-0">
-            {/* Day header */}
-            <div
-              className={[
-                "mb-2 rounded-md px-2 py-1 text-center",
-                today ? "bg-blue-100" : "bg-gray-100",
-              ].join(" ")}
-            >
-              <p className={["text-xs font-semibold", today ? "text-blue-700" : "text-gray-700"].join(" ")}>
-                {format(day, "EEE")}
-              </p>
-              <p className={["text-xs", today ? "text-blue-600" : "text-gray-500"].join(" ")}>
-                {format(day, "MMM d")}
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              {/* Tasks due this day — colored by course */}
-              {tasks.map((task) => {
-                const colors = getCourseColor(task.courseName, colorMap);
-                const isDone = task.status === "done";
-                return (
-                  <button
-                    type="button"
-                    key={`task-${task.id}`}
-                    onClick={() => onTaskClick(task)}
-                    className={[
-                      "w-full rounded-lg border px-2 py-2 text-left transition-all duration-150",
-                      isDone ? "bg-gray-50 border-gray-200 opacity-60" : colors.bg,
-                      "cursor-pointer hover:shadow-md hover:ring-2 hover:ring-blue-300/50",
-                    ].join(" ")}
-                  >
-                    <div className="flex items-center gap-1">
-                      <span className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${isDone ? "bg-gray-400" : colors.dot}`} />
-                      <p className={["truncate text-xs font-medium", isDone ? "text-gray-400 line-through" : colors.text].join(" ")}>
-                        {task.title}
-                      </p>
-                    </div>
-                    {task.courseName && (
-                      <p className="mt-0.5 truncate text-[10px] text-gray-400 pl-3">
-                        {task.courseName}
-                      </p>
-                    )}
-                  </button>
-                );
-              })}
-
-              {/* Subtask milestones — dashed border, milestone icon */}
-              {subtasks.map((sub) => {
-                const subColors = getCourseColor(sub.courseName, colorMap);
-                const subDone = sub.status === "done";
-                return (
-                  <div
-                    key={`sub-${sub.id}`}
-                    className={[
-                      "rounded-lg border border-dashed px-2 py-1.5",
-                      subDone ? "bg-gray-50 border-gray-200 opacity-60" : subColors.bg,
-                    ].join(" ")}
-                  >
-                    <div className="flex items-center gap-1">
-                      <span className="text-[10px]">🏁</span>
-                      <p className={["truncate text-xs font-medium", subDone ? "text-gray-400 line-through" : subColors.text].join(" ")}>
-                        {sub.title}
-                      </p>
-                    </div>
-                    <p className="mt-0.5 truncate text-[10px] text-gray-400 pl-4 italic">
-                      {sub.parentTitle}
-                    </p>
-                  </div>
-                );
-              })}
-
-              {/* Scheduled blocks */}
-              {blocks.map((block) => {
-                const taskRow = blockToTaskRow(block);
-                return (
-                  <PlanBlock
-                    key={block.id}
-                    block={block}
-                    onEditTask={taskRow ? () => onTaskClick(taskRow) : undefined}
-                  />
-                );
-              })}
-
-              {!hasContent && (
-                <p className="px-2 py-3 text-center text-xs text-gray-400">
-                  No items
+          return (
+            <DroppableDayColumn key={key} dateKey={key}>
+              {/* Day header */}
+              <div
+                className={[
+                  "mb-2 rounded-md px-2 py-1 text-center",
+                  today ? "bg-blue-100" : "bg-gray-100",
+                ].join(" ")}
+              >
+                <p className={["text-xs font-semibold", today ? "text-blue-700" : "text-gray-700"].join(" ")}>
+                  {format(day, "EEE")}
                 </p>
-              )}
-            </div>
+                <p className={["text-xs", today ? "text-blue-600" : "text-gray-500"].join(" ")}>
+                  {format(day, "MMM d")}
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                {/* Tasks due this day — colored by course */}
+                {tasks.map((task) => {
+                  const colors = getCourseColor(task.courseName, colorMap);
+                  const isDone = task.status === "done";
+                  return (
+                    <button
+                      type="button"
+                      key={`task-${task.id}`}
+                      onClick={() => onTaskClick(task)}
+                      className={[
+                        "w-full rounded-lg border px-2 py-2 text-left transition-all duration-150",
+                        isDone ? "bg-gray-50 border-gray-200 opacity-60" : colors.bg,
+                        "cursor-pointer hover:shadow-md hover:ring-2 hover:ring-blue-300/50",
+                      ].join(" ")}
+                    >
+                      <div className="flex items-center gap-1">
+                        <span className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${isDone ? "bg-gray-400" : colors.dot}`} />
+                        <p className={["truncate text-xs font-medium", isDone ? "text-gray-400 line-through" : colors.text].join(" ")}>
+                          {task.title}
+                        </p>
+                      </div>
+                      {task.courseName && (
+                        <p className="mt-0.5 truncate text-[10px] text-gray-400 pl-3">
+                          {task.courseName}
+                        </p>
+                      )}
+                    </button>
+                  );
+                })}
+
+                {/* Subtask milestones — dashed border, milestone icon */}
+                {subtasks.map((sub) => {
+                  const subColors = getCourseColor(sub.courseName, colorMap);
+                  const subDone = sub.status === "done";
+                  return (
+                    <div
+                      key={`sub-${sub.id}`}
+                      className={[
+                        "rounded-lg border border-dashed px-2 py-1.5",
+                        subDone ? "bg-gray-50 border-gray-200 opacity-60" : subColors.bg,
+                      ].join(" ")}
+                    >
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px]">🏁</span>
+                        <p className={["truncate text-xs font-medium", subDone ? "text-gray-400 line-through" : subColors.text].join(" ")}>
+                          {sub.title}
+                        </p>
+                      </div>
+                      <p className="mt-0.5 truncate text-[10px] text-gray-400 pl-4 italic">
+                        {sub.parentTitle}
+                      </p>
+                    </div>
+                  );
+                })}
+
+                {/* Scheduled blocks — draggable */}
+                {blocks.map((block) => {
+                  const taskRow = blockToTaskRow(block);
+                  return (
+                    <PlanBlock
+                      key={block.id}
+                      block={block}
+                      onEditTask={taskRow ? () => onTaskClick(taskRow) : undefined}
+                      draggable
+                    />
+                  );
+                })}
+
+                {!hasContent && (
+                  <p className="px-2 py-3 text-center text-xs text-gray-400">
+                    No items
+                  </p>
+                )}
+              </div>
+            </DroppableDayColumn>
+          );
+        })}
+      </div>
+
+      {/* Drag overlay — shows a preview of the block being dragged */}
+      <DragOverlay>
+        {activeBlock ? (
+          <div className="w-40 rounded-lg border border-blue-300 bg-white px-3 py-2 shadow-lg opacity-90">
+            <p className="truncate text-xs font-medium text-gray-900">
+              {activeBlock.tasks?.title ?? "Study block"}
+            </p>
+            <p className="mt-0.5 text-xs text-gray-500">
+              {activeBlock.tasks?.courses?.name ?? ""}
+            </p>
           </div>
-        );
-      })}
-    </div>
+        ) : null}
+      </DragOverlay>
+    </DndContext>
   );
 }
 
