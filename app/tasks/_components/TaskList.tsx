@@ -255,6 +255,13 @@ export default function TaskList({ tasks, courses, subtasksByTask = {} }: TaskLi
                     )}
                   </div>
 
+                  {/* Notes preview */}
+                  {task.notes && (
+                    <p className="mt-0.5 text-xs text-gray-400 truncate max-w-md">
+                      {task.notes}
+                    </p>
+                  )}
+
                   <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-gray-500">
                     {/* Course name */}
                     {task.courses && (

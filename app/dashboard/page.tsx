@@ -4,6 +4,7 @@ import { startOfDay, endOfDay } from "date-fns";
 import { tz } from "@date-fns/tz";
 import NavHeader from "@/app/plan/_components/NavHeader";
 import DashboardContent from "./_components/DashboardContent";
+import QuickNotes from "./_components/QuickNotes";
 import ReminderInit from "@/app/_components/ReminderInit";
 import NotificationPermissionBanner from "@/app/_components/NotificationPermissionBanner";
 import { computeCourseGrade, computeGPA, type GradableTask } from "@/lib/services/grade-calculator";
@@ -245,6 +246,20 @@ export default async function DashboardPage() {
       courseName: (t.courses as unknown as { name: string } | null)?.name ?? null,
     }));
 
+  // ── Quick notes ──────────────────────────────────────────────────────
+  const { data: quickNotesRows } = await supabase
+    .from("quick_notes")
+    .select("id, content, created_at")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(20);
+
+  const quickNotes = (quickNotesRows ?? []).map((n) => ({
+    id: n.id as string,
+    content: n.content as string,
+    created_at: n.created_at as string,
+  }));
+
   return (
     <div className="page-bg">
       <NavHeader />
@@ -263,6 +278,7 @@ export default async function DashboardPage() {
           gradedCount={gpaResult.totalGraded}
 
         />
+        <QuickNotes initialNotes={quickNotes} />
         <ReminderInit tasks={reminderTasks} />
       </main>
     </div>
