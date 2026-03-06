@@ -9,6 +9,7 @@ import QuickNotes from "./_components/QuickNotes";
 import ReminderInit from "@/app/_components/ReminderInit";
 import NotificationPermissionBanner from "@/app/_components/NotificationPermissionBanner";
 import { computeCourseGrade, computeGPA, type GradableTask } from "@/lib/services/grade-calculator";
+import { calculateRiskTasks } from "@/lib/services/risk-calculator";
 import { DEFAULT_GRADING_SCALE } from "@/lib/validations/grade";
 import { DEFAULT_PLANNER_SETTINGS } from "@/lib/validations/planner";
 
@@ -16,12 +17,6 @@ export const metadata: Metadata = {
   title: "Dashboard | BlockPlan",
   description: "Your study schedule and progress at a glance",
 };
-
-interface RiskTask {
-  taskId: string;
-  taskTitle: string;
-  level: "at_risk" | "overdue_risk";
-}
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -80,62 +75,22 @@ export default async function DashboardPage() {
     .eq("user_id", user.id)
     .order("start_time", { ascending: true });
 
-  // Compute risk tasks
-  const planningHorizonEnd = new Date();
-  planningHorizonEnd.setDate(planningHorizonEnd.getDate() + 7);
-
-  const riskTasks: RiskTask[] = [];
-  const seenTaskIds = new Set<string>();
-
-  if (allBlocks) {
-    const scheduledMinutes = new Map<string, number>();
-    for (const block of allBlocks) {
-      if (!block.task_id || block.status === "missed") continue;
-      const taskId = block.task_id as string;
-      const start = new Date(block.start_time as string);
-      const end = new Date(block.end_time as string);
-      const minutes = (end.getTime() - start.getTime()) / 60000;
-      scheduledMinutes.set(
-        taskId,
-        (scheduledMinutes.get(taskId) ?? 0) + minutes
-      );
-    }
-
-    for (const block of allBlocks) {
-      if (!block.tasks) continue;
-      const taskId = block.task_id as string;
-      if (seenTaskIds.has(taskId)) continue;
-      seenTaskIds.add(taskId);
-
-      const task = block.tasks as {
-        title: string;
-        estimated_minutes: number;
-        due_date: string | null;
-      };
-
-      if (!task.due_date) continue;
-
-      const dueDate = new Date(task.due_date);
-      const now = new Date();
-      const covered = scheduledMinutes.get(taskId) ?? 0;
-      const isOverdue = dueDate <= now;
-      const isDueSoon = dueDate <= planningHorizonEnd;
-
-      if (isOverdue && covered < task.estimated_minutes) {
-        riskTasks.push({
-          taskId,
-          taskTitle: task.title,
-          level: "overdue_risk",
-        });
-      } else if (isDueSoon && covered < task.estimated_minutes) {
-        riskTasks.push({
-          taskId,
-          taskTitle: task.title,
-          level: "at_risk",
-        });
-      }
-    }
-  }
+  // Compute risk tasks using shared calculator
+  const riskTasks = calculateRiskTasks(
+    (allBlocks ?? []).map((b) => ({
+      task_id: (b.task_id as string) ?? null,
+      start_time: b.start_time as string,
+      end_time: b.end_time as string,
+      status: b.status as string,
+      tasks: b.tasks
+        ? {
+            title: (b.tasks as { title: string }).title,
+            estimated_minutes: (b.tasks as { estimated_minutes: number }).estimated_minutes,
+            due_date: (b.tasks as { due_date: string | null }).due_date,
+          }
+        : null,
+    }))
+  );
 
   // Compute next scheduled block (first scheduled block with start_time > now)
   const now = new Date();

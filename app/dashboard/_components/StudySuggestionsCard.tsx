@@ -5,22 +5,7 @@ import Link from "next/link";
 import { generatePlan } from "@/app/plan/actions";
 import type { SuggestionResult } from "@/lib/services/study-suggestions";
 import UrgencyBadge from "./UrgencyBadge";
-
-function formatTime(iso: string): string {
-  return new Intl.DateTimeFormat(undefined, {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  }).format(new Date(iso));
-}
-
-function formatDueShort(dateStr: string | null): string {
-  if (!dateStr) return "";
-  return new Intl.DateTimeFormat(undefined, {
-    month: "short",
-    day: "numeric",
-  }).format(new Date(dateStr));
-}
+import { formatTime, formatDueShort } from "@/lib/utils/date-formatting";
 
 export default function StudySuggestionsCard({
   result,

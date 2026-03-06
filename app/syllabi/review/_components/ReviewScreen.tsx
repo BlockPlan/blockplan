@@ -5,47 +5,14 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { ParsedItem } from "@/lib/syllabus/types";
 import { confirmSyllabusItems } from "../actions";
-
-// --- Badge color maps (mirrors TaskList.tsx) ---
-const TYPE_BADGE_COLORS: Record<ParsedItem["type"], string> = {
-  assignment: "bg-blue-100 text-blue-700",
-  exam: "bg-red-100 text-red-700",
-  reading: "bg-green-100 text-green-700",
-  other: "bg-gray-100 text-gray-600",
-};
-
-const TYPE_LABELS: Record<ParsedItem["type"], string> = {
-  assignment: "Assignment",
-  exam: "Exam",
-  reading: "Reading",
-  other: "Other",
-};
+import { TYPE_BADGE_COLORS, TYPE_LABELS } from "@/lib/constants/tasks";
+import { formatDueDate, formatMinutes } from "@/lib/utils/date-formatting";
 
 const CONFIDENCE_COLORS: Record<ParsedItem["confidence"], string> = {
   high: "text-green-600",
   medium: "text-amber-600",
   low: "text-red-500",
 };
-
-function formatDueDate(dateStr: string | null): string {
-  if (!dateStr) return "No date";
-  const date = new Date(dateStr);
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-function formatMinutes(mins: number | null): string {
-  if (!mins) return "—";
-  if (mins >= 60) {
-    const h = Math.floor(mins / 60);
-    const m = mins % 60;
-    return m > 0 ? `${h}h ${m}m` : `${h}h`;
-  }
-  return `${mins}m`;
-}
 
 // --- Blank item for add form ---
 function blankItem(): Omit<ParsedItem, "id"> {

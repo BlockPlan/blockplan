@@ -38,18 +38,14 @@ import PlanBlock from "./PlanBlock";
 import RiskBadge from "./RiskBadge";
 import ExportButton from "./ExportButton";
 import TaskForm from "@/app/tasks/_components/TaskForm";
+import type { RiskTask } from "@/lib/types/risk";
+import { TYPE_LABELS } from "@/lib/constants/tasks";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
 type ViewMode = "day" | "week" | "month";
-
-interface RiskTask {
-  taskId: string;
-  taskTitle: string;
-  level: "at_risk" | "overdue_risk";
-}
 
 interface PlanBlockRow {
   id: string;
@@ -229,13 +225,6 @@ function getRangeLabel(date: Date, mode: ViewMode): string {
       return format(date, "MMMM yyyy");
   }
 }
-
-const TYPE_LABELS: Record<string, string> = {
-  assignment: "Assignment",
-  exam: "Exam",
-  reading: "Reading",
-  other: "Task",
-};
 
 const STATUS_BADGE: Record<string, { label: string; className: string }> = {
   todo: { label: "To Do", className: "bg-gray-100 text-gray-600" },

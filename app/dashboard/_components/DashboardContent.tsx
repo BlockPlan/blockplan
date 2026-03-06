@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import RiskBadge from "@/app/plan/_components/RiskBadge";
+import type { RiskTask } from "@/lib/types/risk";
+import { TYPE_BADGE_COLORS } from "@/lib/constants/tasks";
+import { formatTime as sharedFormatTime, formatDueShort } from "@/lib/utils/date-formatting";
 
 interface NextBlock {
   id: string;
@@ -21,12 +24,6 @@ interface PriorityTask {
   courses: { name: string } | null;
 }
 
-interface RiskTask {
-  taskId: string;
-  taskTitle: string;
-  level: "at_risk" | "overdue_risk";
-}
-
 interface DashboardContentProps {
   nextBlock: NextBlock | null;
   priorityTasks: PriorityTask[];
@@ -37,29 +34,6 @@ interface DashboardContentProps {
   todayTaskDoneCount: number;
   gpa: number | null;
   gradedCount: number;
-}
-
-const TYPE_BADGE_COLORS: Record<string, string> = {
-  assignment: "bg-blue-100 text-blue-700",
-  exam: "bg-red-100 text-red-700",
-  reading: "bg-green-100 text-green-700",
-  other: "bg-gray-100 text-gray-700",
-};
-
-function formatTime(isoStr: string): string {
-  return new Intl.DateTimeFormat(undefined, {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).format(new Date(isoStr));
-}
-
-function formatDueDate(dateStr: string | null): string {
-  if (!dateStr) return "";
-  return new Intl.DateTimeFormat(undefined, {
-    month: "short",
-    day: "numeric",
-  }).format(new Date(dateStr));
 }
 
 export default function DashboardContent({
@@ -250,12 +224,12 @@ export default function DashboardContent({
                 </p>
               )}
               <p className="mt-1 text-sm text-gray-500">
-                {formatTime(nextBlock.start_time)} -{" "}
-                {formatTime(nextBlock.end_time)}
+                {sharedFormatTime(nextBlock.start_time)} -{" "}
+                {sharedFormatTime(nextBlock.end_time)}
               </p>
               {nextBlock.dueDate && (
                 <p className="mt-0.5 text-xs text-gray-400">
-                  Due {formatDueDate(nextBlock.dueDate)}
+                  Due {formatDueShort(nextBlock.dueDate)}
                 </p>
               )}
             </div>
@@ -292,7 +266,7 @@ export default function DashboardContent({
                     <div className="flex items-center gap-1.5 text-xs text-gray-400">
                       {task.courses && <span>{task.courses.name}</span>}
                       {task.due_date && (
-                        <span>Due {formatDueDate(task.due_date)}</span>
+                        <span>Due {formatDueShort(task.due_date)}</span>
                       )}
                     </div>
                   </div>

@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
+import { TASK_TYPES as SHARED_TYPES, TASK_STATUSES as SHARED_STATUSES } from "@/lib/constants/tasks";
 
 interface Course {
   id: string;
@@ -16,20 +17,8 @@ interface TaskFiltersProps {
   currentSort?: string;
 }
 
-const TASK_TYPES = [
-  { value: "", label: "All types" },
-  { value: "assignment", label: "Assignment" },
-  { value: "exam", label: "Exam" },
-  { value: "reading", label: "Reading" },
-  { value: "other", label: "Other" },
-];
-
-const TASK_STATUSES = [
-  { value: "", label: "All statuses" },
-  { value: "todo", label: "To do" },
-  { value: "doing", label: "In progress" },
-  { value: "done", label: "Done" },
-];
+const TASK_TYPES = [{ value: "", label: "All types" }, ...SHARED_TYPES];
+const TASK_STATUSES = [{ value: "", label: "All statuses" }, ...SHARED_STATUSES.map(s => ({ value: s.value, label: s.label }))];
 
 const SORT_OPTIONS = [
   { value: "due_date", label: "Due date" },

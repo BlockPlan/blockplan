@@ -5,6 +5,8 @@ import { createTask, updateTask, TaskState } from "../actions";
 import { DEFAULT_MINUTES } from "@/lib/validations/task";
 import { shouldSuggestSubtasks } from "@/lib/services/subtask-suggestions";
 import SubtaskSuggestionDialog from "./SubtaskSuggestionDialog";
+import { TASK_TYPES, TASK_STATUSES } from "@/lib/constants/tasks";
+import { formatDateForInput } from "@/lib/utils/date-formatting";
 
 interface Course {
   id: string;
@@ -32,28 +34,7 @@ interface TaskFormProps {
   onSuccess?: () => void;
 }
 
-const TASK_STATUSES = [
-  { value: "todo", label: "To Do", icon: "○", color: "border-gray-300 bg-gray-50 text-gray-700" },
-  { value: "doing", label: "In Progress", icon: "◑", color: "border-blue-300 bg-blue-50 text-blue-700" },
-  { value: "done", label: "Completed", icon: "●", color: "border-emerald-300 bg-emerald-50 text-emerald-700" },
-] as const;
-
-const TASK_TYPES = [
-  { value: "assignment", label: "Assignment" },
-  { value: "exam", label: "Exam" },
-  { value: "reading", label: "Reading" },
-  { value: "other", label: "Other" },
-] as const;
-
 const initialState: TaskState = {};
-
-function formatDateForInput(dateStr: string | null): string {
-  if (!dateStr) return "";
-  // Handle TIMESTAMPTZ (ISO format) — convert to YYYY-MM-DD for date input
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return "";
-  return d.toISOString().split("T")[0];
-}
 
 export default function TaskForm({ task, courses, onSuccess }: TaskFormProps) {
   const isEdit = !!task;

@@ -7,6 +7,8 @@ import StatusToggle from "./StatusToggle";
 import DeleteConfirm from "./DeleteConfirm";
 import RecurrenceDeleteDialog from "./RecurrenceDeleteDialog";
 import { toggleSubtaskStatus } from "../actions";
+import { TYPE_BADGE_COLORS, TYPE_LABELS } from "@/lib/constants/tasks";
+import { formatDueDate } from "@/lib/utils/date-formatting";
 
 interface Course {
   id: string;
@@ -45,30 +47,6 @@ interface TaskListProps {
   tasks: Task[];
   courses: Course[];
   subtasksByTask?: Record<string, Subtask[]>;
-}
-
-const TYPE_BADGE_COLORS: Record<Task["type"], string> = {
-  assignment: "bg-blue-100 text-blue-700",
-  exam: "bg-red-100 text-red-700",
-  reading: "bg-green-100 text-green-700",
-  other: "bg-gray-100 text-gray-600",
-};
-
-const TYPE_LABELS: Record<Task["type"], string> = {
-  assignment: "Assignment",
-  exam: "Exam",
-  reading: "Reading",
-  other: "Other",
-};
-
-function formatDueDate(dateStr: string | null): string {
-  if (!dateStr) return "No due date";
-  const date = new Date(dateStr);
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
 }
 
 function isDueSoon(dateStr: string | null): boolean {

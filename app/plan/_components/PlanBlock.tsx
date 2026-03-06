@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useDraggable } from "@dnd-kit/core";
 import { markBlockDone, markBlockMissed, resetBlockStatus } from "../actions";
+import { formatTimeRange } from "@/lib/utils/date-formatting";
 
 type BlockStatus = "scheduled" | "done" | "missed";
 
@@ -34,15 +35,6 @@ interface PlanBlockProps {
 }
 
 export { type PlanBlockData };
-
-function formatTimeRange(start: string, end: string): string {
-  const fmt = new Intl.DateTimeFormat(undefined, {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-  return `${fmt.format(new Date(start))}–${fmt.format(new Date(end))}`;
-}
 
 export default function PlanBlock({ block, onEditTask, draggable }: PlanBlockProps) {
   const router = useRouter();
