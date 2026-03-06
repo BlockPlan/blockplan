@@ -29,7 +29,7 @@ const tiers = [
   },
   {
     name: "Pro",
-    price: "$1.99",
+    price: "$2.50",
     period: "/month",
     description: "Supercharge your study routine with AI and smart scheduling.",
     cta: "Upgrade to Pro",
