@@ -20,21 +20,21 @@ export function formatDueShort(dateStr: string | null): string {
   }).format(new Date(dateStr));
 }
 
-/** Format an ISO timestamp as "14:30" (24h) or "2:30 PM" (12h) */
-export function formatTime(isoStr: string, use12Hour = false): string {
+/** Format an ISO timestamp as "2:30 PM" (12h) or "14:30" (24h) */
+export function formatTime(isoStr: string, use12Hour = true): string {
   return new Intl.DateTimeFormat(undefined, {
-    hour: "2-digit",
+    hour: "numeric",
     minute: "2-digit",
     hour12: use12Hour,
   }).format(new Date(isoStr));
 }
 
-/** Format an ISO timestamp as time range "14:30–15:15" */
+/** Format an ISO timestamp as time range "7:00–8:20 PM" */
 export function formatTimeRange(start: string, end: string): string {
   const fmt = new Intl.DateTimeFormat(undefined, {
-    hour: "2-digit",
+    hour: "numeric",
     minute: "2-digit",
-    hour12: false,
+    hour12: true,
   });
   return `${fmt.format(new Date(start))}–${fmt.format(new Date(end))}`;
 }
