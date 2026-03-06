@@ -102,13 +102,18 @@ export default function PlanBlock({ block, onEditTask, draggable }: PlanBlockPro
       >
         <div className="flex items-start justify-between gap-1">
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold leading-snug text-green-700 line-through">
+            <p className="line-clamp-2 text-xs font-semibold leading-tight text-green-700 line-through">
               {taskTitle}
             </p>
-            <p className="mt-0.5 text-xs text-green-500">{timeRange}</p>
-            {courseName && (
-              <p className="mt-0.5 text-xs text-green-400">{courseName}</p>
-            )}
+            <p className="mt-0.5 flex items-center gap-1 text-[11px] leading-tight text-green-500">
+              <span className="whitespace-nowrap">{timeRange}</span>
+              {courseName && (
+                <>
+                  <span className="text-green-300">·</span>
+                  <span className="truncate">{courseName}</span>
+                </>
+              )}
+            </p>
           </div>
           <button
             onClick={(e) => { e.stopPropagation(); handleReset(); }}
@@ -139,13 +144,18 @@ export default function PlanBlock({ block, onEditTask, draggable }: PlanBlockPro
       >
         <div className="flex items-start justify-between gap-1">
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold leading-snug text-gray-500 line-through">
+            <p className="line-clamp-2 text-xs font-semibold leading-tight text-gray-500 line-through">
               {taskTitle}
             </p>
-            <p className="mt-0.5 text-xs text-gray-400">{timeRange}</p>
-            {courseName && (
-              <p className="mt-0.5 text-xs text-gray-400">{courseName}</p>
-            )}
+            <p className="mt-0.5 flex items-center gap-1 text-[11px] leading-tight text-gray-400">
+              <span className="whitespace-nowrap">{timeRange}</span>
+              {courseName && (
+                <>
+                  <span className="text-gray-300">·</span>
+                  <span className="truncate">{courseName}</span>
+                </>
+              )}
+            </p>
           </div>
           <button
             onClick={(e) => { e.stopPropagation(); handleReset(); }}
@@ -201,25 +211,23 @@ export default function PlanBlock({ block, onEditTask, draggable }: PlanBlockPro
           tabIndex={onEditTask ? 0 : undefined}
           onKeyDown={onEditTask ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onEditTask(); } } : undefined}
         >
-          <p className="text-sm font-semibold leading-snug text-gray-900">
+          <p className="line-clamp-2 text-xs font-semibold leading-tight text-gray-900">
             {taskTitle}
-            {onEditTask && (
-              <svg className="ml-1 inline h-3 w-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-              </svg>
-            )}
           </p>
-          <p className="mt-0.5 text-xs text-gray-500">{timeRange}</p>
-          <div className="mt-0.5 flex items-center gap-1.5">
+          <p className="mt-0.5 flex items-center gap-1 text-[11px] leading-tight text-gray-500">
+            <span className="whitespace-nowrap">{timeRange}</span>
             {courseName && (
-              <span className="text-xs text-gray-400">{courseName}</span>
+              <>
+                <span className="text-gray-300">·</span>
+                <span className="truncate">{courseName}</span>
+              </>
             )}
             {statusIndicator && (
-              <span className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium leading-none ${statusIndicator.className}`}>
+              <span className={`inline-flex items-center rounded-full px-1 py-px text-[9px] font-medium leading-none ${statusIndicator.className}`}>
                 {statusIndicator.icon}
               </span>
             )}
-          </div>
+          </p>
         </div>
         <div className="flex flex-shrink-0 gap-1.5">
           {/* Mark done */}

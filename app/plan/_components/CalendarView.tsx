@@ -719,17 +719,19 @@ function WeekView({
                         "cursor-pointer hover:shadow-md hover:ring-2 hover:ring-blue-300/50",
                       ].join(" ")}
                     >
-                      <div className="flex items-center gap-1">
-                        <span className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${isDone ? "bg-gray-400" : colors.dot}`} />
-                        <p className={["text-sm font-semibold leading-snug", isDone ? "text-gray-400 line-through" : colors.text].join(" ")}>
-                          {task.title}
-                        </p>
+                      <div className="flex items-start gap-1">
+                        <span className={`mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full ${isDone ? "bg-gray-400" : colors.dot}`} />
+                        <div className="min-w-0 flex-1">
+                          <p className={["line-clamp-2 text-xs font-semibold leading-tight", isDone ? "text-gray-400 line-through" : colors.text].join(" ")}>
+                            {task.title}
+                          </p>
+                          {task.courseName && (
+                            <p className="mt-0.5 truncate text-[11px] leading-tight text-gray-400">
+                              {task.courseName}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      {task.courseName && (
-                        <p className="mt-0.5 text-xs text-gray-400 pl-3">
-                          {task.courseName}
-                        </p>
-                      )}
                     </button>
                   );
                 })}

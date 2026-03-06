@@ -29,14 +29,26 @@ export function formatTime(isoStr: string, use12Hour = true): string {
   }).format(new Date(isoStr));
 }
 
-/** Format an ISO timestamp as time range "7:00–8:20 PM" */
+/** Format an ISO timestamp as compact time range "7–8:20pm" or "11:30am–1pm" */
 export function formatTimeRange(start: string, end: string): string {
-  const fmt = new Intl.DateTimeFormat(undefined, {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
-  return `${fmt.format(new Date(start))}–${fmt.format(new Date(end))}`;
+  const s = new Date(start);
+  const e = new Date(end);
+  const sH = s.getHours();
+  const eH = e.getHours();
+  const sM = s.getMinutes();
+  const eM = e.getMinutes();
+  const sPeriod = sH < 12 ? "am" : "pm";
+  const ePeriod = eH < 12 ? "am" : "pm";
+  const sH12 = sH % 12 || 12;
+  const eH12 = eH % 12 || 12;
+  const sMin = sM > 0 ? `:${String(sM).padStart(2, "0")}` : "";
+  const eMin = eM > 0 ? `:${String(eM).padStart(2, "0")}` : "";
+
+  // Omit period on start time if same as end (e.g. "7–8:30pm" instead of "7pm–8:30pm")
+  if (sPeriod === ePeriod) {
+    return `${sH12}${sMin}–${eH12}${eMin}${ePeriod}`;
+  }
+  return `${sH12}${sMin}${sPeriod}–${eH12}${eMin}${ePeriod}`;
 }
 
 /** Convert an ISO date/timestamptz string to "YYYY-MM-DD" for date inputs */
