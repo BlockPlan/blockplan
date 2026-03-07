@@ -11,17 +11,37 @@ function NavLink({
   onClick,
   mobile,
   dataTour,
+  highlight,
 }: {
   href: string;
   children: React.ReactNode;
   onClick?: () => void;
   mobile?: boolean;
   dataTour?: string;
+  highlight?: boolean;
 }) {
   const pathname = usePathname();
   const isActive = pathname === href || pathname.startsWith(href + "/");
 
   if (mobile) {
+    if (highlight) {
+      return (
+        <Link
+          href={href}
+          onClick={onClick}
+          className={`flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-150 ${
+            isActive
+              ? "bg-gradient-to-r from-purple-600 to-blue-500 text-white shadow-md"
+              : "bg-gradient-to-r from-purple-50 to-blue-50 text-purple-700 hover:from-purple-100 hover:to-blue-100"
+          }`}
+        >
+          <svg className="h-4 w-4 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10 1l2.39 5.75L18 7.72l-4.09 3.74L15 17 10 13.87 5 17l1.09-5.54L2 7.72l5.61-.97L10 1z" />
+          </svg>
+          {children}
+        </Link>
+      );
+    }
     return (
       <Link
         href={href}
@@ -32,6 +52,26 @@ function NavLink({
             : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
         }`}
       >
+        {children}
+      </Link>
+    );
+  }
+
+  if (highlight) {
+    return (
+      <Link
+        href={href}
+        onClick={onClick}
+        data-tour={dataTour}
+        className={`relative flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium transition-all duration-200 ${
+          isActive
+            ? "bg-gradient-to-r from-purple-600 to-blue-500 text-white shadow-md shadow-purple-200"
+            : "bg-gradient-to-r from-purple-50 to-blue-50 text-purple-700 hover:from-purple-100 hover:to-blue-100 hover:shadow-sm"
+        }`}
+      >
+        <svg className="h-3.5 w-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10 1l2.39 5.75L18 7.72l-4.09 3.74L15 17 10 13.87 5 17l1.09-5.54L2 7.72l5.61-.97L10 1z" />
+        </svg>
         {children}
       </Link>
     );
@@ -71,7 +111,7 @@ export default function NavHeader() {
           <NavLink href="/plan" dataTour="nav-calendar">Calendar</NavLink>
           <NavLink href="/tasks" dataTour="nav-tasks">Tasks</NavLink>
           <NavLink href="/grades">Grades</NavLink>
-          <NavLink href="/study-help" dataTour="nav-study-help">Study Help</NavLink>
+          <NavLink href="/study-help" dataTour="nav-study-help" highlight>AI Study Help</NavLink>
           <NavLink href="/courses">Courses</NavLink>
           <NavLink href="/syllabi/upload" dataTour="nav-upload-syllabus">Upload Syllabus</NavLink>
           <NavLink href="/profile">Profile</NavLink>
@@ -128,8 +168,8 @@ export default function NavHeader() {
             <NavLink href="/grades" onClick={closeMenu} mobile>
               Grades
             </NavLink>
-            <NavLink href="/study-help" onClick={closeMenu} mobile>
-              Study Help
+            <NavLink href="/study-help" onClick={closeMenu} mobile highlight>
+              AI Study Help
             </NavLink>
             <NavLink href="/courses" onClick={closeMenu} mobile>
               Courses
