@@ -1,4 +1,5 @@
 import { getDocumentProxy, extractText } from "unpdf";
+import { parseOffice } from "officeparser";
 import { createClient } from "@/lib/supabase/server";
 
 // ---------------------------------------------------------------------------
@@ -46,6 +47,39 @@ export async function extractTextFromPdf(storagePath: string): Promise<string> {
   }
 
   return text;
+}
+
+// ---------------------------------------------------------------------------
+// PPTX text extraction — uses officeparser to extract slide text + notes
+// ---------------------------------------------------------------------------
+
+/**
+ * Downloads a PPTX from the study_materials storage bucket and extracts text
+ * including speaker notes.
+ */
+export async function extractTextFromPptx(storagePath: string): Promise<string> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.storage
+    .from("study_materials")
+    .download(storagePath);
+
+  if (error || !data) {
+    throw new Error(
+      `Failed to download study material from storage: ${error?.message ?? "No data returned"}`
+    );
+  }
+
+  const arrayBuffer = await data.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  const text = await parseOffice(buffer, {
+    ignoreNotes: false,
+    putNotesAtLast: false,
+    newlineDelimiter: "\n",
+  });
+
+  return typeof text === "string" ? text : String(text);
 }
 
 // ---------------------------------------------------------------------------

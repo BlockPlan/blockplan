@@ -3,7 +3,15 @@
 import { useState } from "react";
 import type { MultipleChoice } from "@/lib/study-help/types";
 
-export default function QuizViewer({ questions }: { questions: MultipleChoice[] }) {
+export default function QuizViewer({
+  questions,
+  onRegenerate,
+  isRegenerating,
+}: {
+  questions: MultipleChoice[];
+  onRegenerate?: () => void;
+  isRegenerating?: boolean;
+}) {
   const [answers, setAnswers] = useState<Map<number, number>>(new Map());
   const [revealed, setRevealed] = useState<Set<number>>(new Set());
   const [showScore, setShowScore] = useState(false);
@@ -128,6 +136,25 @@ export default function QuizViewer({ questions }: { questions: MultipleChoice[] 
                 ? "Great job! Keep reviewing the ones you missed."
                 : "Keep studying — you'll get there!"}
           </p>
+          {onRegenerate && (
+            <button
+              onClick={onRegenerate}
+              disabled={isRegenerating}
+              className="mt-4 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+            >
+              {isRegenerating ? (
+                <>
+                  <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Generating...
+                </>
+              ) : (
+                "Generate New Quiz"
+              )}
+            </button>
+          )}
         </div>
       )}
     </div>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { startOfDay, endOfDay } from "date-fns";
+import { startOfDay, endOfDay, addDays } from "date-fns";
 import { tz } from "@date-fns/tz";
 import NavHeader from "@/app/plan/_components/NavHeader";
 import DashboardContent from "./_components/DashboardContent";
@@ -135,6 +135,26 @@ export default async function DashboardPage() {
   const todayBlockCount = safeToday.length;
   const todayDoneCount = safeToday.filter((b) => b.status === "done").length;
 
+  // Upcoming deadlines: tasks due within the next 3 days (not done)
+  const threeDaysFromNow = addDays(todayEnd, 3);
+  const { data: upcomingDeadlineRows } = await supabase
+    .from("tasks")
+    .select("id, title, type, due_date, status, course_id, courses(name)")
+    .eq("user_id", user.id)
+    .neq("status", "done")
+    .not("due_date", "is", null)
+    .lte("due_date", threeDaysFromNow.toISOString())
+    .order("due_date", { ascending: true })
+    .limit(5);
+
+  const upcomingDeadlines = (upcomingDeadlineRows ?? []).map((t) => ({
+    id: t.id as string,
+    title: t.title as string,
+    type: t.type as string,
+    due_date: t.due_date as string,
+    courses: t.courses as unknown as { name: string } | null,
+  }));
+
   // Overall task completion counts (all tasks for this user)
   const { data: allTaskRows } = await supabase
     .from("tasks")
@@ -210,14 +230,16 @@ export default async function DashboardPage() {
   // ── Quick notes ──────────────────────────────────────────────────────
   const { data: quickNotesRows } = await supabase
     .from("quick_notes")
-    .select("id, content, created_at")
+    .select("id, content, created_at, completed")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(20);
 
-  const quickNotes = (quickNotesRows ?? []).map((n) => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const quickNotes = (quickNotesRows ?? []).map((n: any) => ({
     id: n.id as string,
     content: n.content as string,
+    completed: n.completed === true,
     created_at: n.created_at as string,
   }));
 
@@ -235,9 +257,9 @@ export default async function DashboardPage() {
           todayDoneCount={todayDoneCount}
           todayTaskCount={totalTaskCount}
           todayTaskDoneCount={totalTaskDoneCount}
+          upcomingDeadlines={upcomingDeadlines}
           gpa={gpaResult.gpa}
           gradedCount={gpaResult.totalGraded}
-
         />
         <QuickNotes initialNotes={quickNotes} />
         <ReminderInit tasks={reminderTasks} />

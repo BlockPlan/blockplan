@@ -44,3 +44,23 @@ export type StudyHelp = z.infer<typeof studyHelpSchema>;
 export type Flashcard = StudyHelp["flashcards"][number];
 export type MultipleChoice = StudyHelp["quiz"][number];
 export type PracticeTestQuestion = StudyHelp["practiceTest"][number];
+
+// ---------------------------------------------------------------------------
+// Partial schema for regenerating specific sections only
+// ---------------------------------------------------------------------------
+
+export type RegeneratableSection = "flashcards" | "quiz" | "practiceTest";
+
+export function buildRegenerateSchema(sections: RegeneratableSection[]) {
+  const shape: Record<string, z.ZodTypeAny> = {};
+  if (sections.includes("flashcards")) {
+    shape.flashcards = studyHelpSchema.shape.flashcards;
+  }
+  if (sections.includes("quiz")) {
+    shape.quiz = studyHelpSchema.shape.quiz;
+  }
+  if (sections.includes("practiceTest")) {
+    shape.practiceTest = studyHelpSchema.shape.practiceTest;
+  }
+  return z.object(shape);
+}

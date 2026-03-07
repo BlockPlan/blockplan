@@ -1,7 +1,13 @@
 "use client";
 
 import { useActionState, useState, useCallback } from "react";
-import { generateStudyHelpAction, type StudyHelpState } from "../actions";
+import { toast } from "sonner";
+import {
+  generateStudyHelpAction,
+  regenerateStudyMaterial,
+  type StudyHelpState,
+} from "../actions";
+import type { RegeneratableSection } from "@/lib/study-help/types";
 import FileUploader from "./FileUploader";
 import StudyHelpResults from "./StudyHelpResults";
 
@@ -26,10 +32,46 @@ export default function StudyHelpSession({
 
   const [storagePaths, setStoragePaths] = useState<string[]>([]);
   const [courseId, setCourseId] = useState(initialCourseId ?? "");
+  // Local data override for when sections are regenerated
+  const [dataOverride, setDataOverride] = useState<Record<string, unknown> | null>(null);
 
   const handleFilesChange = useCallback((paths: string[]) => {
     setStoragePaths(paths);
   }, []);
+
+  // Merge state.data with any local overrides from regeneration
+  const displayData = state.data
+    ? dataOverride
+      ? { ...state.data, ...dataOverride }
+      : state.data
+    : null;
+
+  const handleRegenerate = useCallback(
+    async (sections: RegeneratableSection[]) => {
+      if (!state.sessionId || !state.data) return;
+
+      const currentData = displayData ?? state.data;
+      const result = await regenerateStudyMaterial(
+        state.sessionId,
+        currentData as import("@/lib/study-help/types").StudyHelp,
+        sections,
+        state.courseName
+      );
+
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+      if (result.data) {
+        setDataOverride((prev) => ({ ...prev, ...result.data }));
+        const sectionNames = sections.map((s) =>
+          s === "flashcards" ? "flashcards" : s === "quiz" ? "quiz" : "practice test"
+        );
+        toast.success(`New ${sectionNames.join(", ")} generated!`);
+      }
+    },
+    [state.sessionId, state.data, state.courseName, displayData]
+  );
 
   return (
     <div>
@@ -37,7 +79,7 @@ export default function StudyHelpSession({
       <div className="mb-6">
         <h1 className="page-title">AI Study Help</h1>
         <p className="mt-1 text-sm text-gray-500">
-          Upload PDFs or photos of your textbook, or paste your notes. AI will
+          Upload PDFs, PowerPoints, or photos of your textbook, or paste your notes. AI will
           generate flashcards, quizzes, practice tests, and more.
         </p>
         <div className="mt-2 flex gap-4">
@@ -177,7 +219,7 @@ export default function StudyHelpSession({
       )}
 
       {/* Results */}
-      {state.data && (
+      {displayData && (
         <>
           {state.sessionId && (
             <p className="mt-4 text-xs text-green-600">
@@ -187,7 +229,12 @@ export default function StudyHelpSession({
               </a>
             </p>
           )}
-          <StudyHelpResults data={state.data} courseName={state.courseName} sessionId={state.sessionId} />
+          <StudyHelpResults
+            data={displayData as import("@/lib/study-help/types").StudyHelp}
+            courseName={state.courseName}
+            sessionId={state.sessionId}
+            onRegenerate={state.sessionId ? handleRegenerate : undefined}
+          />
         </>
       )}
     </div>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { StudyHelp } from "@/lib/study-help/types";
+import type { RegeneratableSection } from "@/lib/study-help/types";
 import FlashcardViewer from "./FlashcardViewer";
 import FlashcardStudyMode from "./FlashcardStudyMode";
 import QuizViewer from "./QuizViewer";
@@ -21,13 +22,26 @@ export default function StudyHelpResults({
   data,
   courseName,
   sessionId,
+  onRegenerate,
 }: {
   data: StudyHelp;
   courseName?: string;
   sessionId?: string;
+  onRegenerate?: (sections: RegeneratableSection[]) => Promise<void>;
 }) {
   const [activeTab, setActiveTab] = useState<TabKey>("summary");
   const [studyMode, setStudyMode] = useState(false);
+  const [regeneratingSection, setRegeneratingSection] = useState<RegeneratableSection | null>(null);
+
+  const handleRegenerate = async (section: RegeneratableSection) => {
+    if (!onRegenerate || regeneratingSection) return;
+    setRegeneratingSection(section);
+    try {
+      await onRegenerate([section]);
+    } finally {
+      setRegeneratingSection(null);
+    }
+  };
 
   return (
     <div className="mt-8">
@@ -92,19 +106,42 @@ export default function StudyHelpResults({
               flashcards={data.flashcards}
               sessionId={sessionId}
               onExit={() => setStudyMode(false)}
+              onRegenerate={onRegenerate ? () => handleRegenerate("flashcards") : undefined}
+              isRegenerating={regeneratingSection === "flashcards"}
             />
           ) : (
             <div className="rounded-xl border border-gray-200 bg-white p-5">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900">Flashcards</h2>
-                {data.flashcards.length > 0 && (
-                  <button
-                    onClick={() => setStudyMode(true)}
-                    className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-                  >
-                    <span>📖</span> Study Mode
-                  </button>
-                )}
+                <div className="flex items-center gap-2">
+                  {onRegenerate && (
+                    <button
+                      onClick={() => handleRegenerate("flashcards")}
+                      disabled={regeneratingSection === "flashcards"}
+                      className="flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      {regeneratingSection === "flashcards" ? (
+                        <>
+                          <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                          </svg>
+                          Generating...
+                        </>
+                      ) : (
+                        "New Cards"
+                      )}
+                    </button>
+                  )}
+                  {data.flashcards.length > 0 && (
+                    <button
+                      onClick={() => setStudyMode(true)}
+                      className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                    >
+                      <span>📖</span> Study Mode
+                    </button>
+                  )}
+                </div>
               </div>
               <FlashcardViewer flashcards={data.flashcards} />
             </div>
@@ -113,19 +150,69 @@ export default function StudyHelpResults({
 
         {activeTab === "quiz" && (
           <div>
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">
-              Multiple Choice Quiz
-            </h2>
-            <QuizViewer questions={data.quiz} />
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Multiple Choice Quiz
+              </h2>
+              {onRegenerate && (
+                <button
+                  onClick={() => handleRegenerate("quiz")}
+                  disabled={regeneratingSection === "quiz"}
+                  className="flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
+                >
+                  {regeneratingSection === "quiz" ? (
+                    <>
+                      <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      Generating...
+                    </>
+                  ) : (
+                    "New Quiz"
+                  )}
+                </button>
+              )}
+            </div>
+            <QuizViewer
+              questions={data.quiz}
+              onRegenerate={onRegenerate ? () => handleRegenerate("quiz") : undefined}
+              isRegenerating={regeneratingSection === "quiz"}
+            />
           </div>
         )}
 
         {activeTab === "practiceTest" && (
           <div>
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">
-              Practice Test
-            </h2>
-            <PracticeTestViewer questions={data.practiceTest} />
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Practice Test
+              </h2>
+              {onRegenerate && (
+                <button
+                  onClick={() => handleRegenerate("practiceTest")}
+                  disabled={regeneratingSection === "practiceTest"}
+                  className="flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
+                >
+                  {regeneratingSection === "practiceTest" ? (
+                    <>
+                      <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      Generating...
+                    </>
+                  ) : (
+                    "New Test"
+                  )}
+                </button>
+              )}
+            </div>
+            <PracticeTestViewer
+              questions={data.practiceTest}
+              onRegenerate={onRegenerate ? () => handleRegenerate("practiceTest") : undefined}
+              isRegenerating={regeneratingSection === "practiceTest"}
+            />
           </div>
         )}
       </div>

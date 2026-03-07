@@ -35,12 +35,16 @@ interface FlashcardStudyModeProps {
   flashcards: Flashcard[];
   sessionId?: string;
   onExit: () => void;
+  onRegenerate?: () => void;
+  isRegenerating?: boolean;
 }
 
 export default function FlashcardStudyMode({
   flashcards,
   sessionId,
   onExit,
+  onRegenerate,
+  isRegenerating,
 }: FlashcardStudyModeProps) {
   const [studyCards, setStudyCards] = useState<StudyCard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -356,6 +360,25 @@ export default function FlashcardStudyMode({
           >
             Start Over (All Cards)
           </button>
+          {onRegenerate && (
+            <button
+              onClick={onRegenerate}
+              disabled={isRegenerating}
+              className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+            >
+              {isRegenerating ? (
+                <span className="inline-flex items-center gap-2">
+                  <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Generating...
+                </span>
+              ) : (
+                "Generate New Flashcards"
+              )}
+            </button>
+          )}
           <button
             onClick={onExit}
             className="rounded-lg px-4 py-3 text-sm font-medium text-gray-500 transition-colors hover:text-gray-700"

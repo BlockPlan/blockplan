@@ -17,6 +17,7 @@ interface TasksPageProps {
     type?: string;
     status?: string;
     sort?: string;
+    highlight?: string;
   }>;
 }
 
@@ -33,7 +34,7 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
 
   // Await searchParams — required in Next.js 16
   const params = await searchParams;
-  const { course, type, status, sort } = params;
+  const { course, type, status, sort, highlight } = params;
 
   // Fetch user's courses for filter dropdown and task form
   const { data: courses } = await supabase
@@ -178,7 +179,7 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
           currentSort={sort}
         />
 
-        <TaskList tasks={taskList} courses={courseList} subtasksByTask={subtasksByTask} />
+        <TaskList tasks={taskList} courses={courseList} subtasksByTask={subtasksByTask} highlightTaskId={highlight} />
       </main>
     </div>
   );

@@ -1,12 +1,13 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { generateStudyHelp, type ContentPart } from "@/lib/study-help/generate";
+import { generateStudyHelp, regenerateStudyHelp, type ContentPart } from "@/lib/study-help/generate";
 import {
   extractTextFromPdf,
+  extractTextFromPptx,
   imageToBase64,
 } from "@/lib/study-help/extract";
-import type { StudyHelp } from "@/lib/study-help/types";
+import type { StudyHelp, RegeneratableSection } from "@/lib/study-help/types";
 import { revalidatePath } from "next/cache";
 import crypto from "crypto";
 
@@ -90,6 +91,11 @@ export async function generateStudyHelpAction(
 
       if (ext === "pdf") {
         const text = await extractTextFromPdf(storagePath);
+        if (text.trim().length > 0) {
+          contentParts.push({ type: "text", text });
+        }
+      } else if (ext === "ppt" || ext === "pptx") {
+        const text = await extractTextFromPptx(storagePath);
         if (text.trim().length > 0) {
           contentParts.push({ type: "text", text });
         }
@@ -483,4 +489,62 @@ export async function deleteStudyHelpSession(
 
   revalidatePath("/study-help/history");
   return {};
+}
+
+// ---------------------------------------------------------------------------
+// Regenerate flashcards, quiz, and/or practice test with new questions
+// ---------------------------------------------------------------------------
+
+export async function regenerateStudyMaterial(
+  sessionId: string,
+  existingData: StudyHelp,
+  sections: RegeneratableSection[],
+  courseName?: string
+): Promise<{ data?: Partial<StudyHelp>; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  // Verify session ownership
+  const { data: session } = await supabase
+    .from("study_help_sessions")
+    .select("id, data")
+    .eq("id", sessionId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!session) return { error: "Session not found." };
+
+  // Generate new questions
+  const { data: regenerated, isMock } = await regenerateStudyHelp(
+    existingData,
+    sections,
+    courseName
+  );
+
+  if (isMock && process.env.OPENAI_API_KEY) {
+    return { error: "Failed to generate new questions. Please try again." };
+  }
+
+  // Merge regenerated sections into existing session data
+  const currentData = session.data as StudyHelp;
+  const merged: StudyHelp = { ...currentData, ...regenerated };
+
+  const { error } = await supabase
+    .from("study_help_sessions")
+    .update({ data: merged })
+    .eq("id", sessionId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { error: "Failed to save regenerated questions." };
+  }
+
+  revalidatePath("/study-help/history");
+  revalidatePath(`/study-help/${sessionId}`);
+
+  return { data: regenerated };
 }

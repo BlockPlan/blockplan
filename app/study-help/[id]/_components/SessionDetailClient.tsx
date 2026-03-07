@@ -1,12 +1,15 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import type { StudyHelp } from "@/lib/study-help/types";
+import type { RegeneratableSection } from "@/lib/study-help/types";
 import {
   updateStudyHelpData,
   shareStudyHelpSession,
   unshareStudyHelpSession,
+  regenerateStudyMaterial,
 } from "@/app/study-help/actions";
 import StudyHelpResults from "@/app/study-help/_components/StudyHelpResults";
 import SessionEditor from "@/app/study-help/_components/SessionEditor";
@@ -23,10 +26,11 @@ interface SessionDetailClientProps {
 export default function SessionDetailClient({
   sessionId,
   title,
-  data,
+  data: initialData,
   courseName,
   shareToken: initialShareToken,
 }: SessionDetailClientProps) {
+  const [data, setData] = useState(initialData);
   const [editing, setEditing] = useState(false);
   const [showExport, setShowExport] = useState(false);
   const [shareToken, setShareToken] = useState(initialShareToken);
@@ -67,6 +71,29 @@ export default function SessionDetailClient({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleRegenerate = useCallback(
+    async (sections: RegeneratableSection[]) => {
+      const result = await regenerateStudyMaterial(
+        sessionId,
+        data,
+        sections,
+        courseName
+      );
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+      if (result.data) {
+        setData((prev) => ({ ...prev, ...result.data }));
+        const sectionNames = sections.map((s) =>
+          s === "flashcards" ? "flashcards" : s === "quiz" ? "quiz" : "practice test"
+        );
+        toast.success(`New ${sectionNames.join(", ")} generated!`);
+      }
+    },
+    [sessionId, data, courseName]
+  );
+
   if (editing) {
     return (
       <div>
@@ -83,6 +110,7 @@ export default function SessionDetailClient({
             const result = await updateStudyHelpData(sessionId, updates);
             if (result.error) return { error: result.error };
             setEditing(false);
+            setData((prev) => ({ ...prev, ...updates }));
             router.refresh();
             return {};
           }}
@@ -153,7 +181,12 @@ export default function SessionDetailClient({
         </div>
       )}
 
-      <StudyHelpResults data={data} courseName={courseName} sessionId={sessionId} />
+      <StudyHelpResults
+        data={data}
+        courseName={courseName}
+        sessionId={sessionId}
+        onRegenerate={handleRegenerate}
+      />
 
       {showExport && (
         <ExportPdfModal

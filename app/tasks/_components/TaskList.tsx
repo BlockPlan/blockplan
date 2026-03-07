@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import TaskForm from "./TaskForm";
 import StatusToggle from "./StatusToggle";
@@ -47,6 +47,7 @@ interface TaskListProps {
   tasks: Task[];
   courses: Course[];
   subtasksByTask?: Record<string, Subtask[]>;
+  highlightTaskId?: string;
 }
 
 function isDueSoon(dateStr: string | null): boolean {
@@ -63,11 +64,30 @@ function isPastDue(dateStr: string | null, status: Task["status"]): boolean {
   return new Date(dateStr) < new Date();
 }
 
-export default function TaskList({ tasks, courses, subtasksByTask = {} }: TaskListProps) {
+export default function TaskList({ tasks, courses, subtasksByTask = {}, highlightTaskId }: TaskListProps) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [deletingTask, setDeletingTask] = useState<Task | null>(null);
   const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set());
+  const [highlightedId, setHighlightedId] = useState<string | null>(highlightTaskId ?? null);
+  const highlightRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to and highlight the target task on mount
+  useEffect(() => {
+    if (!highlightTaskId) return;
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      highlightRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 100);
+    // Clear highlight after animation
+    const fadeTimer = setTimeout(() => {
+      setHighlightedId(null);
+    }, 3000);
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(fadeTimer);
+    };
+  }, [highlightTaskId]);
 
   const toggleExpand = (taskId: string) => {
     setExpandedTasks((prev) => {
@@ -177,7 +197,13 @@ export default function TaskList({ tasks, courses, subtasksByTask = {} }: TaskLi
         {tasks.map((task) => (
           <div
             key={task.id}
-            className="rounded-xl border border-gray-200 bg-white p-4 shadow-[var(--shadow-card)] transition-shadow duration-200 hover:shadow-[var(--shadow-card-hover)]"
+            ref={task.id === highlightTaskId ? highlightRef : undefined}
+            className={[
+              "rounded-xl border bg-white p-4 shadow-[var(--shadow-card)] transition-all duration-500 hover:shadow-[var(--shadow-card-hover)]",
+              task.id === highlightedId
+                ? "border-blue-400 ring-2 ring-blue-200"
+                : "border-gray-200",
+            ].join(" ")}
           >
             {editingTask?.id === task.id ? (
               <div>

@@ -24,6 +24,14 @@ interface PriorityTask {
   courses: { name: string } | null;
 }
 
+interface UpcomingDeadline {
+  id: string;
+  title: string;
+  type: string;
+  due_date: string;
+  courses: { name: string } | null;
+}
+
 interface DashboardContentProps {
   nextBlock: NextBlock | null;
   priorityTasks: PriorityTask[];
@@ -32,8 +40,28 @@ interface DashboardContentProps {
   todayDoneCount: number;
   todayTaskCount: number;
   todayTaskDoneCount: number;
+  upcomingDeadlines: UpcomingDeadline[];
   gpa: number | null;
   gradedCount: number;
+}
+
+function getDeadlineLabel(dueDate: string): { text: string; color: string } {
+  const now = new Date();
+  const due = new Date(dueDate);
+  const diffMs = due.getTime() - now.getTime();
+  const diffHours = diffMs / (1000 * 60 * 60);
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffMs < 0) {
+    return { text: "Overdue", color: "bg-red-100 text-red-700" };
+  }
+  if (diffHours < 24) {
+    return { text: "Due today", color: "bg-amber-100 text-amber-700" };
+  }
+  if (diffDays <= 1) {
+    return { text: "Due tomorrow", color: "bg-orange-100 text-orange-700" };
+  }
+  return { text: `Due in ${diffDays} days`, color: "bg-blue-100 text-blue-700" };
 }
 
 export default function DashboardContent({
@@ -44,6 +72,7 @@ export default function DashboardContent({
   todayDoneCount,
   todayTaskCount,
   todayTaskDoneCount,
+  upcomingDeadlines,
   gpa,
   gradedCount,
 }: DashboardContentProps) {
@@ -53,11 +82,6 @@ export default function DashboardContent({
     day: "numeric",
     year: "numeric",
   }).format(new Date());
-
-  const blockPercent =
-    todayBlockCount > 0
-      ? Math.round((todayDoneCount / todayBlockCount) * 100)
-      : 0;
 
   const taskPercent =
     todayTaskCount > 0
@@ -74,48 +98,56 @@ export default function DashboardContent({
         <h2 className="text-xl font-semibold tracking-tight text-gray-900">Welcome back</h2>
         <p className="mt-1 text-sm text-gray-500">{todayLabel}</p>
 
-        {(hasTasks || hasBlocks) && (
-          <div className={`mt-4 grid gap-4 ${hasTasks && hasBlocks ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"}`}>
-            {/* Tasks progress */}
-            {hasTasks && (
-              <div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">
-                    <span className="font-medium">{todayTaskDoneCount}/{todayTaskCount}</span> tasks completed
-                    <span className="text-gray-400"> · all courses</span>
-                  </span>
-                  <span className="font-medium text-blue-600">
-                    {taskPercent}%
-                  </span>
-                </div>
-                <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-blue-100">
-                  <div
-                    className="h-2 rounded-full bg-blue-600 transition-all duration-500"
-                    style={{ width: `${taskPercent}%` }}
-                  />
-                </div>
-              </div>
-            )}
+        {hasTasks && (
+          <div className="mt-4">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-600">
+                <span className="font-medium">{todayTaskDoneCount}/{todayTaskCount}</span> tasks completed
+                <span className="text-gray-400"> · all courses</span>
+              </span>
+              <span className="font-medium text-blue-600">
+                {taskPercent}%
+              </span>
+            </div>
+            <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-blue-100">
+              <div
+                className="h-2 rounded-full bg-blue-600 transition-all duration-500"
+                style={{ width: `${taskPercent}%` }}
+              />
+            </div>
+          </div>
+        )}
 
-            {/* Blocks progress */}
-            {hasBlocks && (
-              <div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">
-                    <span className="font-medium">{todayDoneCount}/{todayBlockCount}</span> blocks done today
-                  </span>
-                  <span className="font-medium text-emerald-600">
-                    {blockPercent}%
-                  </span>
-                </div>
-                <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-emerald-100">
-                  <div
-                    className="h-2 rounded-full bg-emerald-600 transition-all duration-500"
-                    style={{ width: `${blockPercent}%` }}
-                  />
-                </div>
-              </div>
-            )}
+        {/* Upcoming Deadlines */}
+        {upcomingDeadlines.length > 0 && (
+          <div className="mt-4 border-t border-gray-100 pt-4">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
+              Upcoming Deadlines
+            </p>
+            <div className="flex flex-col gap-1.5">
+              {upcomingDeadlines.map((task) => {
+                const badge = getDeadlineLabel(task.due_date);
+                return (
+                  <Link
+                    key={task.id}
+                    href={`/tasks?highlight=${task.id}`}
+                    className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 -mx-2 transition-colors hover:bg-gray-50"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-gray-900">
+                        {task.title}
+                      </p>
+                      {task.courses && (
+                        <p className="text-xs text-gray-400">{task.courses.name}</p>
+                      )}
+                    </div>
+                    <span className={`flex-shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${badge.color}`}>
+                      {badge.text}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>

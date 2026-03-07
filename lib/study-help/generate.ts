@@ -1,6 +1,11 @@
 import { generateText, Output, NoObjectGeneratedError } from "ai";
 import { openai } from "@ai-sdk/openai";
-import { studyHelpSchema, type StudyHelp } from "./types";
+import {
+  studyHelpSchema,
+  buildRegenerateSchema,
+  type StudyHelp,
+  type RegeneratableSection,
+} from "./types";
 import { getMockStudyHelp } from "./mock";
 
 // Maximum characters for text content sent to the LLM
@@ -91,5 +96,122 @@ export async function generateStudyHelp(
       console.error("[generateStudyHelp] Unexpected error:", err);
     }
     return { data: getMockStudyHelp(), isMock: true };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Regenerate specific sections with different questions
+// ---------------------------------------------------------------------------
+
+/**
+ * Regenerate flashcards, quiz, and/or practice test for an existing session.
+ * Uses the session's summary + key terms as source context, and instructs
+ * the AI to produce different questions from the existing ones.
+ */
+export async function regenerateStudyHelp(
+  existingData: StudyHelp,
+  sections: RegeneratableSection[],
+  courseName?: string
+): Promise<{ data: Partial<StudyHelp>; isMock: boolean }> {
+  if (!process.env.OPENAI_API_KEY) {
+    const mock = getMockStudyHelp();
+    const partial: Partial<StudyHelp> = {};
+    for (const s of sections) partial[s] = mock[s] as never;
+    return { data: partial, isMock: true };
+  }
+
+  const courseContext = courseName ? `Course: ${courseName}. ` : "";
+
+  // Build context from existing summary + key terms
+  const summaryText = existingData.summary.join("\n- ");
+  const keyTermsText = existingData.keyTerms
+    .map((kt) => `${kt.term}: ${kt.definition}`)
+    .join("\n");
+
+  // Build list of existing questions to avoid
+  const existingQuestions: string[] = [];
+  if (sections.includes("flashcards")) {
+    existingData.flashcards.forEach((f) =>
+      existingQuestions.push(`Flashcard: ${f.front}`)
+    );
+  }
+  if (sections.includes("quiz")) {
+    existingData.quiz.forEach((q) =>
+      existingQuestions.push(`Quiz: ${q.question}`)
+    );
+  }
+  if (sections.includes("practiceTest")) {
+    existingData.practiceTest.forEach((q) =>
+      existingQuestions.push(`Practice: ${q.question}`)
+    );
+  }
+
+  const sectionInstructions: string[] = [];
+  if (sections.includes("flashcards")) {
+    sectionInstructions.push(
+      "flashcards: 10-15 NEW flashcards with front (question/term) and back (answer/definition)"
+    );
+  }
+  if (sections.includes("quiz")) {
+    sectionInstructions.push(
+      "quiz: 8-12 NEW multiple-choice questions, each with exactly 4 options, correctIndex (0-3), and explanation"
+    );
+  }
+  if (sections.includes("practiceTest")) {
+    sectionInstructions.push(
+      "practiceTest: 6-10 NEW open-ended questions mixing recall, conceptual, and application types, each with a suggestedAnswer"
+    );
+  }
+
+  const systemMessage = [
+    "You are a study aid generator for college students.",
+    courseContext,
+    "Using the summary and key terms below as source material, generate NEW study questions.",
+    "",
+    "CRITICAL: Generate DIFFERENT questions from the existing ones listed below. Cover the same topics but ask about different aspects, use different phrasing, and test different details.",
+    "",
+    "IMPORTANT: Generate study aids only. Do not provide answers to graded assignments.",
+    "",
+    `Generate the following:\n${sectionInstructions.map((s, i) => `${i + 1}. ${s}`).join("\n")}`,
+  ].join("\n");
+
+  const userMessage = [
+    "## Source Material\n",
+    "### Summary\n- " + summaryText,
+    "\n### Key Terms\n" + keyTermsText,
+    "\n## Existing Questions (generate DIFFERENT ones)\n" +
+      existingQuestions.join("\n"),
+  ].join("\n");
+
+  const schema = buildRegenerateSchema(sections);
+
+  try {
+    const { experimental_output } = await generateText({
+      model: openai("gpt-4o-mini"),
+      experimental_output: Output.object({ schema }),
+      messages: [
+        { role: "system", content: systemMessage },
+        { role: "user", content: userMessage },
+      ],
+    });
+
+    if (!experimental_output) {
+      const mock = getMockStudyHelp();
+      const partial: Partial<StudyHelp> = {};
+      for (const s of sections) partial[s] = mock[s] as never;
+      return { data: partial, isMock: true };
+    }
+
+    return { data: experimental_output as Partial<StudyHelp>, isMock: false };
+  } catch (err) {
+    if (err instanceof NoObjectGeneratedError) {
+      console.warn("[regenerateStudyHelp] NoObjectGeneratedError — returning mock");
+    } else {
+      console.error("[regenerateStudyHelp] Unexpected error:", err);
+    }
+    const mock = getMockStudyHelp();
+    const partial: Partial<StudyHelp> = {};
+    for (const s of sections) partial[s] = mock[s] as never;
+    return { data: partial, isMock: true };
   }
 }

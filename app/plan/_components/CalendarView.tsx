@@ -35,6 +35,7 @@ import {
 } from "@dnd-kit/core";
 import { generatePlan, moveBlock, undoMoveBlock } from "../actions";
 import PlanBlock from "./PlanBlock";
+import TimeGrid from "./TimeGrid";
 import RiskBadge from "./RiskBadge";
 import ExportButton from "./ExportButton";
 import TaskForm from "@/app/tasks/_components/TaskForm";
@@ -1210,10 +1211,60 @@ export default function CalendarView({
 
       {/* ---- View content ---- */}
       {viewMode === "day" && (
-        <DayView date={currentDate} blocksByDate={blocksByDate} tasksByDate={tasksByDate} subtasksByDate={subtasksByDate} colorMap={courseColorMap} onTaskClick={setEditingTask} />
+        <div className="space-y-4">
+          {/* Time Remaining card */}
+          {(() => {
+            const dayKey = getDateKey(currentDate);
+            const dayBlocks = blocksByDate.get(dayKey) ?? [];
+            const remainingMinutes = dayBlocks
+              .filter((b) => b.status === "scheduled")
+              .reduce((sum, b) => {
+                const s = new Date(b.start_time);
+                const e = new Date(b.end_time);
+                return sum + (e.getTime() - s.getTime()) / 60000;
+              }, 0);
+            const hrs = Math.floor(remainingMinutes / 60);
+            const mns = Math.round(remainingMinutes % 60);
+            const hasBlocks = dayBlocks.length > 0;
+            const allDone = hasBlocks && remainingMinutes === 0;
+
+            return (
+              <div className="rounded-lg border border-gray-200 bg-white p-4">
+                <p className="text-sm font-medium text-gray-500">Time Remaining</p>
+                {allDone ? (
+                  <p className="mt-1 text-2xl font-bold text-green-600">All done!</p>
+                ) : hasBlocks ? (
+                  <p className="mt-1 text-2xl font-bold text-gray-900">
+                    {hrs > 0 ? `${hrs}h ` : ""}{mns}m
+                  </p>
+                ) : (
+                  <p className="mt-1 text-lg text-gray-400">No blocks scheduled</p>
+                )}
+              </div>
+            );
+          })()}
+          <TimeGrid
+            days={[currentDate]}
+            blocksByDate={blocksByDate}
+            tasksByDate={tasksByDate}
+            subtasksByDate={subtasksByDate}
+            colorMap={courseColorMap}
+            onTaskClick={setEditingTask}
+          />
+        </div>
       )}
       {viewMode === "week" && (
-        <WeekView date={currentDate} blocksByDate={blocksByDate} tasksByDate={tasksByDate} subtasksByDate={subtasksByDate} colorMap={courseColorMap} onTaskClick={setEditingTask} />
+        <TimeGrid
+          days={eachDayOfInterval({
+            start: startOfWeek(currentDate, { weekStartsOn: 0 }),
+            end: addDays(startOfWeek(currentDate, { weekStartsOn: 0 }), 6),
+          })}
+          blocksByDate={blocksByDate}
+          tasksByDate={tasksByDate}
+          subtasksByDate={subtasksByDate}
+          colorMap={courseColorMap}
+          onTaskClick={setEditingTask}
+        />
       )}
       {viewMode === "month" && (
         <MonthView

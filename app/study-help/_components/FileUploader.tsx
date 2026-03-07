@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 
 interface UploadedFile {
   filename: string;
@@ -17,28 +17,30 @@ interface FileUploaderProps {
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 const ACCEPTED_TYPES = [
   "application/pdf",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "application/vnd.ms-powerpoint",
   "image/png",
   "image/jpeg",
   "image/jpg",
 ];
-const ACCEPTED_EXTENSIONS = [".pdf", ".png", ".jpg", ".jpeg"];
+const ACCEPTED_EXTENSIONS = [".pdf", ".ppt", ".pptx", ".png", ".jpg", ".jpeg"];
 
 export default function FileUploader({ onFilesChange }: FileUploaderProps) {
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Sync parent with done paths via useEffect to avoid setState-during-render
+  useEffect(() => {
+    const donePaths = files.filter((f) => f.status === "done").map((f) => f.storagePath);
+    onFilesChange(donePaths);
+  }, [files, onFilesChange]);
+
   const updateFiles = useCallback(
     (updater: (prev: UploadedFile[]) => UploadedFile[]) => {
-      setFiles((prev) => {
-        const next = updater(prev);
-        onFilesChange(
-          next.filter((f) => f.status === "done").map((f) => f.storagePath)
-        );
-        return next;
-      });
+      setFiles((prev) => updater(prev));
     },
-    [onFilesChange]
+    []
   );
 
   const uploadFile = useCallback(
@@ -137,7 +139,7 @@ export default function FileUploader({ onFilesChange }: FileUploaderProps) {
               storagePath: `err-${Date.now()}`,
               status: "error",
               progress: 0,
-              error: "File must be PDF, PNG, or JPG",
+              error: "File must be PDF, PPT, PPTX, PNG, or JPG",
             },
           ]);
           continue;
@@ -216,7 +218,7 @@ export default function FileUploader({ onFilesChange }: FileUploaderProps) {
           Drop files here or click to browse
         </p>
         <p className="mt-1 text-xs text-gray-500">
-          PDF, PNG, or JPG — up to 10 MB each
+          PDF, PPT, PPTX, PNG, or JPG — up to 10 MB each
         </p>
       </div>
 
@@ -224,7 +226,7 @@ export default function FileUploader({ onFilesChange }: FileUploaderProps) {
         ref={fileInputRef}
         type="file"
         multiple
-        accept=".pdf,.png,.jpg,.jpeg"
+        accept=".pdf,.ppt,.pptx,.png,.jpg,.jpeg"
         className="hidden"
         onChange={(e) => {
           if (e.target.files) handleFiles(e.target.files);
@@ -242,7 +244,7 @@ export default function FileUploader({ onFilesChange }: FileUploaderProps) {
             >
               {/* File icon */}
               <span className="text-lg">
-                {file.filename.endsWith(".pdf") ? "📄" : "🖼️"}
+                {file.filename.endsWith(".pdf") ? "📄" : file.filename.endsWith(".pptx") ? "📊" : "🖼️"}
               </span>
 
               {/* File info */}

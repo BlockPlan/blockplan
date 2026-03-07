@@ -52,3 +52,54 @@ export async function deleteQuickNote(noteId: string) {
   revalidatePath("/dashboard");
   return { success: true };
 }
+
+// ---------------------------------------------------------------------------
+// updateQuickNote – edit content
+// ---------------------------------------------------------------------------
+
+export async function updateQuickNote(noteId: string, content: string) {
+  if (!content.trim()) return { error: "Note cannot be empty." };
+  if (content.length > 500) return { error: "Note is too long (max 500 characters)." };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) redirect("/auth");
+
+  const { error } = await supabase
+    .from("quick_notes")
+    .update({ content: content.trim() })
+    .eq("id", noteId)
+    .eq("user_id", user.id);
+
+  if (error) return { error: "Failed to update note." };
+
+  revalidatePath("/dashboard");
+  return { success: true };
+}
+
+// ---------------------------------------------------------------------------
+// toggleQuickNoteComplete – mark done / undone
+// ---------------------------------------------------------------------------
+
+export async function toggleQuickNoteComplete(noteId: string, completed: boolean) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) redirect("/auth");
+
+  const { error } = await supabase
+    .from("quick_notes")
+    .update({ completed })
+    .eq("id", noteId)
+    .eq("user_id", user.id);
+
+  if (error) return { error: "Failed to update note." };
+
+  revalidatePath("/dashboard");
+  return { success: true };
+}
