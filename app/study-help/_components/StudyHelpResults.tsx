@@ -23,11 +23,13 @@ export default function StudyHelpResults({
   courseName,
   sessionId,
   onRegenerate,
+  onEditFlashcard,
 }: {
   data: StudyHelp;
   courseName?: string;
   sessionId?: string;
   onRegenerate?: (sections: RegeneratableSection[]) => Promise<void>;
+  onEditFlashcard?: (index: number, front: string, back: string) => void;
 }) {
   const [activeTab, setActiveTab] = useState<TabKey>("summary");
   const [studyMode, setStudyMode] = useState(false);
@@ -143,7 +145,7 @@ export default function StudyHelpResults({
                   )}
                 </div>
               </div>
-              <FlashcardViewer flashcards={data.flashcards} />
+              <FlashcardViewer flashcards={data.flashcards} onEditCard={onEditFlashcard} />
             </div>
           )
         )}

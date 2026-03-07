@@ -71,6 +71,27 @@ export default function SessionDetailClient({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleEditFlashcard = useCallback(
+    (index: number, front: string, back: string) => {
+      setData((prev) => {
+        const updated = { ...prev, flashcards: [...prev.flashcards] };
+        updated.flashcards[index] = { front, back };
+        // Persist to DB (fire-and-forget with toast feedback)
+        updateStudyHelpData(sessionId, { flashcards: updated.flashcards }).then(
+          (result) => {
+            if (result.error) {
+              toast.error("Failed to save edit");
+            } else {
+              toast.success("Card updated");
+            }
+          }
+        );
+        return updated;
+      });
+    },
+    [sessionId]
+  );
+
   const handleRegenerate = useCallback(
     async (sections: RegeneratableSection[]) => {
       const result = await regenerateStudyMaterial(
@@ -186,6 +207,7 @@ export default function SessionDetailClient({
         courseName={courseName}
         sessionId={sessionId}
         onRegenerate={handleRegenerate}
+        onEditFlashcard={handleEditFlashcard}
       />
 
       {showExport && (

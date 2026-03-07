@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import {
   generateStudyHelpAction,
   regenerateStudyMaterial,
+  updateStudyHelpData,
   type StudyHelpState,
 } from "../actions";
 import type { RegeneratableSection } from "@/lib/study-help/types";
@@ -45,6 +46,26 @@ export default function StudyHelpSession({
       ? { ...state.data, ...dataOverride }
       : state.data
     : null;
+
+  const handleEditFlashcard = useCallback(
+    (index: number, front: string, back: string) => {
+      if (!state.sessionId || !displayData) return;
+      const currentFlashcards = [...(displayData as import("@/lib/study-help/types").StudyHelp).flashcards];
+      currentFlashcards[index] = { front, back };
+      setDataOverride((prev) => ({ ...prev, flashcards: currentFlashcards }));
+      // Persist to DB
+      updateStudyHelpData(state.sessionId!, { flashcards: currentFlashcards }).then(
+        (result) => {
+          if (result.error) {
+            toast.error("Failed to save edit");
+          } else {
+            toast.success("Card updated");
+          }
+        }
+      );
+    },
+    [state.sessionId, displayData]
+  );
 
   const handleRegenerate = useCallback(
     async (sections: RegeneratableSection[]) => {
@@ -234,6 +255,7 @@ export default function StudyHelpSession({
             courseName={state.courseName}
             sessionId={state.sessionId}
             onRegenerate={state.sessionId ? handleRegenerate : undefined}
+            onEditFlashcard={state.sessionId ? handleEditFlashcard : undefined}
           />
         </>
       )}
