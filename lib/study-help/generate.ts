@@ -85,17 +85,17 @@ export async function generateStudyHelp(
     });
 
     if (!experimental_output) {
-      return { data: getMockStudyHelp(), isMock: true };
+      throw new Error("AI did not return structured output. Please try again.");
     }
 
     return { data: experimental_output, isMock: false };
   } catch (err) {
     if (err instanceof NoObjectGeneratedError) {
-      console.warn("[generateStudyHelp] NoObjectGeneratedError — returning mock");
-    } else {
-      console.error("[generateStudyHelp] Unexpected error:", err);
+      console.warn("[generateStudyHelp] NoObjectGeneratedError");
+      throw new Error("AI could not generate study materials from this content. Try providing more text or a different file.");
     }
-    return { data: getMockStudyHelp(), isMock: true };
+    console.error("[generateStudyHelp] Unexpected error:", err);
+    throw err;
   }
 }
 

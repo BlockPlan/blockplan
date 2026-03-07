@@ -89,15 +89,28 @@ export async function generateStudyHelpAction(
     try {
       const ext = storagePath.split(".").pop()?.toLowerCase();
 
-      if (ext === "pdf") {
+      if (ext === "ppt") {
+        // Old binary .ppt format is not supported — tell user to convert
+        if (!pastedText && storagePaths.length === 1) {
+          return {
+            error: "Old .ppt format is not supported. Please save as .pptx in PowerPoint (File → Save As → .pptx) and re-upload.",
+          };
+        }
+        console.warn(`[study-help] Skipping unsupported .ppt file: ${storagePath}`);
+        continue;
+      } else if (ext === "pdf") {
         const text = await extractTextFromPdf(storagePath);
         if (text.trim().length > 0) {
           contentParts.push({ type: "text", text });
+        } else {
+          console.warn(`[study-help] PDF extraction returned empty text: ${storagePath}`);
         }
-      } else if (ext === "ppt" || ext === "pptx") {
+      } else if (ext === "pptx") {
         const text = await extractTextFromPptx(storagePath);
         if (text.trim().length > 0) {
           contentParts.push({ type: "text", text });
+        } else {
+          console.warn(`[study-help] PPTX extraction returned empty text: ${storagePath}`);
         }
       } else if (["png", "jpg", "jpeg"].includes(ext ?? "")) {
         const dataUrl = await imageToBase64(storagePath);
@@ -160,8 +173,9 @@ export async function generateStudyHelpAction(
 
     return { data, isMock, courseName, sessionId };
   } catch (err) {
-    console.error("[study-help] Generation failed:", err);
-    return { error: "Failed to generate study materials. Please try again." };
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error("[study-help] Generation failed:", errMsg);
+    return { error: `Failed to generate study materials: ${errMsg}` };
   }
 }
 

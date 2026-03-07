@@ -244,7 +244,7 @@ export default function FileUploader({ onFilesChange }: FileUploaderProps) {
             >
               {/* File icon */}
               <span className="text-lg">
-                {file.filename.endsWith(".pdf") ? "📄" : file.filename.endsWith(".pptx") ? "📊" : "🖼️"}
+                {file.filename.endsWith(".pdf") ? "📄" : (file.filename.endsWith(".pptx") || file.filename.endsWith(".ppt")) ? "📊" : "🖼️"}
               </span>
 
               {/* File info */}
