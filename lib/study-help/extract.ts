@@ -73,13 +73,18 @@ export async function extractTextFromPptx(storagePath: string): Promise<string> 
   const arrayBuffer = await data.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
-  const text = await parseOffice(buffer, {
+  const result = await parseOffice(buffer, {
     ignoreNotes: false,
     putNotesAtLast: false,
     newlineDelimiter: "\n",
   });
 
-  return typeof text === "string" ? text : String(text);
+  // parseOffice returns an object with a toText() method, not a plain string
+  if (result && typeof result === "object" && typeof result.toText === "function") {
+    return result.toText();
+  }
+  // Fallback for older versions that may return a string directly
+  return typeof result === "string" ? result : String(result);
 }
 
 // ---------------------------------------------------------------------------
