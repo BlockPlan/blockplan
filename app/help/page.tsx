@@ -11,7 +11,6 @@ const sections = [
       "Navigate to the Dashboard tab — it loads automatically after sign-in.",
       "View your overall task completion progress (blue bar) at the top of the welcome card.",
       "Upcoming Deadlines appear below the progress bar — tasks due within the next 3 days are shown with color-coded badges (Overdue, Due today, Due tomorrow, Due in X days). Click any deadline to jump to that task.",
-      "Check your current GPA in the purple card (appears once you've entered grades).",
       'See your next scheduled study block under "Next Up".',
       'Review your top 5 upcoming tasks sorted by due date under "Top Priorities". Clicking a task highlights and scrolls to it on the Tasks page.',
       'Use "Quick Notes" to jot down personal reminders, to-dos, or thoughts — add and delete notes right from the Dashboard.',
@@ -48,7 +47,6 @@ const sections = [
       'Click "Tasks" in the navigation bar.',
       'Click "Add Task" to create a new task.',
       "Fill in the title, type (Assignment, Exam, Reading, or Other), course, due date, and estimated time.",
-      "Optionally set grading info (points possible, weight, grade earned) for GPA tracking.",
       "Optionally set a reminder (30 min to 1 week before due date) for browser notifications.",
       "Add notes to any task using the Notes field — notes appear as a preview under the task title in the list.",
       "Click the circle icon on the left of any task to toggle its status: To Do → In Progress → Completed.",
@@ -86,24 +84,7 @@ const sections = [
       'When deleting a recurring task, you\'ll be asked: "This task only", "This and future tasks", or "All tasks in series".',
     ],
   },
-  {
-    title: "Grades & GPA",
-    icon: "🎓",
-    description:
-      "Track your grades per assignment and see your projected GPA across all courses.",
-    steps: [
-      'Click "Grades" in the navigation bar.',
-      "Your overall GPA is shown at the top of the page.",
-      "Each course is displayed as an expandable card showing your current letter grade and weighted average.",
-      "Click a course card to expand it and see all graded assignments.",
-      "Enter grades inline — type the score earned for each assignment and click Save.",
-      "To set up grading weights: when creating/editing a task, fill in Points Possible and Weight.",
-      'Click "Customize Scale" on a course card to adjust letter grade thresholds (e.g., change A to 94% instead of 93%).',
-      "GPA is calculated on a 4.0 scale: A=4.0, A-=3.7, B+=3.3, etc.",
-      "Your GPA also appears on the Dashboard when you have graded assignments.",
-    ],
-  },
-  {
+{
     title: "Reminders",
     icon: "🔔",
     description:
@@ -185,8 +166,7 @@ const sections = [
       'Click "Courses" in the navigation bar.',
       'Click "Add Course" and enter the course name (e.g., "Math 105").',
       "Courses are used to organize your tasks, grades, and study materials.",
-      "Each course can have a custom grading scale (edit from the Grades page).",
-      "Deleting a course will remove it from all associated tasks.",
+        "Deleting a course will remove it from all associated tasks.",
     ],
   },
   {
@@ -235,7 +215,6 @@ const sections = [
       'Go to the Calendar and click "Generate Plan" to create your study schedule.',
       "Check your Dashboard daily to see what's coming up and track your progress.",
       "Mark tasks as completed and blocks as done as you work through them.",
-      "Enter grades as you get them back to track your GPA.",
     ],
   },
   {

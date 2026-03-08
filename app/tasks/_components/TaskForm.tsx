@@ -22,9 +22,6 @@ interface Task {
   estimated_minutes: number | null;
   course_id: string;
   notes?: string | null;
-  grade?: number | null;
-  points?: number | null;
-  weight?: number | null;
   reminder_minutes_before?: number | null;
 }
 
@@ -341,68 +338,6 @@ export default function TaskForm({ task, courses, onSuccess }: TaskFormProps) {
             Leave blank to use default ({DEFAULT_MINUTES[defaultType]}m for{" "}
             {defaultType})
           </p>
-        </div>
-        {/* Grade section */}
-        <div className="sm:col-span-2">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
-            Grading (optional)
-          </p>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <div>
-              <label
-                htmlFor="points"
-                className="mb-1 block text-sm font-medium text-gray-700"
-              >
-                Points possible
-              </label>
-              <input
-                id="points"
-                name="points"
-                type="number"
-                step="any"
-                min="0.01"
-                defaultValue={task?.points ?? ""}
-                placeholder="e.g. 100"
-                className="input"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="weight"
-                className="mb-1 block text-sm font-medium text-gray-700"
-              >
-                Weight
-              </label>
-              <input
-                id="weight"
-                name="weight"
-                type="number"
-                step="any"
-                min="0"
-                defaultValue={task?.weight ?? ""}
-                placeholder="e.g. 10"
-                className="input"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="grade"
-                className="mb-1 block text-sm font-medium text-gray-700"
-              >
-                Grade earned
-              </label>
-              <input
-                id="grade"
-                name="grade"
-                type="number"
-                step="any"
-                min="0"
-                defaultValue={task?.grade ?? ""}
-                placeholder="e.g. 95"
-                className="input"
-              />
-            </div>
-          </div>
         </div>
         {/* Reminder */}
         <div>

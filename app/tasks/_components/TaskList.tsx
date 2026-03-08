@@ -24,9 +24,6 @@ interface Task {
   estimated_minutes: number | null;
   course_id: string;
   notes?: string | null;
-  grade?: number | null;
-  points?: number | null;
-  weight?: number | null;
   reminder_minutes_before?: number | null;
   recurrence_parent_id?: string | null;
   recurrence_rule?: Record<string, unknown> | null;

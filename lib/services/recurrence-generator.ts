@@ -7,8 +7,6 @@ interface ParentTaskData {
   title: string;
   type: string;
   estimated_minutes: number;
-  points: number | null;
-  weight: number | null;
   notes: string | null;
 }
 
@@ -20,8 +18,6 @@ interface TaskInstance {
   status: "todo";
   estimated_minutes: number;
   due_date: string; // ISO string
-  points: number | null;
-  weight: number | null;
   notes: string | null;
   recurrence_parent_id: string;
 }
@@ -60,8 +56,6 @@ export function generateRecurrenceInstances(
         status: "todo",
         estimated_minutes: parent.estimated_minutes,
         due_date: cursor.toISOString(),
-        points: parent.points,
-        weight: parent.weight,
         notes: parent.notes,
         recurrence_parent_id: parent.id,
       });

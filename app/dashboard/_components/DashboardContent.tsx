@@ -41,8 +41,6 @@ interface DashboardContentProps {
   todayTaskCount: number;
   todayTaskDoneCount: number;
   upcomingDeadlines: UpcomingDeadline[];
-  gpa: number | null;
-  gradedCount: number;
 }
 
 function getDeadlineLabel(dueDate: string): { text: string; color: string } {
@@ -73,8 +71,6 @@ export default function DashboardContent({
   todayTaskCount,
   todayTaskDoneCount,
   upcomingDeadlines,
-  gpa,
-  gradedCount,
 }: DashboardContentProps) {
   const todayLabel = new Intl.DateTimeFormat(undefined, {
     weekday: "long",
@@ -151,31 +147,6 @@ export default function DashboardContent({
           </div>
         )}
       </div>
-
-      {/* GPA card */}
-      {gradedCount > 0 && (
-        <div className="mb-4 rounded-xl border border-purple-200 bg-gradient-to-br from-purple-50 to-white p-5 shadow-[var(--shadow-card)]">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-purple-600">
-                Current GPA
-              </p>
-              <p className="mt-1 text-3xl font-bold text-gray-900">
-                {gpa !== null ? gpa.toFixed(2) : "–"}
-              </p>
-              <p className="mt-0.5 text-xs text-gray-500">
-                {gradedCount} assignment{gradedCount !== 1 ? "s" : ""} graded
-              </p>
-            </div>
-            <Link
-              href="/grades"
-              className="text-sm font-medium text-purple-600 transition-colors duration-150 hover:text-purple-800"
-            >
-              View Grades
-            </Link>
-          </div>
-        </div>
-      )}
 
       {/* Getting Started — shown for brand-new users */}
       {!hasTasks && !hasBlocks && (

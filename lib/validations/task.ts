@@ -38,21 +38,6 @@ export const taskSchema = z.object({
     .uuid("Must be a valid course ID")
     .min(1, "Course is required"),
   notes: z.string().max(5000, "Notes must be 5000 characters or less").optional(),
-  grade: z
-    .string()
-    .optional()
-    .transform((val) => (val && val.trim() !== "" ? Number(val) : undefined))
-    .pipe(z.number().min(0, "Grade cannot be negative").optional()),
-  points: z
-    .string()
-    .optional()
-    .transform((val) => (val && val.trim() !== "" ? Number(val) : undefined))
-    .pipe(z.number().min(0.01, "Points must be greater than 0").optional()),
-  weight: z
-    .string()
-    .optional()
-    .transform((val) => (val && val.trim() !== "" ? Number(val) : undefined))
-    .pipe(z.number().min(0, "Weight cannot be negative").optional()),
   reminder_minutes_before: z
     .string()
     .optional()
@@ -93,21 +78,6 @@ export const taskUpdateSchema = z.object({
     ),
   course_id: z.string().uuid("Must be a valid course ID").optional(),
   notes: z.string().max(5000, "Notes must be 5000 characters or less").optional(),
-  grade: z
-    .string()
-    .optional()
-    .transform((val) => (val && val.trim() !== "" ? Number(val) : undefined))
-    .pipe(z.number().min(0, "Grade cannot be negative").optional()),
-  points: z
-    .string()
-    .optional()
-    .transform((val) => (val && val.trim() !== "" ? Number(val) : undefined))
-    .pipe(z.number().min(0.01, "Points must be greater than 0").optional()),
-  weight: z
-    .string()
-    .optional()
-    .transform((val) => (val && val.trim() !== "" ? Number(val) : undefined))
-    .pipe(z.number().min(0, "Weight cannot be negative").optional()),
   reminder_minutes_before: z
     .string()
     .optional()

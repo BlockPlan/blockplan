@@ -8,9 +8,7 @@ import DashboardContent from "./_components/DashboardContent";
 import QuickNotes from "./_components/QuickNotes";
 import ReminderInit from "@/app/_components/ReminderInit";
 import NotificationPermissionBanner from "@/app/_components/NotificationPermissionBanner";
-import { computeCourseGrade, computeGPA, type GradableTask } from "@/lib/services/grade-calculator";
 import { calculateRiskTasks } from "@/lib/services/risk-calculator";
-import { DEFAULT_GRADING_SCALE } from "@/lib/validations/grade";
 import { DEFAULT_PLANNER_SETTINGS } from "@/lib/validations/planner";
 
 export const metadata: Metadata = {
@@ -175,39 +173,6 @@ export default async function DashboardPage() {
     courses: t.courses as unknown as { name: string } | null,
   }));
 
-  // ── GPA computation ────────────────────────────────────────────────────
-  const { data: gpaCourses } = await supabase
-    .from("courses")
-    .select("id, name, grading_scale")
-    .eq("user_id", user.id);
-
-  const { data: gpaTasks } = await supabase
-    .from("tasks")
-    .select("id, title, type, grade, points, weight, course_id")
-    .eq("user_id", user.id);
-
-  const tasksByCourse = new Map<string, GradableTask[]>();
-  for (const t of gpaTasks ?? []) {
-    const cid = t.course_id as string;
-    const existing = tasksByCourse.get(cid) ?? [];
-    existing.push({
-      id: t.id as string,
-      title: t.title as string,
-      type: t.type as string,
-      grade: t.grade as number | null,
-      points: t.points as number | null,
-      weight: t.weight as number | null,
-    });
-    tasksByCourse.set(cid, existing);
-  }
-
-  const courseGrades = (gpaCourses ?? []).map((c) => {
-    const scale = (c.grading_scale as Record<string, number>) ?? DEFAULT_GRADING_SCALE;
-    return computeCourseGrade(c.id as string, c.name as string, tasksByCourse.get(c.id as string) ?? [], scale);
-  });
-
-  const gpaResult = computeGPA(courseGrades);
-
   // ── Reminder tasks for client-side scheduling ────────────────────────
   const { data: reminderRows } = await supabase
     .from("tasks")
@@ -258,8 +223,6 @@ export default async function DashboardPage() {
           todayTaskCount={totalTaskCount}
           todayTaskDoneCount={totalTaskDoneCount}
           upcomingDeadlines={upcomingDeadlines}
-          gpa={gpaResult.gpa}
-          gradedCount={gpaResult.totalGraded}
         />
         <QuickNotes initialNotes={quickNotes} />
         <ReminderInit tasks={reminderTasks} />

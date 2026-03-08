@@ -110,8 +110,7 @@ export default function NavHeader() {
           <NavLink href="/dashboard">Dashboard</NavLink>
           <NavLink href="/plan" dataTour="nav-calendar">Calendar</NavLink>
           <NavLink href="/tasks" dataTour="nav-tasks">Tasks</NavLink>
-          <NavLink href="/grades">Grades</NavLink>
-          <NavLink href="/study-help" dataTour="nav-study-help" highlight>AI Study Help</NavLink>
+<NavLink href="/study-help" dataTour="nav-study-help" highlight>AI Study Help</NavLink>
           <NavLink href="/courses">Courses</NavLink>
           <NavLink href="/syllabi/upload" dataTour="nav-upload-syllabus">Upload Syllabus</NavLink>
           <NavLink href="/profile">Profile</NavLink>
@@ -165,10 +164,7 @@ export default function NavHeader() {
             <NavLink href="/tasks" onClick={closeMenu} mobile>
               Tasks
             </NavLink>
-            <NavLink href="/grades" onClick={closeMenu} mobile>
-              Grades
-            </NavLink>
-            <NavLink href="/study-help" onClick={closeMenu} mobile highlight>
+<NavLink href="/study-help" onClick={closeMenu} mobile highlight>
               AI Study Help
             </NavLink>
             <NavLink href="/courses" onClick={closeMenu} mobile>

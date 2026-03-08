@@ -41,7 +41,7 @@ export async function createTask(
     return { errors: result.error.flatten().fieldErrors };
   }
 
-  const { title, type, due_date, estimated_minutes, course_id, notes, grade, points, weight, reminder_minutes_before } = result.data;
+  const { title, type, due_date, estimated_minutes, course_id, notes, reminder_minutes_before } = result.data;
 
   // Apply default estimated_minutes if not provided (defense: use type-based default)
   const finalEstimatedMinutes = estimated_minutes ?? DEFAULT_MINUTES[type];
@@ -69,9 +69,6 @@ export async function createTask(
       estimated_minutes: finalEstimatedMinutes,
       due_date: due_date || null,
       notes: notes || null,
-      grade: grade ?? null,
-      points: points ?? null,
-      weight: weight ?? null,
       reminder_minutes_before: reminder_minutes_before ?? null,
     })
     .select("id, type, estimated_minutes, due_date")
@@ -131,8 +128,6 @@ export async function createTask(
             title,
             type,
             estimated_minutes: finalEstimatedMinutes,
-            points: points ?? null,
-            weight: weight ?? null,
             notes: notes || null,
           },
           ruleParsed.data
@@ -200,16 +195,6 @@ export async function updateTask(
   // Always set notes (allows clearing it)
   if ("notes" in raw) {
     updatePayload.notes = updateFields.notes || null;
-  }
-  // Grade fields (allow clearing)
-  if ("grade" in raw) {
-    updatePayload.grade = updateFields.grade ?? null;
-  }
-  if ("points" in raw) {
-    updatePayload.points = updateFields.points ?? null;
-  }
-  if ("weight" in raw) {
-    updatePayload.weight = updateFields.weight ?? null;
   }
   if ("reminder_minutes_before" in raw) {
     updatePayload.reminder_minutes_before = updateFields.reminder_minutes_before ?? null;
