@@ -7,7 +7,7 @@ import {
   extractTextFromPptx,
   imageToBase64,
 } from "@/lib/study-help/extract";
-import type { StudyHelp, RegeneratableSection, DiagramType } from "@/lib/study-help/types";
+import type { StudyHelp, RegeneratableSection, DiagramType, Diagram } from "@/lib/study-help/types";
 import { revalidatePath } from "next/cache";
 import crypto from "crypto";
 
@@ -447,7 +447,7 @@ export async function generateDiagramsForSession(
   sessionId: string,
   diagramType: DiagramType,
   courseName?: string
-): Promise<{ error?: string }> {
+): Promise<{ error?: string; diagrams?: Diagram[] }> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -481,9 +481,10 @@ export async function generateDiagramsForSession(
     // Merge: replace diagram of this type, keep others
     const existingDiagrams = existingData.diagrams ?? [];
     const otherDiagrams = existingDiagrams.filter((d) => d.type !== diagramType);
+    const mergedDiagrams = [...otherDiagrams, ...newDiagrams];
     const merged: StudyHelp = {
       ...existingData,
-      diagrams: [...otherDiagrams, ...newDiagrams],
+      diagrams: mergedDiagrams,
     };
 
     const { error } = await supabase
@@ -495,7 +496,7 @@ export async function generateDiagramsForSession(
     if (error) return { error: "Failed to save diagram." };
 
     revalidatePath(`/study-help/${sessionId}`);
-    return {};
+    return { diagrams: mergedDiagrams };
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
     return { error: errMsg };

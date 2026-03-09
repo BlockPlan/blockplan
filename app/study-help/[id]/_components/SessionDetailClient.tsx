@@ -115,10 +115,12 @@ export default function SessionDetailClient({
         toast.error(result.error);
         return;
       }
+      if (result.diagrams) {
+        setData((prev) => ({ ...prev, diagrams: result.diagrams }));
+      }
       toast.success("Diagram generated!");
-      router.refresh();
     },
-    [sessionId, courseName, router]
+    [sessionId, courseName]
   );
 
   const handleRegenerate = useCallback(

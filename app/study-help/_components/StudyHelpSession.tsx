@@ -1,7 +1,6 @@
 "use client";
 
 import { useActionState, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   generateStudyHelpAction,
@@ -31,7 +30,6 @@ export default function StudyHelpSession({
   initialCourseId,
   userPlan,
 }: StudyHelpSessionProps) {
-  const router = useRouter();
   const [state, formAction, isPending] = useActionState<StudyHelpState, FormData>(
     generateStudyHelpAction,
     {}
@@ -81,11 +79,12 @@ export default function StudyHelpSession({
         toast.error(result.error);
         return;
       }
+      if (result.diagrams) {
+        setDataOverride((prev) => ({ ...prev, diagrams: result.diagrams }));
+      }
       toast.success("Diagram generated!");
-      // Navigate to the saved session page where data is loaded from DB
-      router.push(`/study-help/${state.sessionId}`);
     },
-    [state.sessionId, state.courseName, router]
+    [state.sessionId, state.courseName]
   );
 
   const handleRegenerate = useCallback(
