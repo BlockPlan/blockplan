@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import NavHeader from "@/app/plan/_components/NavHeader";
+import PricingButtons from "./_components/PricingButtons";
 
 export const metadata: Metadata = {
   title: "Pricing | BlockPlan",
@@ -45,6 +46,7 @@ const tiers = [
       "Drag-and-drop block rescheduling",
       "Subtask milestones & progress tracking",
       "Spaced repetition flashcard system",
+      "AI Tutor Chat (ask follow-up questions)",
     ],
   },
   {
@@ -63,6 +65,7 @@ const tiers = [
       "Advanced analytics & insights",
       "Backward planning mode",
       "Priority support",
+      "AI Tutor Chat (unlimited conversations)",
       "Early access to new features",
     ],
   },
@@ -142,15 +145,11 @@ export default async function PricingPage() {
               <p className="mt-3 text-sm text-gray-500">{tier.description}</p>
 
               {/* CTA */}
-              <button
-                className={`mt-6 w-full rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors duration-150 ${
-                  tier.highlighted
-                    ? "bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                }`}
-              >
-                {tier.cta}
-              </button>
+              <PricingButtons
+                tierName={tier.name}
+                cta={tier.cta}
+                highlighted={tier.highlighted}
+              />
 
               {/* Divider */}
               <div className="my-6 border-t border-gray-100" />
