@@ -2,7 +2,7 @@ import { z } from "zod";
 import { generateText, Output, NoObjectGeneratedError } from "ai";
 import { openai } from "@ai-sdk/openai";
 import {
-  studyHelpSchema,
+  studyHelpGenerationSchema,
   buildRegenerateSchema,
   type StudyHelp,
   type RegeneratableSection,
@@ -81,7 +81,7 @@ export async function generateStudyHelp(
   try {
     const { experimental_output } = await generateText({
       model: openai("gpt-4o-mini"),
-      experimental_output: Output.object({ schema: studyHelpSchema }),
+      experimental_output: Output.object({ schema: studyHelpGenerationSchema }),
       messages: [
         { role: "system", content: systemMessage },
         { role: "user", content: userParts },
