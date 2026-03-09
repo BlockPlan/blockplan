@@ -14,11 +14,16 @@ export default function FlashcardViewer({ flashcards, onEditCard }: FlashcardVie
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editFront, setEditFront] = useState("");
   const [editBack, setEditBack] = useState("");
+  // Track confidence per card: true = "Got It", false = "Still Learning", undefined = not rated
+  const [confidence, setConfidence] = useState<Record<number, boolean>>({});
 
   if (flashcards.length === 0) return null;
 
   const card = flashcards[currentIndex];
   const isEditing = editingIndex === currentIndex;
+
+  const gotItCount = Object.values(confidence).filter((v) => v === true).length;
+  const stillLearningCount = Object.values(confidence).filter((v) => v === false).length;
 
   const startEditing = () => {
     setEditFront(card.front);
@@ -50,12 +55,36 @@ export default function FlashcardViewer({ flashcards, onEditCard }: FlashcardVie
     setCurrentIndex((prev) => (prev - 1 + flashcards.length) % flashcards.length);
   };
 
+  const markConfidence = (gotIt: boolean) => {
+    setConfidence((prev) => ({ ...prev, [currentIndex]: gotIt }));
+    // Auto-advance to next card
+    setFlipped(false);
+    setCurrentIndex((prev) => (prev + 1) % flashcards.length);
+  };
+
+  const resetProgress = () => {
+    setConfidence({});
+    setCurrentIndex(0);
+    setFlipped(false);
+  };
+
   return (
     <div>
-      {/* Card counter */}
-      <p className="mb-3 text-center text-sm text-gray-500">
-        Card {currentIndex + 1} of {flashcards.length}
-      </p>
+      {/* Card counter + progress */}
+      <div className="mb-3 text-center">
+        <p className="text-sm text-gray-500">
+          Card {currentIndex + 1} of {flashcards.length}
+        </p>
+        {(gotItCount > 0 || stillLearningCount > 0) && (
+          <div className="mt-1 flex items-center justify-center gap-3 text-xs">
+            <span className="text-emerald-600">{gotItCount} Got It</span>
+            <span className="text-amber-600">{stillLearningCount} Still Learning</span>
+            <span className="text-gray-400">
+              {flashcards.length - gotItCount - stillLearningCount} remaining
+            </span>
+          </div>
+        )}
+      </div>
 
       {isEditing ? (
         /* Edit mode */
@@ -116,6 +145,16 @@ export default function FlashcardViewer({ flashcards, onEditCard }: FlashcardVie
             </button>
           )}
 
+          {/* Confidence indicator dot */}
+          {confidence[currentIndex] !== undefined && (
+            <div
+              className={`absolute left-2 top-2 z-10 h-3 w-3 rounded-full ${
+                confidence[currentIndex] ? "bg-emerald-400" : "bg-amber-400"
+              }`}
+              title={confidence[currentIndex] ? "Got It" : "Still Learning"}
+            />
+          )}
+
           <button
             type="button"
             onClick={() => setFlipped(!flipped)}
@@ -159,12 +198,35 @@ export default function FlashcardViewer({ flashcards, onEditCard }: FlashcardVie
                       Answer
                     </p>
                     <p className="text-base text-gray-800">{card.back}</p>
-                    <p className="mt-4 text-xs text-gray-400">Click to flip back</p>
                   </div>
                 </div>
               </div>
             </div>
           </button>
+
+          {/* Confidence buttons — shown when card is flipped */}
+          {flipped && (
+            <div className="mt-3 flex items-center justify-center gap-3">
+              <button
+                onClick={() => markConfidence(false)}
+                className="flex items-center gap-1.5 rounded-lg border-2 border-amber-300 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-100"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Still Learning
+              </button>
+              <button
+                onClick={() => markConfidence(true)}
+                className="flex items-center gap-1.5 rounded-lg border-2 border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-100"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Got It
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -174,17 +236,17 @@ export default function FlashcardViewer({ flashcards, onEditCard }: FlashcardVie
           onClick={goPrev}
           className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
         >
-          ← Previous
+          Previous
         </button>
         <button
           onClick={goNext}
           className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
         >
-          Next →
+          Next
         </button>
       </div>
 
-      {/* Progress dots */}
+      {/* Progress dots — colored by confidence */}
       <div className="mt-3 flex justify-center gap-1">
         {flashcards.map((_, i) => (
           <button
@@ -195,12 +257,55 @@ export default function FlashcardViewer({ flashcards, onEditCard }: FlashcardVie
               setCurrentIndex(i);
             }}
             className={`h-2 w-2 rounded-full transition-colors ${
-              i === currentIndex ? "bg-blue-500" : "bg-gray-300"
+              i === currentIndex
+                ? "bg-blue-500"
+                : confidence[i] === true
+                  ? "bg-emerald-400"
+                  : confidence[i] === false
+                    ? "bg-amber-400"
+                    : "bg-gray-300"
             }`}
             aria-label={`Go to card ${i + 1}`}
           />
         ))}
       </div>
+
+      {/* Reset button when all cards have been rated */}
+      {gotItCount + stillLearningCount === flashcards.length && (
+        <div className="mt-4 rounded-xl border border-gray-200 bg-white p-4 text-center">
+          <p className="text-sm font-medium text-gray-900">
+            You&apos;ve gone through all {flashcards.length} cards!
+          </p>
+          <p className="mt-1 text-sm text-gray-500">
+            <span className="text-emerald-600">{gotItCount} Got It</span>
+            {" · "}
+            <span className="text-amber-600">{stillLearningCount} Still Learning</span>
+          </p>
+          {stillLearningCount > 0 && (
+            <button
+              onClick={() => {
+                // Jump to first "still learning" card
+                const firstStillLearning = Object.entries(confidence).find(
+                  ([, v]) => v === false
+                );
+                if (firstStillLearning) {
+                  setCurrentIndex(Number(firstStillLearning[0]));
+                  setFlipped(false);
+                }
+              }}
+              className="mt-3 mr-2 rounded-lg bg-amber-500 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600"
+            >
+              Review Missed Cards
+            </button>
+          )}
+          <button
+            onClick={resetProgress}
+            className="mt-3 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+          >
+            Start Over
+          </button>
+        </div>
+      )}
     </div>
   );
 }
