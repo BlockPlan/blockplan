@@ -10,7 +10,9 @@ import {
   shareStudyHelpSession,
   unshareStudyHelpSession,
   regenerateStudyMaterial,
+  generateEli5ForSession,
 } from "@/app/study-help/actions";
+import type { SubscriptionPlan } from "@/lib/subscription";
 import StudyHelpResults from "@/app/study-help/_components/StudyHelpResults";
 import SessionEditor from "@/app/study-help/_components/SessionEditor";
 import ExportPdfModal from "@/app/study-help/_components/ExportPdfModal";
@@ -21,6 +23,7 @@ interface SessionDetailClientProps {
   data: StudyHelp;
   courseName?: string;
   shareToken: string | null;
+  userPlan?: SubscriptionPlan;
 }
 
 export default function SessionDetailClient({
@@ -29,6 +32,7 @@ export default function SessionDetailClient({
   data: initialData,
   courseName,
   shareToken: initialShareToken,
+  userPlan,
 }: SessionDetailClientProps) {
   const [data, setData] = useState(initialData);
   const [editing, setEditing] = useState(false);
@@ -91,6 +95,16 @@ export default function SessionDetailClient({
     },
     [sessionId]
   );
+
+  const handleGenerateEli5 = useCallback(async () => {
+    const result = await generateEli5ForSession(sessionId, courseName);
+    if (result.error) {
+      toast.error(result.error);
+      return;
+    }
+    toast.success("Simplified version generated!");
+    router.refresh();
+  }, [sessionId, courseName, router]);
 
   const handleRegenerate = useCallback(
     async (sections: RegeneratableSection[]) => {
@@ -208,6 +222,8 @@ export default function SessionDetailClient({
         sessionId={sessionId}
         onRegenerate={handleRegenerate}
         onEditFlashcard={handleEditFlashcard}
+        onGenerateEli5={handleGenerateEli5}
+        userPlan={userPlan}
       />
 
       {showExport && (

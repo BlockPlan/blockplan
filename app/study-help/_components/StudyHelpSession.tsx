@@ -9,6 +9,7 @@ import {
   type StudyHelpState,
 } from "../actions";
 import type { RegeneratableSection } from "@/lib/study-help/types";
+import type { SubscriptionPlan } from "@/lib/subscription";
 import FileUploader from "./FileUploader";
 import StudyHelpResults from "./StudyHelpResults";
 
@@ -20,11 +21,13 @@ interface Course {
 interface StudyHelpSessionProps {
   courses: Course[];
   initialCourseId?: string;
+  userPlan?: SubscriptionPlan;
 }
 
 export default function StudyHelpSession({
   courses,
   initialCourseId,
+  userPlan,
 }: StudyHelpSessionProps) {
   const [state, formAction, isPending] = useActionState<StudyHelpState, FormData>(
     generateStudyHelpAction,
@@ -256,6 +259,7 @@ export default function StudyHelpSession({
             sessionId={state.sessionId}
             onRegenerate={state.sessionId ? handleRegenerate : undefined}
             onEditFlashcard={state.sessionId ? handleEditFlashcard : undefined}
+            userPlan={userPlan}
           />
         </>
       )}

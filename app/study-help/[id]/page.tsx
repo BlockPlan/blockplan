@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import NavHeader from "@/app/plan/_components/NavHeader";
 import SessionDetailClient from "./_components/SessionDetailClient";
 import type { StudyHelp } from "@/lib/study-help/types";
+import { getUserPlan } from "@/lib/subscription";
 import Link from "next/link";
 
 export default async function StudyHelpSessionPage({
@@ -39,6 +40,8 @@ export default async function StudyHelpSessionPage({
     courseName = (course?.name as string) ?? undefined;
   }
 
+  const userPlan = await getUserPlan(user.id);
+
   return (
     <div className="page-bg">
       <NavHeader />
@@ -61,6 +64,7 @@ export default async function StudyHelpSessionPage({
           data={session.data as StudyHelp}
           courseName={courseName}
           shareToken={(session.share_token as string | null) ?? null}
+          userPlan={userPlan}
         />
       </main>
     </div>

@@ -11,6 +11,7 @@ import {
   DEFAULT_PLANNER_SETTINGS,
   type PlannerSettings,
 } from "@/lib/validations/planner";
+import { getUserPlan } from "@/lib/subscription";
 
 export const metadata: Metadata = {
   title: "Profile | BlockPlan",
@@ -39,6 +40,9 @@ export default async function ProfilePage() {
     ...DEFAULT_PLANNER_SETTINGS,
     ...((profile?.planner_settings as Partial<PlannerSettings>) ?? {}),
   };
+
+  const userPlan = await getUserPlan(user.id);
+  const planLabel = userPlan === "free" ? "Free" : userPlan === "pro" ? "Pro" : "MAX";
 
   return (
     <div className="page-bg">
@@ -91,11 +95,17 @@ export default async function ProfilePage() {
               <h3 className="text-lg font-semibold text-gray-900">Your Plan</h3>
               <p className="mt-1 text-sm text-gray-500">
                 You&apos;re currently on the{" "}
-                <span className="font-semibold text-gray-900">Free</span> plan
+                <span className="font-semibold text-gray-900">{planLabel}</span> plan
               </p>
             </div>
-            <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-600">
-              Free
+            <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${
+              userPlan === "free"
+                ? "border-gray-200 bg-gray-50 text-gray-600"
+                : userPlan === "pro"
+                  ? "border-purple-200 bg-purple-50 text-purple-700"
+                  : "border-blue-200 bg-blue-50 text-blue-700"
+            }`}>
+              {planLabel}
             </span>
           </div>
 

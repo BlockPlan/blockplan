@@ -13,6 +13,13 @@ export function getMockStudyHelp(): StudyHelp {
       "Key concept 4: Common applications and real-world examples of the material",
       "Key concept 5: Summary of major themes and takeaways from the content",
     ],
+    eli5Summary: [
+      "Think of the main topic like a big puzzle — this piece shows you the picture on the box",
+      "The subtopics are like ingredients in a recipe — they all work together to make something",
+      "Some important dates and numbers are like passwords — you need to memorize them",
+      "This stuff gets used in real life, like how math helps you split a pizza evenly",
+      "The big takeaway is like the moral of a story — the main lesson to remember",
+    ],
     keyTerms: [
       {
         term: "Sample Term 1",
@@ -25,6 +32,20 @@ export function getMockStudyHelp(): StudyHelp {
       {
         term: "Sample Term 3",
         definition: "A third example term with its corresponding definition for reference",
+      },
+    ],
+    eli5KeyTerms: [
+      {
+        term: "Sample Term 1",
+        definition: "It's like a label you put on a jar so you know what's inside",
+      },
+      {
+        term: "Sample Term 2",
+        definition: "Think of it like a buddy system — two things that always go together",
+      },
+      {
+        term: "Sample Term 3",
+        definition: "It's like the third leg on a stool — it keeps everything balanced",
       },
     ],
     flashcards: [
@@ -68,6 +89,50 @@ export function getMockStudyHelp(): StudyHelp {
         ],
         correctIndex: 0,
         explanation: "The material emphasizes that understanding fundamentals leads to better outcomes.",
+      },
+    ],
+    practiceProblems: [
+      {
+        question: "Calculate the total cost of 3 textbooks priced at $45, $62, and $38, with a 10% student discount applied to the total.",
+        difficulty: "easy",
+        steps: [
+          "Add up the individual textbook prices: $45 + $62 + $38 = $145",
+          "Calculate the 10% discount: $145 × 0.10 = $14.50",
+          "Subtract the discount from the total: $145 - $14.50 = $130.50",
+        ],
+        finalAnswer: "The total cost after the 10% student discount is $130.50.",
+      },
+      {
+        question: "A study found that students who use active recall retain 75% of material after 1 week, while passive readers retain 40%. If both groups start with 200 facts, how many more facts does the active recall group remember?",
+        difficulty: "medium",
+        steps: [
+          "Calculate facts retained by active recall group: 200 × 0.75 = 150 facts",
+          "Calculate facts retained by passive reading group: 200 × 0.40 = 80 facts",
+          "Find the difference: 150 - 80 = 70 facts",
+        ],
+        finalAnswer: "The active recall group remembers 70 more facts than the passive reading group.",
+      },
+      {
+        question: "Analyze the time complexity of a nested loop where the outer loop runs n times and the inner loop runs from 1 to i (where i is the outer loop variable). Express in Big-O notation.",
+        difficulty: "hard",
+        steps: [
+          "The outer loop runs n times (i = 1 to n)",
+          "For each iteration i, the inner loop runs i times",
+          "Total iterations = 1 + 2 + 3 + ... + n = n(n+1)/2",
+          "Expand: n(n+1)/2 = (n² + n)/2",
+          "In Big-O notation, we keep the dominant term: O(n²)",
+        ],
+        finalAnswer: "The time complexity is O(n²), which is quadratic.",
+      },
+      {
+        question: "Convert the binary number 11010110 to decimal.",
+        difficulty: "medium",
+        steps: [
+          "Write out the place values from right to left: 1, 2, 4, 8, 16, 32, 64, 128",
+          "Multiply each digit by its place value: (1×128) + (1×64) + (0×32) + (1×16) + (0×8) + (1×4) + (1×2) + (0×1)",
+          "Calculate: 128 + 64 + 0 + 16 + 0 + 4 + 2 + 0 = 214",
+        ],
+        finalAnswer: "The binary number 11010110 equals 214 in decimal.",
       },
     ],
     practiceTest: [

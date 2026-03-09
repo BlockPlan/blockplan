@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { generateStudyHelp, regenerateStudyHelp, type ContentPart } from "@/lib/study-help/generate";
+import { generateStudyHelp, regenerateStudyHelp, generateEli5, type ContentPart } from "@/lib/study-help/generate";
 import {
   extractTextFromPdf,
   extractTextFromPptx,
@@ -383,6 +383,61 @@ export async function unshareStudyHelpSession(
 // ---------------------------------------------------------------------------
 // Delete a saved study help session
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Generate ELI5 (Explain Like I'm 5) for an existing session
+// ---------------------------------------------------------------------------
+
+export async function generateEli5ForSession(
+  sessionId: string,
+  courseName?: string
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const { data: session } = await supabase
+    .from("study_help_sessions")
+    .select("data")
+    .eq("id", sessionId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!session) return { error: "Session not found." };
+
+  const existingData = session.data as StudyHelp;
+
+  if (existingData.summary.length === 0) {
+    return { error: "No summary available to simplify." };
+  }
+
+  try {
+    const { eli5Summary, eli5KeyTerms } = await generateEli5(
+      existingData.summary,
+      existingData.keyTerms,
+      courseName
+    );
+
+    const merged: StudyHelp = { ...existingData, eli5Summary, eli5KeyTerms };
+
+    const { error } = await supabase
+      .from("study_help_sessions")
+      .update({ data: merged })
+      .eq("id", sessionId)
+      .eq("user_id", user.id);
+
+    if (error) return { error: "Failed to save simplified content." };
+
+    revalidatePath(`/study-help/${sessionId}`);
+    return {};
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    return { error: errMsg };
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Flashcard spaced-repetition helpers

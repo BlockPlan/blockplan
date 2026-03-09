@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { generateText, Output, NoObjectGeneratedError } from "ai";
 import { openai } from "@ai-sdk/openai";
 import {
@@ -64,6 +65,9 @@ export async function generateStudyHelp(
     "3. flashcards: 10-15 flashcards with front (question/term) and back (answer/definition). Each flashcard should test a specific fact, concept, or definition from the material.",
     "4. quiz: 8-12 multiple-choice questions, each with exactly 4 options, correctIndex (0-3), and a brief explanation of why the answer is correct. Questions should test understanding of the actual content.",
     "5. practiceTest: 6-10 open-ended questions mixing recall, conceptual, and application types, each with a suggestedAnswer",
+    "6. practiceProblems: 4-6 step-by-step problems with varying difficulty (easy, medium, hard). Each problem should have a question, a difficulty level, an array of solution steps that walk through the problem, and a finalAnswer. Focus on problems that require calculation, analysis, or multi-step reasoning.",
+    "7. eli5Summary: Rewrite each summary bullet point in extremely simple language using everyday analogies, as if explaining to someone with no background. Make it fun and relatable.",
+    "8. eli5KeyTerms: For each key term, provide a simplified definition using everyday analogies and simple language a child could understand.",
   ].join("\n");
 
   // Truncate text parts to stay within context limits, keep image parts as-is
@@ -145,6 +149,11 @@ export async function regenerateStudyHelp(
       existingQuestions.push(`Practice: ${q.question}`)
     );
   }
+  if (sections.includes("practiceProblems")) {
+    (existingData.practiceProblems ?? []).forEach((p) =>
+      existingQuestions.push(`Problem: ${p.question}`)
+    );
+  }
 
   const sectionInstructions: string[] = [];
   if (sections.includes("flashcards")) {
@@ -160,6 +169,11 @@ export async function regenerateStudyHelp(
   if (sections.includes("practiceTest")) {
     sectionInstructions.push(
       "practiceTest: 6-10 NEW open-ended questions mixing recall, conceptual, and application types, each with a suggestedAnswer"
+    );
+  }
+  if (sections.includes("practiceProblems")) {
+    sectionInstructions.push(
+      "practiceProblems: 4-6 NEW step-by-step problems with varying difficulty (easy, medium, hard), each with solution steps and finalAnswer"
     );
   }
 
@@ -213,5 +227,64 @@ export async function regenerateStudyHelp(
     const partial: Partial<StudyHelp> = {};
     for (const s of sections) partial[s] = mock[s] as never;
     return { data: partial, isMock: true };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Generate ELI5 (Explain Like I'm 5) versions for existing sessions
+// ---------------------------------------------------------------------------
+
+const eli5Schema = z.object({
+  eli5Summary: z.array(z.string()),
+  eli5KeyTerms: z.array(z.object({ term: z.string(), definition: z.string() })),
+});
+
+export async function generateEli5(
+  summary: string[],
+  keyTerms: { term: string; definition: string }[],
+  courseName?: string
+): Promise<{ eli5Summary: string[]; eli5KeyTerms: { term: string; definition: string }[] }> {
+  if (!process.env.OPENAI_API_KEY) {
+    return {
+      eli5Summary: summary.map((s) => `Simple version: ${s}`),
+      eli5KeyTerms: keyTerms.map((kt) => ({ term: kt.term, definition: `Simply put: ${kt.definition}` })),
+    };
+  }
+
+  const courseContext = courseName ? `Course: ${courseName}. ` : "";
+
+  const systemMessage = [
+    "You are a friendly tutor who explains complex topics in the simplest possible way.",
+    courseContext,
+    "Rewrite the provided summary and key terms using:",
+    "- Everyday language a 10-year-old could understand",
+    "- Fun analogies and relatable examples",
+    "- Short sentences, no jargon",
+    "- Keep the same number of items as the original",
+  ].join("\n");
+
+  const userMessage = [
+    "## Summary to simplify:\n" + summary.map((s, i) => `${i + 1}. ${s}`).join("\n"),
+    "\n## Key Terms to simplify:\n" + keyTerms.map((kt) => `- ${kt.term}: ${kt.definition}`).join("\n"),
+  ].join("\n");
+
+  try {
+    const { experimental_output } = await generateText({
+      model: openai("gpt-4o-mini"),
+      experimental_output: Output.object({ schema: eli5Schema }),
+      messages: [
+        { role: "system", content: systemMessage },
+        { role: "user", content: userMessage },
+      ],
+    });
+
+    if (!experimental_output) {
+      throw new Error("Failed to generate simplified content.");
+    }
+
+    return experimental_output;
+  } catch (err) {
+    console.error("[generateEli5] Error:", err);
+    throw new Error("Failed to generate simplified explanations. Please try again.");
   }
 }

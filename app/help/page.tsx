@@ -129,6 +129,52 @@ const sections = [
     ],
   },
   {
+    title: "Practice Problems",
+    icon: "🧮",
+    description:
+      "Step-by-step practice problems with progressive reveal — perfect for STEM courses and multi-step reasoning.",
+    steps: [
+      'When you generate study materials, a "Practice Problems" tab appears alongside your other study aids.',
+      "Each problem has a difficulty badge (Easy, Medium, or Hard) so you can challenge yourself progressively.",
+      'Click "Show First Step" to reveal the first step of the solution.',
+      "Continue clicking to reveal each subsequent step one at a time — try solving it yourself before peeking!",
+      "After all steps are revealed, the final answer is shown.",
+      'Click "Hide Steps" to reset and try the problem again from scratch.',
+      'Use the "New Problems" button to generate a fresh set of problems on the same material.',
+      "Practice problems focus on calculation, analysis, and multi-step reasoning skills.",
+    ],
+  },
+  {
+    title: "Simplify It (ELI5 Mode)",
+    icon: "💡",
+    description:
+      "Struggling with complex concepts? Toggle simplified explanations that use everyday analogies and simple language.",
+    steps: [
+      'In the Summary or Key Terms tab, click the "Simplify It" button in the top-right corner.',
+      "The content switches to a simplified version using everyday language and fun analogies.",
+      'Click "Show Original" to switch back to the full academic version at any time.',
+      "For new study sessions, simplified versions are generated automatically.",
+      'For older sessions that don\'t have simplified content yet, clicking "Simplify It" will generate it on demand.',
+      "Simplified summaries are shown with purple bullet points to distinguish them from the originals.",
+      "This feature is free for all users and works on any study session.",
+    ],
+  },
+  {
+    title: "AI Tutor Chat",
+    icon: "💬",
+    description:
+      "Have an interactive conversation with an AI tutor about your study material. Ask follow-up questions, request different explanations, or quiz yourself.",
+    steps: [
+      'The "AI Tutor" tab appears in every study session.',
+      "The AI tutor has full context of your study session — it knows your summary, key terms, and material.",
+      "Type a question and hit Send to start a conversation.",
+      "Ask for different explanations, real-world examples, or to quiz you on specific concepts.",
+      "Your chat history is saved — come back later and continue where you left off.",
+      "AI Tutor Chat is available on Pro and MAX plans. Free users will see an upgrade prompt.",
+      'To upgrade, visit the Pricing page from the "AI Tutor" tab or your Profile.',
+    ],
+  },
+  {
     title: "Create & Edit Flashcards / Quizzes",
     icon: "✏️",
     description:

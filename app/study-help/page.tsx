@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import NavHeader from "@/app/plan/_components/NavHeader";
 import StudyHelpSession from "./_components/StudyHelpSession";
+import { getUserPlan } from "@/lib/subscription";
 
 export const metadata: Metadata = {
   title: "Study Help | BlockPlan",
@@ -32,6 +33,8 @@ export default async function StudyHelpPage({
     .eq("user_id", user.id)
     .order("name", { ascending: true });
 
+  const userPlan = await getUserPlan(user.id);
+
   return (
     <div className="page-bg">
       <NavHeader />
@@ -39,6 +42,7 @@ export default async function StudyHelpPage({
         <StudyHelpSession
           courses={courses ?? []}
           initialCourseId={params.course_id}
+          userPlan={userPlan}
         />
       </main>
     </div>
