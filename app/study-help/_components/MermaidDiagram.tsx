@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function MermaidDiagram({
   code,
@@ -9,7 +9,7 @@ export default function MermaidDiagram({
   code: string;
   id: string;
 }) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [svgContent, setSvgContent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -20,6 +20,7 @@ export default function MermaidDiagram({
       try {
         setLoading(true);
         setError(null);
+        setSvgContent(null);
 
         const mermaid = (await import("mermaid")).default;
         mermaid.initialize({
@@ -32,8 +33,8 @@ export default function MermaidDiagram({
 
         const { svg } = await mermaid.render(`mermaid-${id}`, code);
 
-        if (cancelled || !containerRef.current) return;
-        containerRef.current.innerHTML = svg;
+        if (cancelled) return;
+        setSvgContent(svg);
       } catch (err) {
         if (!cancelled) {
           setError(
@@ -99,10 +100,12 @@ export default function MermaidDiagram({
     );
   }
 
+  if (!svgContent) return null;
+
   return (
     <div
-      ref={containerRef}
       className="overflow-auto rounded-lg border border-gray-200 bg-white p-4 [&_svg]:mx-auto [&_svg]:max-w-full"
+      dangerouslySetInnerHTML={{ __html: svgContent }}
     />
   );
 }
