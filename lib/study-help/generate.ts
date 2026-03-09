@@ -288,3 +288,136 @@ export async function generateEli5(
     throw new Error("Failed to generate simplified explanations. Please try again.");
   }
 }
+
+// ---------------------------------------------------------------------------
+// Generate Mermaid.js diagrams from study material
+// ---------------------------------------------------------------------------
+
+const diagramSchema = z.object({
+  diagrams: z.array(
+    z.object({
+      type: z.enum(["mindmap", "flowchart", "conceptMap"]),
+      title: z.string(),
+      mermaidCode: z.string(),
+    })
+  ),
+});
+
+type DiagramTypeKey = "mindmap" | "flowchart" | "conceptMap";
+
+export async function generateDiagrams(
+  summary: string[],
+  keyTerms: { term: string; definition: string }[],
+  diagramType: DiagramTypeKey,
+  courseName?: string
+): Promise<{ diagrams: { type: DiagramTypeKey; title: string; mermaidCode: string }[] }> {
+  if (!process.env.OPENAI_API_KEY) {
+    return { diagrams: [getMockDiagram(diagramType)] };
+  }
+
+  const courseContext = courseName ? `Course: ${courseName}. ` : "";
+
+  const typeInstructions: Record<DiagramTypeKey, string> = {
+    mindmap: [
+      "Generate a Mermaid.js mindmap diagram. Use the mindmap syntax.",
+      "The root node should be the main topic. Branch into subtopics from the summary.",
+      "Include key terms as leaf nodes where relevant.",
+      "Example syntax:\nmindmap\n  root((Main Topic))\n    Subtopic A\n      Detail 1\n      Detail 2\n    Subtopic B",
+    ].join(" "),
+    flowchart: [
+      "Generate a Mermaid.js flowchart using 'graph TD' (top-down).",
+      "Connect related concepts with labeled arrows showing how ideas flow logically.",
+      "Use summary points as major nodes and key terms as supporting nodes.",
+    ].join(" "),
+    conceptMap: [
+      "Generate a Mermaid.js flowchart using 'graph LR' (left-right) styled as a concept map.",
+      "Show relationships between key terms using labeled edges.",
+      "Group related concepts together. Focus on how terms relate to each other.",
+    ].join(" "),
+  };
+
+  const systemMessage = [
+    "You are a visual learning aid generator for college students.",
+    courseContext,
+    "Generate a visual diagram in valid Mermaid.js syntax from the provided summary and key terms.",
+    "",
+    typeInstructions[diagramType],
+    "",
+    "CRITICAL RULES for valid Mermaid syntax:",
+    "- Do NOT use special characters like parentheses, colons, semicolons, or quotes inside node labels unless properly escaped",
+    "- For flowchart/graph nodes, wrap labels in square brackets: A[Label Text]",
+    "- For mindmap, use plain indented text (no brackets needed for child nodes)",
+    "- Keep labels concise (under 50 chars)",
+    "- Use simple alphanumeric node IDs (A, B, C or n1, n2, n3)",
+    "- Do NOT include ```mermaid or ``` wrapper — return raw Mermaid syntax only",
+    "- Ensure the diagram has 8-15 nodes for good visual density",
+  ].join("\n");
+
+  const userMessage = [
+    "## Summary\n- " + summary.join("\n- "),
+    "\n## Key Terms\n" + keyTerms.map((kt) => `${kt.term}: ${kt.definition}`).join("\n"),
+  ].join("\n");
+
+  try {
+    const { experimental_output } = await generateText({
+      model: openai("gpt-4o-mini"),
+      experimental_output: Output.object({ schema: diagramSchema }),
+      messages: [
+        { role: "system", content: systemMessage },
+        { role: "user", content: userMessage },
+      ],
+    });
+
+    if (!experimental_output) {
+      throw new Error("Failed to generate diagram.");
+    }
+
+    return experimental_output as { diagrams: { type: DiagramTypeKey; title: string; mermaidCode: string }[] };
+  } catch (err) {
+    console.error("[generateDiagrams] Error:", err);
+    throw new Error("Failed to generate diagram. Please try again.");
+  }
+}
+
+function getMockDiagram(type: DiagramTypeKey): { type: DiagramTypeKey; title: string; mermaidCode: string } {
+  const mocks: Record<DiagramTypeKey, { type: DiagramTypeKey; title: string; mermaidCode: string }> = {
+    mindmap: {
+      type: "mindmap",
+      title: "Topic Overview",
+      mermaidCode: `mindmap
+  root((Main Topic))
+    Concept A
+      Detail 1
+      Detail 2
+    Concept B
+      Detail 3
+      Detail 4
+    Concept C
+      Detail 5`,
+    },
+    flowchart: {
+      type: "flowchart",
+      title: "Concept Flow",
+      mermaidCode: `graph TD
+    A[Main Concept] --> B[Sub Concept 1]
+    A --> C[Sub Concept 2]
+    B --> D[Detail 1]
+    B --> E[Detail 2]
+    C --> F[Detail 3]
+    D --> G[Conclusion]
+    E --> G
+    F --> G`,
+    },
+    conceptMap: {
+      type: "conceptMap",
+      title: "Concept Relationships",
+      mermaidCode: `graph LR
+    A[Term 1] -->|relates to| B[Term 2]
+    B -->|depends on| C[Term 3]
+    A -->|contrasts with| C
+    C -->|leads to| D[Term 4]
+    D -->|supports| A`,
+    },
+  };
+  return mocks[type];
+}

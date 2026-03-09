@@ -55,6 +55,14 @@ export const studyHelpSchema = z.object({
       finalAnswer: z.string(),
     })
   ).describe("4-6 step-by-step practice problems with varying difficulty").optional(),
+
+  diagrams: z.array(
+    z.object({
+      type: z.enum(["mindmap", "flowchart", "conceptMap"]),
+      title: z.string().describe("Short descriptive title for the diagram"),
+      mermaidCode: z.string().describe("Valid Mermaid.js syntax for the diagram"),
+    })
+  ).describe("Visual diagrams in Mermaid.js syntax").optional(),
 });
 
 // Inferred TypeScript types
@@ -63,6 +71,8 @@ export type Flashcard = StudyHelp["flashcards"][number];
 export type MultipleChoice = StudyHelp["quiz"][number];
 export type PracticeTestQuestion = StudyHelp["practiceTest"][number];
 export type PracticeProblem = NonNullable<StudyHelp["practiceProblems"]>[number];
+export type Diagram = NonNullable<StudyHelp["diagrams"]>[number];
+export type DiagramType = Diagram["type"];
 
 // ---------------------------------------------------------------------------
 // Partial schema for regenerating specific sections only

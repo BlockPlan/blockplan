@@ -11,7 +11,9 @@ import {
   unshareStudyHelpSession,
   regenerateStudyMaterial,
   generateEli5ForSession,
+  generateDiagramsForSession,
 } from "@/app/study-help/actions";
+import type { DiagramType } from "@/lib/study-help/types";
 import type { SubscriptionPlan } from "@/lib/subscription";
 import StudyHelpResults from "@/app/study-help/_components/StudyHelpResults";
 import SessionEditor from "@/app/study-help/_components/SessionEditor";
@@ -105,6 +107,19 @@ export default function SessionDetailClient({
     toast.success("Simplified version generated!");
     router.refresh();
   }, [sessionId, courseName, router]);
+
+  const handleGenerateDiagram = useCallback(
+    async (diagramType: DiagramType) => {
+      const result = await generateDiagramsForSession(sessionId, diagramType, courseName);
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Diagram generated!");
+      router.refresh();
+    },
+    [sessionId, courseName, router]
+  );
 
   const handleRegenerate = useCallback(
     async (sections: RegeneratableSection[]) => {
@@ -223,6 +238,7 @@ export default function SessionDetailClient({
         onRegenerate={handleRegenerate}
         onEditFlashcard={handleEditFlashcard}
         onGenerateEli5={handleGenerateEli5}
+        onGenerateDiagram={handleGenerateDiagram}
         userPlan={userPlan}
       />
 

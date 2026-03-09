@@ -6,9 +6,10 @@ import {
   generateStudyHelpAction,
   regenerateStudyMaterial,
   updateStudyHelpData,
+  generateDiagramsForSession,
   type StudyHelpState,
 } from "../actions";
-import type { RegeneratableSection } from "@/lib/study-help/types";
+import type { RegeneratableSection, DiagramType } from "@/lib/study-help/types";
 import type { SubscriptionPlan } from "@/lib/subscription";
 import FileUploader from "./FileUploader";
 import StudyHelpResults from "./StudyHelpResults";
@@ -68,6 +69,21 @@ export default function StudyHelpSession({
       );
     },
     [state.sessionId, displayData]
+  );
+
+  const handleGenerateDiagram = useCallback(
+    async (diagramType: DiagramType) => {
+      if (!state.sessionId) return;
+      const result = await generateDiagramsForSession(state.sessionId, diagramType, state.courseName);
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Diagram generated!");
+      // Refresh data from server
+      window.location.reload();
+    },
+    [state.sessionId, state.courseName]
   );
 
   const handleRegenerate = useCallback(
@@ -259,6 +275,7 @@ export default function StudyHelpSession({
             sessionId={state.sessionId}
             onRegenerate={state.sessionId ? handleRegenerate : undefined}
             onEditFlashcard={state.sessionId ? handleEditFlashcard : undefined}
+            onGenerateDiagram={state.sessionId ? handleGenerateDiagram : undefined}
             userPlan={userPlan}
           />
         </>

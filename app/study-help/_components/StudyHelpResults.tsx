@@ -8,9 +8,11 @@ import FlashcardStudyMode from "./FlashcardStudyMode";
 import QuizViewer from "./QuizViewer";
 import PracticeTestViewer from "./PracticeTestViewer";
 import PracticeProblemsViewer from "./PracticeProblemsViewer";
+import DiagramViewer from "./DiagramViewer";
 import TutorChat from "./TutorChat";
 import TutorUpgradePrompt from "./TutorUpgradePrompt";
 import type { SubscriptionPlan } from "@/lib/subscription";
+import type { DiagramType } from "@/lib/study-help/types";
 
 const TABS = [
   { key: "summary", label: "Summary" },
@@ -19,6 +21,7 @@ const TABS = [
   { key: "quiz", label: "Quiz" },
   { key: "practiceTest", label: "Practice Test" },
   { key: "practiceProblems", label: "Practice Problems" },
+  { key: "visualize", label: "Visualize" },
   { key: "tutor", label: "AI Tutor" },
 ] as const;
 
@@ -31,6 +34,7 @@ export default function StudyHelpResults({
   onRegenerate,
   onEditFlashcard,
   onGenerateEli5,
+  onGenerateDiagram,
   userPlan,
 }: {
   data: StudyHelp;
@@ -39,6 +43,7 @@ export default function StudyHelpResults({
   onRegenerate?: (sections: RegeneratableSection[]) => Promise<void>;
   onEditFlashcard?: (index: number, front: string, back: string) => void;
   onGenerateEli5?: () => Promise<void>;
+  onGenerateDiagram?: (type: DiagramType) => Promise<void>;
   userPlan?: SubscriptionPlan;
 }) {
   const [activeTab, setActiveTab] = useState<TabKey>("summary");
@@ -46,6 +51,7 @@ export default function StudyHelpResults({
   const [eli5Mode, setEli5Mode] = useState(false);
   const [generatingEli5, setGeneratingEli5] = useState(false);
   const [regeneratingSection, setRegeneratingSection] = useState<RegeneratableSection | null>(null);
+  const [generatingDiagram, setGeneratingDiagram] = useState(false);
 
   const hasEli5 = !!(data.eli5Summary && data.eli5Summary.length > 0);
 
@@ -67,6 +73,16 @@ export default function StudyHelpResults({
       } finally {
         setGeneratingEli5(false);
       }
+    }
+  };
+
+  const handleGenerateDiagram = async (type: DiagramType) => {
+    if (!onGenerateDiagram || generatingDiagram) return;
+    setGeneratingDiagram(true);
+    try {
+      await onGenerateDiagram(type);
+    } finally {
+      setGeneratingDiagram(false);
     }
   };
 
@@ -377,6 +393,22 @@ export default function StudyHelpResults({
                 </p>
               </div>
             )}
+          </div>
+        )}
+
+        {activeTab === "visualize" && (
+          <div>
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Visual Diagrams</h2>
+              <p className="text-sm text-gray-500">
+                AI-generated concept maps, flowcharts, and mind maps from your study material
+              </p>
+            </div>
+            <DiagramViewer
+              diagrams={data.diagrams ?? []}
+              onGenerate={onGenerateDiagram ? handleGenerateDiagram : undefined}
+              isGenerating={generatingDiagram}
+            />
           </div>
         )}
 

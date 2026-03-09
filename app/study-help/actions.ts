@@ -1,13 +1,13 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { generateStudyHelp, regenerateStudyHelp, generateEli5, type ContentPart } from "@/lib/study-help/generate";
+import { generateStudyHelp, regenerateStudyHelp, generateEli5, generateDiagrams, type ContentPart } from "@/lib/study-help/generate";
 import {
   extractTextFromPdf,
   extractTextFromPptx,
   imageToBase64,
 } from "@/lib/study-help/extract";
-import type { StudyHelp, RegeneratableSection } from "@/lib/study-help/types";
+import type { StudyHelp, RegeneratableSection, DiagramType } from "@/lib/study-help/types";
 import { revalidatePath } from "next/cache";
 import crypto from "crypto";
 
@@ -430,6 +430,69 @@ export async function generateEli5ForSession(
       .eq("user_id", user.id);
 
     if (error) return { error: "Failed to save simplified content." };
+
+    revalidatePath(`/study-help/${sessionId}`);
+    return {};
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    return { error: errMsg };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Generate Mermaid.js diagrams for an existing session
+// ---------------------------------------------------------------------------
+
+export async function generateDiagramsForSession(
+  sessionId: string,
+  diagramType: DiagramType,
+  courseName?: string
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const { data: session } = await supabase
+    .from("study_help_sessions")
+    .select("data")
+    .eq("id", sessionId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!session) return { error: "Session not found." };
+
+  const existingData = session.data as StudyHelp;
+
+  if (existingData.summary.length === 0) {
+    return { error: "No summary available to visualize." };
+  }
+
+  try {
+    const { diagrams: newDiagrams } = await generateDiagrams(
+      existingData.summary,
+      existingData.keyTerms,
+      diagramType,
+      courseName
+    );
+
+    // Merge: replace diagram of this type, keep others
+    const existingDiagrams = existingData.diagrams ?? [];
+    const otherDiagrams = existingDiagrams.filter((d) => d.type !== diagramType);
+    const merged: StudyHelp = {
+      ...existingData,
+      diagrams: [...otherDiagrams, ...newDiagrams],
+    };
+
+    const { error } = await supabase
+      .from("study_help_sessions")
+      .update({ data: merged })
+      .eq("id", sessionId)
+      .eq("user_id", user.id);
+
+    if (error) return { error: "Failed to save diagram." };
 
     revalidatePath(`/study-help/${sessionId}`);
     return {};
