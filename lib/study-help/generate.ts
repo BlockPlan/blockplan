@@ -372,7 +372,12 @@ export async function generateDiagrams(
       throw new Error("Failed to generate diagram.");
     }
 
-    return experimental_output as { diagrams: { type: DiagramTypeKey; title: string; mermaidCode: string }[] };
+    // Override the type field — OpenAI may return the wrong enum value
+    // (e.g. "flowchart" for a conceptMap since the prompt says "graph LR")
+    const output = experimental_output as { diagrams: { type: DiagramTypeKey; title: string; mermaidCode: string }[] };
+    return {
+      diagrams: output.diagrams.map((d) => ({ ...d, type: diagramType })),
+    };
   } catch (err) {
     console.error("[generateDiagrams] Error:", err);
     throw new Error("Failed to generate diagram. Please try again.");
