@@ -2,6 +2,37 @@
 
 import { useEffect, useState } from "react";
 
+/**
+ * Sanitize Mermaid code to fix common AI-generated syntax issues.
+ * Parentheses in node labels are the most frequent problem — Mermaid
+ * interprets them as node shape syntax (e.g. `(label)` = rounded node).
+ */
+function sanitizeMermaidCode(code: string): string {
+  const lines = code.split("\n");
+  const isMindmap = lines[0]?.trim() === "mindmap";
+
+  if (isMindmap) {
+    // For mindmap: only the root node uses (( )), all other lines are plain text
+    return lines
+      .map((line, i) => {
+        // Keep first line ("mindmap") and root node line as-is
+        if (i === 0) return line;
+        const trimmed = line.trimStart();
+        if (trimmed.startsWith("root((") || trimmed.startsWith("root(")) return line;
+        // Strip parentheses and their content or replace with dashes
+        // "Go-To-Market (GTM) Strategy" → "Go-To-Market GTM Strategy"
+        return line.replace(/[()]/g, "");
+      })
+      .join("\n");
+  }
+
+  // For flowchart/graph: parentheses inside [...] labels break parsing
+  // Replace ( and ) inside bracket labels with dashes
+  return code.replace(/\[([^\]]*)\]/g, (match, label: string) => {
+    return "[" + label.replace(/[()]/g, "") + "]";
+  });
+}
+
 export default function MermaidDiagram({
   code,
   id,
@@ -31,7 +62,8 @@ export default function MermaidDiagram({
 
         if (cancelled) return;
 
-        const { svg } = await mermaid.render(`mermaid-${id}`, code);
+        const sanitized = sanitizeMermaidCode(code);
+        const { svg } = await mermaid.render(`mermaid-${id}`, sanitized);
 
         if (cancelled) return;
         setSvgContent(svg);

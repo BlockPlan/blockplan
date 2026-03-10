@@ -344,13 +344,16 @@ export async function generateDiagrams(
     typeInstructions[diagramType],
     "",
     "CRITICAL RULES for valid Mermaid syntax:",
-    "- Do NOT use special characters like parentheses, colons, semicolons, or quotes inside node labels unless properly escaped",
-    "- For flowchart/graph nodes, wrap labels in square brackets: A[Label Text]",
-    "- For mindmap, use plain indented text (no brackets needed for child nodes)",
-    "- Keep labels concise (under 50 chars)",
+    "- NEVER use parentheses () in ANY node label text — they break Mermaid parsing. Write 'GTM' not '(GTM)', write 'eg sales' not '(e.g. sales)'",
+    "- NEVER use square brackets [], curly braces {}, angle brackets <>, colons :, semicolons ;, or quotes in node labels",
+    "- For flowchart/graph nodes, wrap labels in square brackets: A[Label Text Here]",
+    "- For mindmap child nodes, use plain indented text only — NO brackets, NO parentheses, NO special punctuation",
+    "- The ONLY place parentheses are allowed is the root node: root((Topic Name))",
+    "- Keep labels concise (under 40 chars), use plain words only",
     "- Use simple alphanumeric node IDs (A, B, C or n1, n2, n3)",
     "- Do NOT include ```mermaid or ``` wrapper — return raw Mermaid syntax only",
     "- Ensure the diagram has 8-15 nodes for good visual density",
+    "- If an acronym has parentheses like 'GTM (Go-To-Market)', write it as 'GTM - Go To Market' instead",
   ].join("\n");
 
   const userMessage = [
