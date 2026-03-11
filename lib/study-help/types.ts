@@ -70,9 +70,9 @@ export const studyHelpSchema = studyHelpGenerationSchema.extend({
   })).optional(),
   diagrams: z.array(
     z.object({
-      type: z.enum(["mindmap", "flowchart", "conceptMap"]),
+      type: z.enum(["mindmap", "flowchart", "conceptMap", "infographic"]),
       title: z.string().describe("Short descriptive title for the diagram"),
-      mermaidCode: z.string().describe("Valid Mermaid.js syntax for the diagram"),
+      mermaidCode: z.string().describe("Valid Mermaid.js syntax or JSON content for the diagram"),
     })
   ).optional(),
 });

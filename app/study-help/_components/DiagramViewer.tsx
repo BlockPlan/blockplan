@@ -3,8 +3,10 @@
 import { useState } from "react";
 import type { Diagram, DiagramType } from "@/lib/study-help/types";
 import MermaidDiagram from "./MermaidDiagram";
+import InfographicView from "./InfographicView";
 
 const DIAGRAM_TYPES: { key: DiagramType; label: string }[] = [
+  { key: "infographic", label: "Study Guide" },
   { key: "mindmap", label: "Mind Map" },
   { key: "flowchart", label: "Flowchart" },
   { key: "conceptMap", label: "Concept Map" },
@@ -19,7 +21,7 @@ export default function DiagramViewer({
   onGenerate?: (type: DiagramType) => Promise<void>;
   isGenerating?: boolean;
 }) {
-  const [selectedType, setSelectedType] = useState<DiagramType>("mindmap");
+  const [selectedType, setSelectedType] = useState<DiagramType>("infographic");
 
   const currentDiagram = diagrams.find((d) => d.type === selectedType);
 
@@ -66,10 +68,14 @@ export default function DiagramViewer({
               </button>
             )}
           </div>
-          <MermaidDiagram
-            code={currentDiagram.mermaidCode}
-            id={`${currentDiagram.type}-${Date.now()}`}
-          />
+          {currentDiagram.type === "infographic" ? (
+            <InfographicView json={currentDiagram.mermaidCode} />
+          ) : (
+            <MermaidDiagram
+              code={currentDiagram.mermaidCode}
+              id={`${currentDiagram.type}-${Date.now()}`}
+            />
+          )}
         </div>
       ) : (
         <div className="rounded-xl border border-gray-200 bg-white p-8 text-center">
@@ -94,7 +100,9 @@ export default function DiagramViewer({
             generated yet
           </p>
           <p className="mt-1 text-xs text-gray-500">
-            AI will create a visual diagram from your study material
+            {selectedType === "infographic"
+              ? "AI will create a colorful visual study guide from your material"
+              : "AI will create a visual diagram from your study material"}
           </p>
           {onGenerate && (
             <button

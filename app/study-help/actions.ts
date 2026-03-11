@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { generateStudyHelp, regenerateStudyHelp, generateEli5, generateDiagrams, type ContentPart } from "@/lib/study-help/generate";
+import { generateStudyHelp, regenerateStudyHelp, generateEli5, generateDiagrams, generateInfographic, type ContentPart } from "@/lib/study-help/generate";
 import {
   extractTextFromPdf,
   extractTextFromPptx,
@@ -471,12 +471,18 @@ export async function generateDiagramsForSession(
   }
 
   try {
-    const { diagrams: newDiagrams } = await generateDiagrams(
-      existingData.summary,
-      existingData.keyTerms,
-      diagramType,
-      courseName
-    );
+    const { diagrams: newDiagrams } = diagramType === "infographic"
+      ? await generateInfographic(
+          existingData.summary,
+          existingData.keyTerms,
+          courseName
+        )
+      : await generateDiagrams(
+          existingData.summary,
+          existingData.keyTerms,
+          diagramType,
+          courseName
+        );
 
     // Merge: replace diagram of this type, keep others
     const existingDiagrams = existingData.diagrams ?? [];

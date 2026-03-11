@@ -387,6 +387,137 @@ export async function generateDiagrams(
   }
 }
 
+// ---------------------------------------------------------------------------
+// Generate infographic (Visual Study Guide) from study material
+// ---------------------------------------------------------------------------
+
+const infographicContentSchema = z.object({
+  title: z.string().describe("Main title for the study guide"),
+  subtitle: z.string().describe("Brief subtitle or tagline"),
+  colorTheme: z.string().describe("Primary color theme name: blue, green, purple, orange, red, teal, pink, or amber"),
+  sections: z.array(
+    z.object({
+      title: z.string().describe("Section heading"),
+      icon: z.string().describe("Single emoji representing this section"),
+      color: z.string().describe("Color name: blue, green, purple, orange, red, teal, pink, or amber"),
+      points: z.array(z.string()).describe("3-5 key points for this section"),
+      highlight: z.string().describe("One important takeaway or fact to emphasize in this section"),
+    })
+  ).describe("3-6 main content sections"),
+  keyTakeaway: z.string().describe("The single most important takeaway from all the material"),
+  quickFacts: z.array(
+    z.object({
+      label: z.string().describe("Short label like 'Key Concept' or 'Remember'"),
+      value: z.string().describe("The fact or value to highlight"),
+    })
+  ).describe("3-5 quick facts or statistics to display prominently"),
+});
+
+export type InfographicContent = z.infer<typeof infographicContentSchema>;
+
+export async function generateInfographic(
+  summary: string[],
+  keyTerms: { term: string; definition: string }[],
+  courseName?: string
+): Promise<{ diagrams: { type: "infographic"; title: string; mermaidCode: string }[] }> {
+  if (!process.env.OPENAI_API_KEY) {
+    return { diagrams: [getMockInfographic()] };
+  }
+
+  const courseContext = courseName ? `Course: ${courseName}. ` : "";
+
+  const systemMessage = [
+    "You are a visual study guide designer for college students.",
+    courseContext,
+    "Create an engaging, well-organized visual study guide from the provided summary and key terms.",
+    "",
+    "Design the content to be visually appealing when rendered as a colorful infographic:",
+    "- Choose a cohesive color theme that fits the subject matter",
+    "- Create 3-6 logical sections that group related concepts",
+    "- Each section should have an emoji icon, a distinct color, 3-5 bullet points, and one highlighted takeaway",
+    "- Include 3-5 quick facts (short label + value pairs) for at-a-glance review",
+    "- Write a single key takeaway that captures the most important idea",
+    "- Use clear, concise language optimized for studying",
+    "- Make section titles engaging and descriptive",
+    "",
+    "Available colors: blue, green, purple, orange, red, teal, pink, amber",
+    "Use different colors for different sections to create visual variety.",
+  ].join("\n");
+
+  const userMessage = [
+    "## Summary\n- " + summary.join("\n- "),
+    "\n## Key Terms\n" + keyTerms.map((kt) => `${kt.term}: ${kt.definition}`).join("\n"),
+  ].join("\n");
+
+  try {
+    const { experimental_output } = await generateText({
+      model: openai("gpt-4o-mini"),
+      experimental_output: Output.object({ schema: infographicContentSchema }),
+      messages: [
+        { role: "system", content: systemMessage },
+        { role: "user", content: userMessage },
+      ],
+    });
+
+    if (!experimental_output) {
+      throw new Error("Failed to generate study guide.");
+    }
+
+    return {
+      diagrams: [{
+        type: "infographic" as const,
+        title: experimental_output.title,
+        mermaidCode: JSON.stringify(experimental_output),
+      }],
+    };
+  } catch (err) {
+    console.error("[generateInfographic] Error:", err);
+    throw new Error("Failed to generate study guide. Please try again.");
+  }
+}
+
+function getMockInfographic(): { type: "infographic"; title: string; mermaidCode: string } {
+  const content: InfographicContent = {
+    title: "Study Guide Overview",
+    subtitle: "Key concepts at a glance",
+    colorTheme: "blue",
+    sections: [
+      {
+        title: "Core Concepts",
+        icon: "📚",
+        color: "blue",
+        points: ["Main idea from the material", "Supporting concept A", "Supporting concept B"],
+        highlight: "This is the foundational concept everything builds upon",
+      },
+      {
+        title: "Key Relationships",
+        icon: "🔗",
+        color: "green",
+        points: ["Concept A relates to Concept B", "Cause and effect relationship", "Sequential dependency"],
+        highlight: "Understanding these connections is crucial for exams",
+      },
+      {
+        title: "Practical Applications",
+        icon: "🎯",
+        color: "purple",
+        points: ["Real-world example 1", "Real-world example 2", "How to apply in practice"],
+        highlight: "Focus on application-type questions",
+      },
+    ],
+    keyTakeaway: "The most important thing to remember from this material",
+    quickFacts: [
+      { label: "Key Term", value: "Important definition" },
+      { label: "Remember", value: "Critical fact for the exam" },
+      { label: "Formula", value: "Key equation or rule" },
+    ],
+  };
+  return {
+    type: "infographic",
+    title: content.title,
+    mermaidCode: JSON.stringify(content),
+  };
+}
+
 function getMockDiagram(type: DiagramTypeKey): { type: DiagramTypeKey; title: string; mermaidCode: string } {
   const mocks: Record<DiagramTypeKey, { type: DiagramTypeKey; title: string; mermaidCode: string }> = {
     mindmap: {

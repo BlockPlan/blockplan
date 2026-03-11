@@ -399,9 +399,9 @@ export default function StudyHelpResults({
         {activeTab === "visualize" && (
           <div>
             <div className="mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Visual Diagrams</h2>
+              <h2 className="text-lg font-semibold text-gray-900">Visualize</h2>
               <p className="text-sm text-gray-500">
-                AI-generated concept maps, flowcharts, and mind maps from your study material
+                AI-generated study guides, mind maps, flowcharts, and concept maps
               </p>
             </div>
             <DiagramViewer
