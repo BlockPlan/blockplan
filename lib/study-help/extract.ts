@@ -88,6 +88,39 @@ export async function extractTextFromPptx(storagePath: string): Promise<string> 
 }
 
 // ---------------------------------------------------------------------------
+// DOCX text extraction — uses officeparser (same as PPTX)
+// ---------------------------------------------------------------------------
+
+/**
+ * Downloads a DOCX from the study_materials storage bucket and extracts text.
+ */
+export async function extractTextFromDocx(storagePath: string): Promise<string> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.storage
+    .from("study_materials")
+    .download(storagePath);
+
+  if (error || !data) {
+    throw new Error(
+      `Failed to download study material from storage: ${error?.message ?? "No data returned"}`
+    );
+  }
+
+  const arrayBuffer = await data.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  const result = await parseOffice(buffer, {
+    newlineDelimiter: "\n",
+  });
+
+  if (result && typeof result === "object" && typeof result.toText === "function") {
+    return result.toText();
+  }
+  return typeof result === "string" ? result : String(result);
+}
+
+// ---------------------------------------------------------------------------
 // Image to base64 — downloads from storage and converts for GPT-4o vision
 // ---------------------------------------------------------------------------
 

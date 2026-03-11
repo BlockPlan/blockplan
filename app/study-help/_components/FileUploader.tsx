@@ -19,11 +19,13 @@ const ACCEPTED_TYPES = [
   "application/pdf",
   "application/vnd.openxmlformats-officedocument.presentationml.presentation",
   "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/msword",
   "image/png",
   "image/jpeg",
   "image/jpg",
 ];
-const ACCEPTED_EXTENSIONS = [".pdf", ".ppt", ".pptx", ".png", ".jpg", ".jpeg"];
+const ACCEPTED_EXTENSIONS = [".pdf", ".ppt", ".pptx", ".doc", ".docx", ".png", ".jpg", ".jpeg"];
 
 export default function FileUploader({ onFilesChange }: FileUploaderProps) {
   const [files, setFiles] = useState<UploadedFile[]>([]);
@@ -139,7 +141,7 @@ export default function FileUploader({ onFilesChange }: FileUploaderProps) {
               storagePath: `err-${Date.now()}`,
               status: "error",
               progress: 0,
-              error: "File must be PDF, PPT, PPTX, PNG, or JPG",
+              error: "File must be PDF, PPT, PPTX, DOC, DOCX, PNG, or JPG",
             },
           ]);
           continue;
@@ -218,7 +220,7 @@ export default function FileUploader({ onFilesChange }: FileUploaderProps) {
           Drop files here or click to browse
         </p>
         <p className="mt-1 text-xs text-gray-500">
-          PDF, PPT, PPTX, PNG, or JPG — up to 10 MB each
+          PDF, DOCX, PPTX, PNG, or JPG — up to 10 MB each
         </p>
       </div>
 
@@ -226,7 +228,7 @@ export default function FileUploader({ onFilesChange }: FileUploaderProps) {
         ref={fileInputRef}
         type="file"
         multiple
-        accept=".pdf,.ppt,.pptx,.png,.jpg,.jpeg"
+        accept=".pdf,.ppt,.pptx,.doc,.docx,.png,.jpg,.jpeg"
         className="hidden"
         onChange={(e) => {
           if (e.target.files) handleFiles(e.target.files);

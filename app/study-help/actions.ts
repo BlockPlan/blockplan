@@ -5,6 +5,7 @@ import { generateStudyHelp, regenerateStudyHelp, generateEli5, generateDiagrams,
 import {
   extractTextFromPdf,
   extractTextFromPptx,
+  extractTextFromDocx,
   imageToBase64,
 } from "@/lib/study-help/extract";
 import type { StudyHelp, RegeneratableSection, DiagramType, Diagram } from "@/lib/study-help/types";
@@ -89,15 +90,24 @@ export async function generateStudyHelpAction(
     try {
       const ext = storagePath.split(".").pop()?.toLowerCase();
 
-      if (ext === "ppt") {
-        // Old binary .ppt format is not supported — tell user to convert
+      if (ext === "ppt" || ext === "doc") {
+        // Old binary formats are not supported — tell user to convert
+        const newExt = ext === "ppt" ? ".pptx" : ".docx";
+        const appName = ext === "ppt" ? "PowerPoint" : "Word";
         if (!pastedText && storagePaths.length === 1) {
           return {
-            error: "Old .ppt format is not supported. Please save as .pptx in PowerPoint (File → Save As → .pptx) and re-upload.",
+            error: `Old .${ext} format is not supported. Please save as ${newExt} in ${appName} (File → Save As → ${newExt}) and re-upload.`,
           };
         }
-        console.warn(`[study-help] Skipping unsupported .ppt file: ${storagePath}`);
+        console.warn(`[study-help] Skipping unsupported .${ext} file: ${storagePath}`);
         continue;
+      } else if (ext === "docx") {
+        const text = await extractTextFromDocx(storagePath);
+        if (text.trim().length > 0) {
+          contentParts.push({ type: "text", text });
+        } else {
+          console.warn(`[study-help] DOCX extraction returned empty text: ${storagePath}`);
+        }
       } else if (ext === "pdf") {
         const text = await extractTextFromPdf(storagePath);
         if (text.trim().length > 0) {
