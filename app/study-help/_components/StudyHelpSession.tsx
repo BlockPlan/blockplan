@@ -123,7 +123,7 @@ export default function StudyHelpSession({
           Upload PDFs, PowerPoints, or photos of your textbook, or paste your notes. AI will
           generate flashcards, quizzes, practice tests, and more.
         </p>
-        <div className="mt-2 flex gap-4">
+        <div className="mt-2 flex flex-col gap-1 sm:flex-row sm:gap-4">
           <a
             href="/study-help/history"
             className="text-sm text-blue-600 hover:underline"
@@ -189,7 +189,7 @@ export default function StudyHelpSession({
           <textarea
             id="notes"
             name="notes"
-            rows={6}
+            rows={4}
             className="input"
             placeholder="Paste your notes, chapter text, or study material here..."
           />

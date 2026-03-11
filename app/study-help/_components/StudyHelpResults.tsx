@@ -105,37 +105,39 @@ export default function StudyHelpResults({
         </p>
       )}
 
-      {/* Tab navigation */}
-      <div className="mb-6 flex flex-wrap gap-1 rounded-lg border border-gray-200 bg-gray-100 p-1">
-        {TABS.map(({ key, label }) => (
-          <button
-            key={key}
-            onClick={() => setActiveTab(key)}
-            className={[
-              "rounded-md px-3 py-2 text-sm font-medium transition-colors",
-              activeTab === key
-                ? key === "tutor"
-                  ? "bg-gradient-to-r from-purple-600 to-blue-500 text-white shadow-sm"
-                  : "bg-white text-gray-900 shadow-sm"
-                : key === "tutor"
-                  ? "text-purple-600 hover:text-purple-800"
-                  : "text-gray-500 hover:text-gray-700",
-            ].join(" ")}
-          >
-            {label}
-            {key === "tutor" && userPlan === "free" && (
-              <span className="ml-1 text-[10px] align-super">PRO</span>
-            )}
-          </button>
-        ))}
+      {/* Tab navigation — horizontal scroll on mobile */}
+      <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200 bg-gray-100 p-1 -mx-1 sm:mx-0">
+        <div className="flex gap-1 min-w-max">
+          {TABS.map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setActiveTab(key)}
+              className={[
+                "whitespace-nowrap rounded-md px-2.5 py-2 text-xs font-medium transition-colors sm:px-3 sm:text-sm",
+                activeTab === key
+                  ? key === "tutor"
+                    ? "bg-gradient-to-r from-purple-600 to-blue-500 text-white shadow-sm"
+                    : "bg-white text-gray-900 shadow-sm"
+                  : key === "tutor"
+                    ? "text-purple-600 hover:text-purple-800"
+                    : "text-gray-500 hover:text-gray-700",
+              ].join(" ")}
+            >
+              {label}
+              {key === "tutor" && userPlan === "free" && (
+                <span className="ml-1 text-[10px] align-super">PRO</span>
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Tab content */}
       <div>
         {activeTab === "summary" && (
-          <div className="rounded-xl border border-gray-200 bg-white p-5">
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Summary</h2>
+          <div className="rounded-xl border border-gray-200 bg-white p-3 sm:p-5">
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <h2 className="text-base font-semibold text-gray-900 sm:text-lg">Summary</h2>
               <button
                 onClick={handleEli5Toggle}
                 disabled={generatingEli5}
@@ -186,9 +188,9 @@ export default function StudyHelpResults({
         )}
 
         {activeTab === "keyTerms" && (
-          <div className="rounded-xl border border-gray-200 bg-white p-5">
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Key Terms</h2>
+          <div className="rounded-xl border border-gray-200 bg-white p-3 sm:p-5">
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <h2 className="text-base font-semibold text-gray-900 sm:text-lg">Key Terms</h2>
               <button
                 onClick={handleEli5Toggle}
                 disabled={generatingEli5}
@@ -248,9 +250,9 @@ export default function StudyHelpResults({
               isRegenerating={regeneratingSection === "flashcards"}
             />
           ) : (
-            <div className="rounded-xl border border-gray-200 bg-white p-5">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Flashcards</h2>
+            <div className="rounded-xl border border-gray-200 bg-white p-3 sm:p-5">
+              <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <h2 className="text-base font-semibold text-gray-900 sm:text-lg">Flashcards</h2>
                 <div className="flex items-center gap-2">
                   {onRegenerate && (
                     <button
@@ -288,8 +290,8 @@ export default function StudyHelpResults({
 
         {activeTab === "quiz" && (
           <div>
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">
+            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <h2 className="text-base font-semibold text-gray-900 sm:text-lg">
                 Multiple Choice Quiz
               </h2>
               {onRegenerate && (
@@ -322,8 +324,8 @@ export default function StudyHelpResults({
 
         {activeTab === "practiceTest" && (
           <div>
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">
+            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <h2 className="text-base font-semibold text-gray-900 sm:text-lg">
                 Practice Test
               </h2>
               {onRegenerate && (
@@ -356,8 +358,8 @@ export default function StudyHelpResults({
 
         {activeTab === "practiceProblems" && (
           <div>
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">
+            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <h2 className="text-base font-semibold text-gray-900 sm:text-lg">
                 Practice Problems
               </h2>
               {onRegenerate && (
@@ -386,7 +388,7 @@ export default function StudyHelpResults({
               isRegenerating={regeneratingSection === "practiceProblems"}
             />
             {(!data.practiceProblems || data.practiceProblems.length === 0) && (
-              <div className="rounded-xl border border-gray-200 bg-white p-8 text-center">
+              <div className="rounded-xl border border-gray-200 bg-white p-5 text-center sm:p-8">
                 <p className="text-sm text-gray-500">
                   No practice problems yet.
                   {onRegenerate && " Click \"New Problems\" above to generate step-by-step problems."}
@@ -399,7 +401,7 @@ export default function StudyHelpResults({
         {activeTab === "visualize" && (
           <div>
             <div className="mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Visualize</h2>
+              <h2 className="text-base font-semibold text-gray-900 sm:text-lg">Visualize</h2>
               <p className="text-sm text-gray-500">
                 AI-generated study guides, mind maps, flowcharts, and concept maps
               </p>
@@ -415,7 +417,7 @@ export default function StudyHelpResults({
         {activeTab === "tutor" && (
           <div>
             <div className="mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">AI Tutor</h2>
+              <h2 className="text-base font-semibold text-gray-900 sm:text-lg">AI Tutor</h2>
               <p className="text-sm text-gray-500">
                 Have a conversation about your study material
               </p>

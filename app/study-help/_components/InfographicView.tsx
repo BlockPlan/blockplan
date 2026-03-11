@@ -32,23 +32,23 @@ export default function InfographicView({ json }: { json: string }) {
   const themeColors = getColors(content.colorTheme);
 
   return (
-    <div className="space-y-4 rounded-xl border border-gray-200 bg-white overflow-hidden pb-6">
+    <div className="space-y-3 rounded-xl border border-gray-200 bg-white overflow-hidden pb-4 sm:space-y-4 sm:pb-6">
       {/* Header banner */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-6 text-white">
-        <h2 className="text-2xl font-bold">{content.title}</h2>
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-4 text-white sm:px-6 sm:py-6">
+        <h2 className="text-xl font-bold sm:text-2xl">{content.title}</h2>
         {content.subtitle && (
-          <p className="mt-1 text-sm text-indigo-100">{content.subtitle}</p>
+          <p className="mt-1 text-xs text-indigo-100 sm:text-sm">{content.subtitle}</p>
         )}
       </div>
 
       {/* Quick facts bar */}
       {content.quickFacts && content.quickFacts.length > 0 && (
-        <div className="px-6">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="px-3 sm:px-6">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
             {content.quickFacts.map((fact, i) => (
               <div
                 key={i}
-                className={`rounded-lg border ${themeColors.border} ${themeColors.bg} p-3 text-center`}
+                className={`rounded-lg border ${themeColors.border} ${themeColors.bg} p-2.5 text-center sm:p-3`}
               >
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
                   {fact.label}
@@ -63,32 +63,32 @@ export default function InfographicView({ json }: { json: string }) {
       )}
 
       {/* Section cards */}
-      <div className="grid grid-cols-1 gap-4 px-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 px-3 sm:gap-4 sm:px-6 md:grid-cols-2">
         {content.sections.map((section, i) => {
           const colors = getColors(section.color);
           return (
             <div
               key={i}
-              className={`rounded-xl border-2 ${colors.border} ${colors.bg} p-4`}
+              className={`rounded-xl border-2 ${colors.border} ${colors.bg} p-3 sm:p-4`}
             >
-              <div className="mb-3 flex items-center gap-2">
-                <span className={`flex h-8 w-8 items-center justify-center rounded-lg ${colors.badge} text-lg text-white`}>
+              <div className="mb-2 flex items-center gap-2 sm:mb-3">
+                <span className={`flex h-7 w-7 items-center justify-center rounded-lg ${colors.badge} text-base text-white sm:h-8 sm:w-8 sm:text-lg`}>
                   {section.icon}
                 </span>
-                <h3 className={`text-base font-bold ${colors.text}`}>
+                <h3 className={`text-sm font-bold sm:text-base ${colors.text}`}>
                   {section.title}
                 </h3>
               </div>
-              <ul className="space-y-1.5 mb-3">
+              <ul className="space-y-1.5 mb-2 sm:mb-3">
                 {section.points.map((point, j) => (
-                  <li key={j} className="flex gap-2 text-sm text-gray-700">
+                  <li key={j} className="flex gap-2 text-xs text-gray-700 sm:text-sm">
                     <span className={`mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full ${colors.badge}`} />
                     {point}
                   </li>
                 ))}
               </ul>
               {section.highlight && (
-                <div className={`rounded-lg ${colors.highlight} px-3 py-2 text-xs font-medium`}>
+                <div className={`rounded-lg ${colors.highlight} px-2.5 py-1.5 text-xs font-medium sm:px-3 sm:py-2`}>
                   {section.highlight}
                 </div>
               )}
@@ -99,16 +99,16 @@ export default function InfographicView({ json }: { json: string }) {
 
       {/* Key takeaway */}
       {content.keyTakeaway && (
-        <div className="mx-6 mb-6 rounded-xl border-2 border-amber-300 bg-amber-50 p-4">
-          <div className="flex items-start gap-3">
-            <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-amber-500 text-lg text-white">
+        <div className="mx-3 rounded-xl border-2 border-amber-300 bg-amber-50 p-3 sm:mx-6 sm:p-4">
+          <div className="flex items-start gap-2 sm:gap-3">
+            <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-amber-500 text-base text-white sm:h-8 sm:w-8 sm:text-lg">
               💡
             </span>
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-amber-600">
                 Key Takeaway
               </p>
-              <p className="mt-1 text-sm font-medium text-amber-900">
+              <p className="mt-1 text-xs font-medium text-amber-900 sm:text-sm">
                 {content.keyTakeaway}
               </p>
             </div>

@@ -28,7 +28,7 @@ export default function DiagramViewer({
   return (
     <div className="space-y-4">
       {/* Diagram type selector */}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
         {DIAGRAM_TYPES.map(({ key, label }) => {
           const hasData = diagrams.some((d) => d.type === key);
           return (
@@ -36,7 +36,7 @@ export default function DiagramViewer({
               key={key}
               onClick={() => setSelectedType(key)}
               className={[
-                "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
+                "rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors sm:px-3 sm:text-sm",
                 selectedType === key
                   ? "bg-blue-600 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200",
@@ -44,7 +44,7 @@ export default function DiagramViewer({
             >
               {label}
               {hasData && (
-                <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 sm:ml-1.5" />
               )}
             </button>
           );
@@ -78,7 +78,7 @@ export default function DiagramViewer({
           )}
         </div>
       ) : (
-        <div className="rounded-xl border border-gray-200 bg-white p-8 text-center">
+        <div className="rounded-xl border border-gray-200 bg-white p-5 text-center sm:p-8">
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">
             <svg
               className="h-6 w-6 text-blue-500"

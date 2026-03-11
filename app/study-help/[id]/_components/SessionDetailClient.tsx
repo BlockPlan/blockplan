@@ -175,11 +175,11 @@ export default function SessionDetailClient({
 
   return (
     <div>
-      <div className="mb-4 flex justify-end gap-2">
+      <div className="mb-4 flex flex-wrap justify-end gap-2">
         <button
           onClick={handleShare}
           disabled={isPending}
-          className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors disabled:opacity-50 ${
+          className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors disabled:opacity-50 ${
             shareToken
               ? "border-emerald-300 text-emerald-700 hover:bg-emerald-50"
               : "border-gray-300 text-gray-700 hover:bg-gray-50"
@@ -189,13 +189,13 @@ export default function SessionDetailClient({
         </button>
         <button
           onClick={() => setShowExport(true)}
-          className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
         >
           Export PDF
         </button>
         <button
           onClick={() => setEditing(true)}
-          className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
         >
           Edit Flashcards &amp; Quiz
         </button>
@@ -203,13 +203,13 @@ export default function SessionDetailClient({
 
       {/* Share panel */}
       {showSharePanel && shareToken && (
-        <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
-          <div className="flex items-center gap-2">
+        <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3 sm:p-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <input
               type="text"
               readOnly
               value={`${typeof window !== "undefined" ? window.location.origin : ""}/study-help/shared/${shareToken}`}
-              className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:outline-none sm:flex-1"
               onFocus={(e) => e.target.select()}
             />
             <button

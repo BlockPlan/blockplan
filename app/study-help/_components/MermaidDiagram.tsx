@@ -98,7 +98,7 @@ export default function MermaidDiagram({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 p-8">
+      <div className="flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 p-4 sm:p-8">
         <svg
           className="h-5 w-5 animate-spin text-gray-400"
           viewBox="0 0 24 24"
@@ -136,7 +136,7 @@ export default function MermaidDiagram({
           <summary className="cursor-pointer text-xs text-red-500">
             Show raw code
           </summary>
-          <pre className="mt-1 overflow-auto rounded bg-red-100 p-2 text-xs text-red-800">
+          <pre className="mt-1 overflow-auto whitespace-pre-wrap break-words rounded bg-red-100 p-2 text-xs text-red-800">
             {code}
           </pre>
         </details>

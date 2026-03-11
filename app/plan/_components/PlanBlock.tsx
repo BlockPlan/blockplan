@@ -180,6 +180,10 @@ export default function PlanBlock({ block, onEditTask, draggable, variant = "sta
   }
 
   /* ── Scheduled block ── */
+  // In grid mode, attach drag listeners to the whole block container;
+  // in stacked mode, attach them only to the grip icon button.
+  const gridDragProps = isDraggableBlock && isGrid ? { ...listeners, ...attributes } : {};
+
   return (
     <div
       ref={isDraggableBlock ? setNodeRef : undefined}
@@ -187,19 +191,21 @@ export default function PlanBlock({ block, onEditTask, draggable, variant = "sta
         "rounded-lg border border-blue-200 bg-white shadow-sm transition-shadow duration-200 hover:shadow",
         isGrid ? "h-full w-full overflow-hidden px-1.5 py-1" : "px-2 py-1.5",
         isDragging ? "opacity-50" : "",
+        isDraggableBlock && isGrid ? "cursor-grab touch-none active:cursor-grabbing" : "",
       ].join(" ")}
       style={isDragging ? { zIndex: 50 } : undefined}
+      {...gridDragProps}
     >
       {/* Title row — drag handle + title */}
       <div
         className={[
           "flex items-start gap-1",
-          onEditTask ? "cursor-pointer hover:text-blue-700 transition-colors" : "",
+          onEditTask && !(isDraggableBlock && isGrid) ? "cursor-pointer hover:text-blue-700 transition-colors" : "",
         ].join(" ")}
-        onClick={onEditTask}
-        role={onEditTask ? "button" : undefined}
-        tabIndex={onEditTask ? 0 : undefined}
-        onKeyDown={onEditTask ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onEditTask(); } } : undefined}
+        onClick={isDraggableBlock && isGrid ? undefined : onEditTask}
+        role={onEditTask && !(isDraggableBlock && isGrid) ? "button" : undefined}
+        tabIndex={onEditTask && !(isDraggableBlock && isGrid) ? 0 : undefined}
+        onKeyDown={onEditTask && !(isDraggableBlock && isGrid) ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onEditTask(); } } : undefined}
       >
         {isDraggableBlock && !isGrid && (
           <button

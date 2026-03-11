@@ -197,7 +197,7 @@ export default function FileUploader({ onFilesChange }: FileUploaderProps) {
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
         className={[
-          "cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-colors",
+          "cursor-pointer rounded-lg border-2 border-dashed p-4 text-center transition-colors sm:p-6",
           isDragging
             ? "border-blue-400 bg-blue-50"
             : "border-gray-300 hover:border-gray-400 hover:bg-gray-50",

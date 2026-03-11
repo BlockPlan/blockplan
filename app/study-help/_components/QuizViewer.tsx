@@ -107,7 +107,7 @@ export default function QuizViewer({
                 }`}
               >
                 <p className="font-medium">{isCorrect ? "Correct!" : "Incorrect"}</p>
-                <p className="mt-1 text-xs opacity-80">{q.explanation}</p>
+                <p className="mt-1 text-xs opacity-80 sm:text-sm">{q.explanation}</p>
               </div>
             )}
           </div>
@@ -125,7 +125,7 @@ export default function QuizViewer({
       )}
 
       {showScore && (
-        <div className="rounded-xl border-2 border-blue-200 bg-blue-50 p-6 text-center">
+        <div className="rounded-xl border-2 border-blue-200 bg-blue-50 p-4 text-center sm:p-6">
           <p className="text-3xl font-bold text-blue-700">
             {correctCount} / {questions.length}
           </p>

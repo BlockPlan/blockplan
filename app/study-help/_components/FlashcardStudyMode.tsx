@@ -292,7 +292,7 @@ export default function FlashcardStudyMode({
         </div>
 
         {/* Score bar */}
-        <div className="mb-6 rounded-xl border border-gray-200 bg-white p-5">
+        <div className="mb-6 rounded-xl border border-gray-200 bg-white p-3 sm:p-5">
           <div className="mb-2 flex items-center justify-between text-sm">
             <span className="font-medium text-gray-700">Score</span>
             <span className="font-bold text-blue-600">{percent}%</span>
@@ -323,7 +323,7 @@ export default function FlashcardStudyMode({
 
         {/* Mastery breakdown (only for saved sessions) */}
         {sessionId && (
-          <div className="mb-6 rounded-xl border border-gray-200 bg-white p-5">
+          <div className="mb-6 rounded-xl border border-gray-200 bg-white p-3 sm:p-5">
             <p className="mb-3 text-sm font-medium text-gray-700">Card Mastery</p>
             <div className="flex flex-wrap gap-2">
               {[1, 2, 3, 4, 5].map((box) => {
@@ -447,14 +447,14 @@ export default function FlashcardStudyMode({
           >
             {/* Front */}
             <div
-              className="absolute inset-0 flex items-center justify-center rounded-xl border-2 border-blue-200 bg-blue-50 p-6"
+              className="absolute inset-0 flex items-center justify-center rounded-xl border-2 border-blue-200 bg-blue-50 p-4 sm:p-6"
               style={{ backfaceVisibility: "hidden" }}
             >
               <div className="text-center">
                 <p className="mb-2 text-xs font-medium uppercase text-blue-400">
                   Question
                 </p>
-                <p className="text-lg font-medium text-gray-900">
+                <p className="text-base font-medium text-gray-900 sm:text-lg">
                   {card?.flashcard.front}
                 </p>
                 <p className="mt-4 text-xs text-gray-400">
@@ -465,7 +465,7 @@ export default function FlashcardStudyMode({
 
             {/* Back */}
             <div
-              className="absolute inset-0 flex items-center justify-center rounded-xl border-2 border-green-200 bg-green-50 p-6"
+              className="absolute inset-0 flex items-center justify-center rounded-xl border-2 border-green-200 bg-green-50 p-4 sm:p-6"
               style={{
                 backfaceVisibility: "hidden",
                 transform: "rotateY(180deg)",
@@ -487,26 +487,26 @@ export default function FlashcardStudyMode({
 
       {/* Action buttons — only visible when flipped */}
       <div
-        className={`mt-5 flex gap-3 transition-opacity duration-200 ${
+        className={`mt-4 flex gap-2 transition-opacity duration-200 sm:mt-5 sm:gap-3 ${
           flipped ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
         <button
           onClick={() => markCard("learning")}
-          className="flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-100"
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border-2 border-amber-300 bg-amber-50 px-3 py-2.5 text-xs font-medium text-amber-700 transition-colors hover:bg-amber-100 sm:gap-2 sm:px-4 sm:py-3 sm:text-sm"
         >
           <span>←</span> Still Learning
         </button>
         <button
           onClick={() => markCard("got_it")}
-          className="flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-emerald-300 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-100"
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border-2 border-emerald-300 bg-emerald-50 px-3 py-2.5 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-100 sm:gap-2 sm:px-4 sm:py-3 sm:text-sm"
         >
           Got It <span>→</span>
         </button>
       </div>
 
-      {/* Keyboard hint */}
-      <p className="mt-3 text-center text-xs text-gray-400">
+      {/* Keyboard hint — hidden on mobile (no keyboard) */}
+      <p className="mt-3 hidden text-center text-xs text-gray-400 sm:block">
         Space to flip · ← Still Learning · → Got It · Esc to exit
       </p>
     </div>

@@ -173,21 +173,21 @@ export default function FlashcardViewer({ flashcards, onEditCard }: FlashcardVie
               >
                 {/* Front */}
                 <div
-                  className="absolute inset-0 flex items-center justify-center rounded-xl border-2 border-blue-200 bg-blue-50 p-6"
+                  className="absolute inset-0 flex items-center justify-center rounded-xl border-2 border-blue-200 bg-blue-50 p-4 sm:p-6"
                   style={{ backfaceVisibility: "hidden" }}
                 >
                   <div className="text-center">
                     <p className="mb-2 text-xs font-medium uppercase text-blue-400">
                       Question
                     </p>
-                    <p className="text-lg font-medium text-gray-900">{card.front}</p>
+                    <p className="text-base font-medium text-gray-900 sm:text-lg">{card.front}</p>
                     <p className="mt-4 text-xs text-gray-400">Click to flip</p>
                   </div>
                 </div>
 
                 {/* Back */}
                 <div
-                  className="absolute inset-0 flex items-center justify-center rounded-xl border-2 border-green-200 bg-green-50 p-6"
+                  className="absolute inset-0 flex items-center justify-center rounded-xl border-2 border-green-200 bg-green-50 p-4 sm:p-6"
                   style={{
                     backfaceVisibility: "hidden",
                     transform: "rotateY(180deg)",
@@ -206,21 +206,21 @@ export default function FlashcardViewer({ flashcards, onEditCard }: FlashcardVie
 
           {/* Confidence buttons — shown when card is flipped */}
           {flipped && (
-            <div className="mt-3 flex items-center justify-center gap-3">
+            <div className="mt-3 flex items-center justify-center gap-2 sm:gap-3">
               <button
                 onClick={() => markConfidence(false)}
-                className="flex items-center gap-1.5 rounded-lg border-2 border-amber-300 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-100"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border-2 border-amber-300 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-700 transition-colors hover:bg-amber-100 sm:flex-none sm:px-4 sm:text-sm"
               >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Still Learning
               </button>
               <button
                 onClick={() => markConfidence(true)}
-                className="flex items-center gap-1.5 rounded-lg border-2 border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-100"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border-2 border-emerald-300 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-100 sm:flex-none sm:px-4 sm:text-sm"
               >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Got It
@@ -231,23 +231,23 @@ export default function FlashcardViewer({ flashcards, onEditCard }: FlashcardVie
       )}
 
       {/* Navigation */}
-      <div className="mt-4 flex items-center justify-center gap-4">
+      <div className="mt-4 flex items-center justify-center gap-3 sm:gap-4">
         <button
           onClick={goPrev}
-          className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+          className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 sm:px-4"
         >
           Previous
         </button>
         <button
           onClick={goNext}
-          className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+          className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 sm:px-4"
         >
           Next
         </button>
       </div>
 
-      {/* Progress dots — colored by confidence */}
-      <div className="mt-3 flex justify-center gap-1">
+      {/* Progress dots — colored by confidence, wraps on mobile for many cards */}
+      <div className="mt-3 flex flex-wrap justify-center gap-1">
         {flashcards.map((_, i) => (
           <button
             key={i}
