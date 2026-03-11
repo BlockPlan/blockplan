@@ -73,6 +73,18 @@ export default function MermaidDiagram({
             err instanceof Error ? err.message : "Failed to render diagram"
           );
         }
+        // Mermaid dumps error SVGs into document.body on parse failure — clean them up
+        if (typeof document !== "undefined") {
+          // Remove the specific render container Mermaid creates
+          const errContainer = document.getElementById(`dmermaid-${id}`);
+          if (errContainer) errContainer.remove();
+          // Remove any orphaned Mermaid error SVGs appended to body
+          document.querySelectorAll("body > [id^='d'] > svg").forEach((svg) => {
+            if (svg.getAttribute("aria-roledescription") === "error") {
+              svg.parentElement?.remove();
+            }
+          });
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
