@@ -105,6 +105,7 @@ export default function SessionDetailClient({
       return;
     }
     toast.success("Simplified version generated!");
+    // Refresh to load the updated ELI5 data from the server
     router.refresh();
   }, [sessionId, courseName, router]);
 

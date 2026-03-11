@@ -32,7 +32,7 @@ export default function InfographicView({ json }: { json: string }) {
   const themeColors = getColors(content.colorTheme);
 
   return (
-    <div className="space-y-4 rounded-xl border border-gray-200 bg-white overflow-hidden">
+    <div className="space-y-4 rounded-xl border border-gray-200 bg-white overflow-hidden pb-6">
       {/* Header banner */}
       <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-6 text-white">
         <h2 className="text-2xl font-bold">{content.title}</h2>
