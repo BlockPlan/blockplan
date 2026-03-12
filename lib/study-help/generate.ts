@@ -10,7 +10,7 @@ import {
 import { getMockStudyHelp } from "./mock";
 
 // Maximum characters for text content sent to the LLM
-const MAX_TEXT_CHARS = 15_000;
+const MAX_TEXT_CHARS = 30_000;
 
 // ---------------------------------------------------------------------------
 // Content part types — supports multi-modal input (text + images)
@@ -53,19 +53,25 @@ export async function generateStudyHelp(
   const sourceDescription = "text and/or images of textbook pages.";
 
   const systemMessage = [
-    "You are a study aid generator for college students.",
+    "You are a thorough, detailed study aid generator for college students preparing for exams.",
     courseContext,
-    `Generate comprehensive study materials from the provided ${sourceDescription}`,
+    `Generate COMPREHENSIVE and DETAILED study materials from the provided ${sourceDescription}`,
     "",
     "IMPORTANT: Generate study aids only. Do not provide answers to graded assignments, write essays, or complete homework. Focus on comprehension, recall, and conceptual understanding.",
     "",
+    "CRITICAL: Be THOROUGH and DETAILED. Students are using these to study for real exams. Do NOT oversimplify.",
+    "- Summaries should capture ALL major ideas, not just the top-level overview",
+    "- Key term definitions should be detailed enough to fully understand each concept (2-3 sentences each)",
+    "- Flashcards should cover specific details, not just broad concepts",
+    "- Quiz questions should test real understanding at exam level, not surface-level recall",
+    "",
     "Generate ALL of the following:",
-    "1. summary: 5-10 bullet points capturing the most important ideas",
-    "2. keyTerms: important terms with brief, clear definitions",
-    "3. flashcards: 10-15 flashcards with front (question/term) and back (answer/definition). Each flashcard should test a specific fact, concept, or definition from the material.",
-    "4. quiz: 8-12 multiple-choice questions, each with exactly 4 options, correctIndex (0-3), and a brief explanation of why the answer is correct. Questions should test understanding of the actual content.",
-    "5. practiceTest: 6-10 open-ended questions mixing recall, conceptual, and application types, each with a suggestedAnswer",
-    "6. practiceProblems: 4-6 step-by-step problems with varying difficulty (easy, medium, hard). Each problem should have a question, a difficulty level, an array of solution steps that walk through the problem, and a finalAnswer. Focus on problems that require calculation, analysis, or multi-step reasoning.",
+    "1. summary: 15-25 detailed bullet points that THOROUGHLY cover all major ideas, concepts, processes, relationships, and important details from the material. Each bullet should be specific and informative, not vague. Cover the breadth AND depth of the content.",
+    "2. keyTerms: ALL important terms, concepts, and vocabulary from the material. Each definition should be 2-3 sentences explaining what it is, why it matters, and how it connects to other concepts. Do NOT write one-line oversimplified definitions.",
+    "3. flashcards: 20-30 flashcards testing specific facts, concepts, definitions, processes, and relationships. Answers should be detailed enough to demonstrate real understanding. Cover ALL important topics from the material.",
+    "4. quiz: 15-20 multiple-choice questions at varying difficulty levels, each with exactly 4 options, correctIndex (0-3), and a detailed explanation of why the correct answer is right and why incorrect options are wrong.",
+    "5. practiceTest: 10-15 open-ended questions mixing recall, conceptual, and application types. Each suggestedAnswer should be a thorough model answer that would earn full marks on an exam.",
+    "6. practiceProblems: 6-10 step-by-step problems with varying difficulty (easy, medium, hard). Each problem should have a question, a difficulty level, an array of detailed solution steps that walk through the problem, and a finalAnswer.",
     "7. eli5Summary: Rewrite each summary bullet point in extremely simple language using everyday analogies, as if explaining to someone with no background. Make it fun and relatable.",
     "8. eli5KeyTerms: For each key term, provide a simplified definition using everyday analogies and simple language a child could understand.",
   ].join("\n");
@@ -158,22 +164,22 @@ export async function regenerateStudyHelp(
   const sectionInstructions: string[] = [];
   if (sections.includes("flashcards")) {
     sectionInstructions.push(
-      "flashcards: 10-15 NEW flashcards with front (question/term) and back (answer/definition)"
+      "flashcards: 20-30 NEW detailed flashcards with front (question/term) and back (thorough answer/definition). Cover different aspects of the material than the existing ones."
     );
   }
   if (sections.includes("quiz")) {
     sectionInstructions.push(
-      "quiz: 8-12 NEW multiple-choice questions, each with exactly 4 options, correctIndex (0-3), and explanation"
+      "quiz: 15-20 NEW multiple-choice questions at exam level, each with exactly 4 options, correctIndex (0-3), and detailed explanation of why the answer is correct and why others are wrong"
     );
   }
   if (sections.includes("practiceTest")) {
     sectionInstructions.push(
-      "practiceTest: 6-10 NEW open-ended questions mixing recall, conceptual, and application types, each with a suggestedAnswer"
+      "practiceTest: 10-15 NEW open-ended questions mixing recall, conceptual, and application types. Each suggestedAnswer should be a thorough model answer worthy of full marks."
     );
   }
   if (sections.includes("practiceProblems")) {
     sectionInstructions.push(
-      "practiceProblems: 4-6 NEW step-by-step problems with varying difficulty (easy, medium, hard), each with solution steps and finalAnswer"
+      "practiceProblems: 6-10 NEW step-by-step problems with varying difficulty (easy, medium, hard), each with detailed solution steps and finalAnswer"
     );
   }
 

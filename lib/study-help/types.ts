@@ -6,40 +6,40 @@ import { z } from "zod";
 
 // Schema used for OpenAI structured output generation (all fields required — OpenAI limitation)
 export const studyHelpGenerationSchema = z.object({
-  summary: z.array(z.string()).describe("5-10 bullet points capturing key ideas"),
+  summary: z.array(z.string()).describe("15-25 detailed bullet points thoroughly covering all major ideas, concepts, processes, and relationships from the material"),
 
   keyTerms: z.array(
     z.object({
       term: z.string(),
-      definition: z.string(),
+      definition: z.string().describe("Thorough 2-3 sentence definition including context, significance, and how it relates to other concepts"),
     })
-  ).describe("Important terms with clear definitions"),
+  ).describe("All important terms, concepts, and vocabulary from the material with detailed definitions"),
 
   flashcards: z.array(
     z.object({
-      front: z.string().describe("Question or term"),
-      back: z.string().describe("Answer or definition"),
+      front: z.string().describe("Specific question or term to test"),
+      back: z.string().describe("Detailed answer with enough context to fully understand the concept"),
     })
-  ).describe("10-15 flashcards for active recall practice"),
+  ).describe("20-30 flashcards covering all key facts, concepts, definitions, and relationships from the material"),
 
   quiz: z.array(
     z.object({
       question: z.string(),
       options: z.array(z.string()).length(4),
       correctIndex: z.number().int().min(0).max(3),
-      explanation: z.string(),
+      explanation: z.string().describe("Detailed explanation of why the correct answer is right AND why the other options are wrong"),
     })
-  ).describe("8-12 multiple-choice questions"),
+  ).describe("15-20 multiple-choice questions testing understanding at various difficulty levels"),
 
   practiceTest: z.array(
     z.object({
       question: z.string(),
       type: z.enum(["recall", "conceptual", "application"]),
-      suggestedAnswer: z.string(),
+      suggestedAnswer: z.string().describe("Thorough model answer that would earn full marks on an exam"),
     })
-  ).describe("6-10 open-ended practice test questions"),
+  ).describe("10-15 open-ended practice test questions"),
 
-  eli5Summary: z.array(z.string()).describe("Simplified 'Explain Like I'm 5' version of the summary using everyday analogies"),
+  eli5Summary: z.array(z.string()).describe("Simplified version of each summary point using everyday analogies"),
 
   eli5KeyTerms: z.array(
     z.object({
@@ -52,10 +52,10 @@ export const studyHelpGenerationSchema = z.object({
     z.object({
       question: z.string(),
       difficulty: z.enum(["easy", "medium", "hard"]),
-      steps: z.array(z.string()).describe("Step-by-step solution walkthrough"),
+      steps: z.array(z.string()).describe("Detailed step-by-step solution walkthrough"),
       finalAnswer: z.string(),
     })
-  ).describe("4-6 step-by-step practice problems with varying difficulty"),
+  ).describe("6-10 step-by-step practice problems with varying difficulty"),
 });
 
 // Storage schema — optional fields for data that may not exist on older sessions
