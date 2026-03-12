@@ -20,16 +20,20 @@ export const parsedItemSchema = z.object({
   source: z.enum(["rule-based", "llm", "user-added"]),
 });
 
-// Schema for the initial PDF upload request
+// Accepted file extensions for syllabus upload
+const ACCEPTED_EXTENSIONS = [".pdf", ".png", ".jpg", ".jpeg"];
+
+// Schema for the initial upload request (PDF or image)
 export const uploadRequestSchema = z.object({
   courseId: z.string().uuid("Must be a valid course ID"),
   filename: z
     .string()
     .min(1, "Filename is required")
     .max(255, "Filename must be 255 characters or less")
-    .refine((f) => f.toLowerCase().endsWith(".pdf"), {
-      message: "File must be a PDF",
-    }),
+    .refine(
+      (f) => ACCEPTED_EXTENSIONS.some((ext) => f.toLowerCase().endsWith(ext)),
+      { message: "File must be a PDF or image (PNG, JPG)" }
+    ),
 });
 
 // Schema for requesting text extraction from an already-uploaded PDF

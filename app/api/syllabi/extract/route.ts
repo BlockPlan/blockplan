@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { extractRequestSchema } from "@/lib/validations/syllabus";
 import { extractSyllabusText } from "@/lib/syllabus/extract";
+import { extractSyllabusTextFromImage } from "@/lib/syllabus/extract-image";
 import { parseWithRules } from "@/lib/syllabus/parser-rule-based";
 import { parseWithLLM } from "@/lib/syllabus/parser-llm";
 import { mergeParserResults } from "@/lib/syllabus/parser-merge";
+
+const IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg"];
 
 export async function POST(request: NextRequest) {
   try {
@@ -74,32 +77,60 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Extract text from the PDF
-    const result = await extractSyllabusText(storagePath);
+    // Determine if this is an image or PDF
+    const isImage = IMAGE_EXTENSIONS.some((ext) =>
+      storagePath.toLowerCase().endsWith(ext)
+    );
 
-    // Scanned/image PDFs: return 422 with clear message
-    if (result.isEmpty) {
-      return NextResponse.json(
-        {
-          error: "no-text",
-          message:
-            "This PDF appears to be a scanned image. It cannot be parsed automatically. Please enter your assignments manually.",
-        },
-        { status: 422 }
-      );
+    let extractedText: string;
+    let totalPages = 1;
+
+    if (isImage) {
+      // Extract text from image using OpenAI Vision
+      console.log("[extract] Processing image file:", storagePath);
+      const imgResult = await extractSyllabusTextFromImage(storagePath);
+
+      if (imgResult.isEmpty) {
+        return NextResponse.json(
+          {
+            error: "no-text",
+            message:
+              "Could not read text from this image. Please use a clearer photo or enter your assignments manually.",
+          },
+          { status: 422 }
+        );
+      }
+
+      extractedText = imgResult.text;
+    } else {
+      // Extract text from PDF
+      const result = await extractSyllabusText(storagePath);
+
+      if (result.isEmpty) {
+        return NextResponse.json(
+          {
+            error: "no-text",
+            message:
+              "This PDF appears to be a scanned image. It cannot be parsed automatically. Please enter your assignments manually.",
+          },
+          { status: 422 }
+        );
+      }
+
+      extractedText = result.text;
+      totalPages = result.totalPages;
     }
 
     // Run both parsers in parallel
     const termStartDate = new Date(term.start_date);
     const termContext = `Term: ${term.name}, starts ${term.start_date}`;
 
-    // Debug: log extracted text so we can see what the parser is working with
-    console.log("[extract] PDF text length:", result.text.length);
-    console.log("[extract] First 1000 chars of extracted text:", result.text.slice(0, 1000));
+    console.log("[extract] Text length:", extractedText.length);
+    console.log("[extract] First 1000 chars:", extractedText.slice(0, 1000));
 
     const [ruleItems, llmItems] = await Promise.all([
-      Promise.resolve(parseWithRules(result.text, termStartDate)),
-      parseWithLLM(result.text, termContext),
+      Promise.resolve(parseWithRules(extractedText, termStartDate)),
+      parseWithLLM(extractedText, termContext),
     ]);
 
     console.log("[extract] Rule-based items:", ruleItems.length);
@@ -112,7 +143,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       items: mergedItems,
-      totalPages: result.totalPages,
+      totalPages,
       llmUsed: llmItems.length > 0,
     });
   } catch (err) {

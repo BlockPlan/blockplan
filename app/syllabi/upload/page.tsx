@@ -48,8 +48,8 @@ export default async function SyllabiUploadPage() {
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900">Upload Syllabus</h2>
           <p className="mt-1 text-sm text-gray-500">
-            Select a course, choose your PDF syllabus, and we&apos;ll
-            automatically extract your assignments and exams.
+            Select a course, upload your syllabus PDF or snap a photo of it,
+            and we&apos;ll automatically extract your assignments and exams.
           </p>
         </div>
 
@@ -58,7 +58,7 @@ export default async function SyllabiUploadPage() {
         </div>
 
         <p className="mt-4 text-center text-xs text-gray-400">
-          PDFs up to 10 MB are supported.{" "}
+          PDFs and photos (PNG, JPG) up to 10 MB are supported.{" "}
           <Link href="/tasks" className="underline hover:text-gray-600">
             Prefer to add tasks manually?
           </Link>

@@ -43,8 +43,14 @@ export default function UploadForm({ courses }: UploadFormProps) {
       return;
     }
 
-    if (!selected.name.toLowerCase().endsWith(".pdf")) {
-      setErrorMessage("Please select a PDF file.");
+    const ext = selected.name.toLowerCase();
+    const isAccepted =
+      ext.endsWith(".pdf") ||
+      ext.endsWith(".png") ||
+      ext.endsWith(".jpg") ||
+      ext.endsWith(".jpeg");
+    if (!isAccepted) {
+      setErrorMessage("Please select a PDF or image file (PNG, JPG).");
       setFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
@@ -105,7 +111,7 @@ export default function UploadForm({ courses }: UploadFormProps) {
         });
 
         xhr.open("PUT", signedUrl);
-        xhr.setRequestHeader("Content-Type", "application/pdf");
+        xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
         xhr.send(file);
       });
 
@@ -206,14 +212,14 @@ export default function UploadForm({ courses }: UploadFormProps) {
           htmlFor="file-input"
           className="block text-sm font-medium text-gray-700"
         >
-          Syllabus PDF
+          Syllabus file
         </label>
         <div className="mt-1.5">
           <input
             ref={fileInputRef}
             id="file-input"
             type="file"
-            accept=".pdf"
+            accept=".pdf,.png,.jpg,.jpeg"
             onChange={handleFileChange}
             disabled={status === "uploading" || status === "extracting"}
             className="block w-full text-sm text-gray-500 file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
