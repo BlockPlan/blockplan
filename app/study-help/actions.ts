@@ -9,6 +9,7 @@ import {
   imageToBase64,
 } from "@/lib/study-help/extract";
 import type { StudyHelp, RegeneratableSection, DiagramType, Diagram } from "@/lib/study-help/types";
+import { getUserPlan, canGenerateStudyHelp, getMonthlyGenerationLimit, getUserGenerationsThisMonth } from "@/lib/subscription";
 import { revalidatePath } from "next/cache";
 import crypto from "crypto";
 
@@ -40,6 +41,15 @@ export async function generateStudyHelpAction(
 
   if (!user) {
     return { error: "Not authenticated" };
+  }
+
+  // Check generation limit
+  const plan = await getUserPlan(user.id);
+  const usage = await canGenerateStudyHelp(supabase, user.id, plan);
+  if (!usage.allowed) {
+    return {
+      error: `You've used ${usage.used} of ${usage.limit} AI generations this month. Upgrade your plan for more.`,
+    };
   }
 
   // Extract form inputs
@@ -696,4 +706,27 @@ export async function regenerateStudyMaterial(
   revalidatePath(`/study-help/${sessionId}`);
 
   return { data: regenerated };
+}
+
+// ---------------------------------------------------------------------------
+// Get current usage info for the UI
+// ---------------------------------------------------------------------------
+
+export async function getUsageInfo(): Promise<{
+  used: number;
+  limit: number;
+  plan: string;
+}> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { used: 0, limit: 0, plan: "free" };
+
+  const plan = await getUserPlan(user.id);
+  const limit = getMonthlyGenerationLimit(plan);
+  const used = limit === Infinity ? 0 : await getUserGenerationsThisMonth(supabase, user.id);
+
+  return { used, limit, plan };
 }

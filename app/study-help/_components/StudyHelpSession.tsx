@@ -1,12 +1,13 @@
 "use client";
 
-import { useActionState, useState, useCallback } from "react";
+import { useActionState, useState, useCallback, useEffect } from "react";
 import { toast } from "sonner";
 import {
   generateStudyHelpAction,
   regenerateStudyMaterial,
   updateStudyHelpData,
   generateDiagramsForSession,
+  getUsageInfo,
   type StudyHelpState,
 } from "../actions";
 import type { RegeneratableSection, DiagramType } from "@/lib/study-help/types";
@@ -39,6 +40,12 @@ export default function StudyHelpSession({
   const [courseId, setCourseId] = useState(initialCourseId ?? "");
   // Local data override for when sections are regenerated
   const [dataOverride, setDataOverride] = useState<Record<string, unknown> | null>(null);
+  // Usage tracking
+  const [usage, setUsage] = useState<{ used: number; limit: number; plan: string } | null>(null);
+
+  useEffect(() => {
+    getUsageInfo().then(setUsage);
+  }, [state.data]); // Refresh after a generation completes
 
   const handleFilesChange = useCallback((paths: string[]) => {
     setStoragePaths(paths);
@@ -198,7 +205,7 @@ export default function StudyHelpSession({
         {/* Generate button */}
         <button
           type="submit"
-          disabled={isPending}
+          disabled={isPending || (usage !== null && usage.limit !== Infinity && usage.used >= usage.limit)}
           className="btn-primary disabled:opacity-50"
         >
           {isPending ? (
@@ -243,6 +250,15 @@ export default function StudyHelpSession({
             </>
           )}
         </button>
+        {/* Usage indicator */}
+        {usage && usage.limit !== Infinity && (
+          <p className={`mt-2 text-xs ${usage.used >= usage.limit ? "text-red-500" : "text-gray-400"}`}>
+            {usage.used} of {usage.limit} generations used this month
+            {usage.used >= usage.limit && (
+              <> · <a href="/pricing" className="text-blue-600 underline">Upgrade</a></>
+            )}
+          </p>
+        )}
       </form>
 
       {/* Error display */}
