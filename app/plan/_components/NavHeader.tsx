@@ -149,13 +149,21 @@ export default function NavHeader() {
         </button>
       </div>
 
-      {/* Mobile menu dropdown */}
+      {/* Mobile menu overlay + dropdown */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 top-[56px] z-40 bg-black/20 sm:hidden"
+          onClick={closeMenu}
+          aria-hidden
+        />
+      )}
       <div
-        className={`overflow-hidden transition-all duration-200 ease-in-out sm:hidden ${
-          mobileOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        className={`overflow-y-auto transition-all duration-200 ease-in-out sm:hidden ${
+          mobileOpen ? "max-h-[80vh] opacity-100" : "max-h-0 opacity-0 overflow-hidden"
         }`}
+        style={{ position: "relative", zIndex: 50 }}
       >
-        <nav className="border-t border-gray-100 bg-white/95 px-4 pb-3 pt-2">
+        <nav className="border-t border-gray-100 bg-white px-4 pb-3 pt-2">
           <div className="flex flex-col gap-1">
             <NavLink href="/dashboard" onClick={closeMenu} mobile>
               Dashboard
