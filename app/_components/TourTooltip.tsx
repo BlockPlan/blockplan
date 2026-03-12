@@ -33,6 +33,13 @@ export default function TourTooltip({
       return;
     }
 
+    // If element is hidden (e.g. desktop nav links on mobile), skip this step
+    const elRect = el.getBoundingClientRect();
+    if (elRect.width === 0 && elRect.height === 0) {
+      onNext();
+      return;
+    }
+
     // Scroll element into view if needed
     el.scrollIntoView({ behavior: "smooth", block: "center" });
 
