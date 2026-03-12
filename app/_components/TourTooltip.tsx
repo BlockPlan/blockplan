@@ -77,11 +77,14 @@ export default function TourTooltip({
   // Calculate tooltip position
   const padding = 8;
   const tooltipGap = 12;
+  const tooltipWidth = 288; // w-72 = 18rem = 288px
+  const screenMargin = 16;
   let top = 0;
   let left = 0;
 
   const centerX = rect.left + rect.width / 2;
   const centerY = rect.top + rect.height / 2;
+  const vw = typeof window !== "undefined" ? window.innerWidth : 400;
 
   switch (step.position) {
     case "bottom":
@@ -100,6 +103,16 @@ export default function TourTooltip({
       top = centerY;
       left = rect.right + tooltipGap;
       break;
+  }
+
+  // On mobile, for top/bottom positioned tooltips, clamp left so the
+  // tooltip stays fully on-screen instead of using translateX(-50%)
+  const isVertical = step.position === "bottom" || step.position === "top";
+  const effectiveWidth = Math.min(tooltipWidth, vw - screenMargin * 2);
+  let clampedLeft = left;
+  if (isVertical) {
+    const halfW = effectiveWidth / 2;
+    clampedLeft = Math.max(screenMargin + halfW, Math.min(left, vw - screenMargin - halfW));
   }
 
   const isLast = stepIndex === totalSteps - 1;
@@ -153,7 +166,7 @@ export default function TourTooltip({
         className="absolute z-10 w-72 max-w-[calc(100vw-2rem)] rounded-xl bg-white p-4 shadow-xl"
         style={{
           top,
-          left: Math.max(16, Math.min(left, typeof window !== "undefined" ? window.innerWidth - 16 : left)),
+          left: isVertical ? clampedLeft : Math.max(screenMargin, Math.min(left, vw - screenMargin)),
           transform:
             step.position === "bottom"
               ? "translateX(-50%)"
@@ -166,14 +179,14 @@ export default function TourTooltip({
           opacity: visible ? 1 : 0,
         }}
       >
-        {/* Arrow */}
+        {/* Arrow — follows the target element, not always centered */}
         <div
           className="absolute h-3 w-3 rotate-45 bg-white"
           style={
             step.position === "bottom"
-              ? { top: -6, left: "50%", marginLeft: -6 }
+              ? { top: -6, left: `calc(50% + ${left - clampedLeft}px)`, marginLeft: -6 }
               : step.position === "top"
-              ? { bottom: -6, left: "50%", marginLeft: -6 }
+              ? { bottom: -6, left: `calc(50% + ${left - clampedLeft}px)`, marginLeft: -6 }
               : step.position === "left"
               ? { right: -6, top: "50%", marginTop: -6 }
               : { left: -6, top: "50%", marginTop: -6 }
