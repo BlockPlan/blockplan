@@ -8,7 +8,7 @@ export type SubscriptionPlan = "free" | "pro" | "max";
 // ---------------------------------------------------------------------------
 
 const GENERATION_LIMITS: Record<SubscriptionPlan, number> = {
-  free: 3,
+  free: 1,
   pro: 15,
   max: 50,
 };
