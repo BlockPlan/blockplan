@@ -513,12 +513,7 @@ export default function ReviewScreen({ courseId, courseName }: ReviewScreenProps
                             {formatMinutes(item.estimatedMinutes)}
                           </span>
 
-                          {/* Confidence indicator */}
-                          <span
-                            className={`text-xs font-medium ${CONFIDENCE_COLORS[item.confidence]}`}
-                          >
-                            {item.confidence} confidence
-                          </span>
+                          {/* Confidence indicator — hidden, only "Needs review" badge shown */}
                         </div>
                       </div>
 
