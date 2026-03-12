@@ -105,9 +105,9 @@ export default function StudyHelpResults({
         </p>
       )}
 
-      {/* Tab navigation — horizontal scroll on mobile */}
+      {/* Tab navigation — scrollable on mobile, wraps on desktop */}
       <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200 bg-gray-100 p-1 -mx-1 sm:mx-0">
-        <div className="flex gap-1 min-w-max">
+        <div className="flex gap-1 min-w-max sm:min-w-0 sm:flex-wrap">
           {TABS.map(({ key, label }) => (
             <button
               key={key}
