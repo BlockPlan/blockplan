@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import CourseForm from "./CourseForm";
 import { deleteCourse } from "../actions";
 
@@ -85,9 +86,12 @@ export default function CourseList({ courses }: CourseListProps) {
             {!isEditing && !isConfirmingDelete && (
               <div className="flex items-start justify-between px-5 py-4">
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">
+                  <Link
+                    href={`/courses/${course.id}`}
+                    className="text-sm font-semibold text-gray-900 hover:text-blue-600 transition-colors"
+                  >
                     {course.name}
-                  </p>
+                  </Link>
                   {times.length > 0 && (
                     <p className="mt-1 text-xs text-gray-500">
                       {times
