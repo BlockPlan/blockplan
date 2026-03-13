@@ -107,9 +107,10 @@ const sections = [
       "Get AI-powered study assistance — flashcards, quizzes, summaries, and more.",
     steps: [
       'Click "Study Help" in the navigation bar.',
-      "Upload PDFs, PowerPoints (.pptx), or photos of your textbook, or paste your notes directly.",
+      "Upload PDFs, PowerPoints (.pptx), Word docs (.docx), or photos of your textbook, or paste your notes directly.",
       "Select a course (optional) to tag the study materials.",
-      "The AI generates a summary, key terms, flashcards, multiple-choice quiz, and practice test questions.",
+      "The AI generates a detailed summary (15–25 points), key terms with thorough definitions, 20–30 flashcards, 15–20 quiz questions, and practice test questions.",
+      "Each plan has a monthly generation limit — Free: 1/month, Pro: 15/month, Max: 50/month. Your usage is shown below the generate button.",
       'You can also start a study session from the Tasks page — click the "Study" link next to any exam or reading task.',
       "Study sessions are tailored to your course content and uploaded materials.",
       'Click "View saved sessions" to browse your study help history.',
@@ -225,12 +226,14 @@ const sections = [
     title: "Courses",
     icon: "📚",
     description:
-      "Manage your courses for the semester.",
+      "Manage your courses for the semester and see everything about each course in one place.",
     steps: [
       'Click "Courses" in the navigation bar.',
       'Click "Add Course" and enter the course name (e.g., "Math 105").',
+      "Click on any course name to open its detail page — see all tasks, study sessions, and quick actions for that course.",
+      "From the course detail page, use the quick action buttons to upload a syllabus, generate AI study help, or view all tasks — each pre-selects the course for you.",
       "Courses are used to organize your tasks, grades, and study materials.",
-        "Deleting a course will remove it from all associated tasks.",
+      "Deleting a course will remove it from all associated tasks.",
     ],
   },
   {
@@ -241,9 +244,10 @@ const sections = [
     steps: [
       'Click "Upload Syllabus" in the navigation bar.',
       "Select the course the syllabus belongs to.",
-      "Upload your syllabus file (PDF or image).",
-      "The system will analyze the document and extract assignments, exams, and due dates.",
-      'Review the extracted tasks on the review page — edit any that need corrections.',
+      "Upload your syllabus as a PDF, or snap a photo (PNG, JPG) of a printed syllabus and upload the image. Files up to 10 MB are supported.",
+      "The system will analyze the document and extract assignments, exams, and due dates. Photos are read using AI vision.",
+      'Review the extracted tasks on the review page — items marked "Needs review" may be general syllabus info rather than real assignments, so check those carefully.',
+      "Edit any tasks that need corrections — fix titles, dates, or estimated times.",
       'Click "Confirm" to add the extracted tasks to your task list.',
     ],
   },
@@ -274,11 +278,23 @@ const sections = [
       "Complete the onboarding flow — set your timezone and study preferences.",
       "A guided tour will automatically start on your first visit to the Dashboard — follow along to learn the key features, or skip it if you prefer.",
       'Go to Courses and add your classes for the semester (e.g., "English 206", "Math 105").',
-      "Upload your syllabi to auto-import assignments, or manually add tasks on the Tasks page.",
+      "Upload your syllabi (PDF or photo) to auto-import assignments, or manually add tasks on the Tasks page.",
       "Set due dates and estimated time for each task.",
       'Go to the Calendar and click "Generate Plan" to create your study schedule.',
       "Check your Dashboard daily to see what's coming up and track your progress.",
       "Mark tasks as completed and blocks as done as you work through them.",
+    ],
+  },
+  {
+    title: "Feedback",
+    icon: "💬",
+    description:
+      "Help us improve BlockPlan by sharing your thoughts.",
+    steps: [
+      'Click "Feedback" in the navigation bar.',
+      "Rate your experience from 1 to 5 stars.",
+      "Write a message describing what you like, what could be better, or any issues you encountered.",
+      "Click Send Feedback — your feedback goes directly to the development team.",
     ],
   },
   {
@@ -287,7 +303,7 @@ const sections = [
     description:
       "BlockPlan is designed to work great on your phone. Here are some tips for the best mobile experience.",
     steps: [
-      "Use the hamburger menu (three lines) in the top-right to navigate between pages on mobile.",
+      "Use the hamburger menu (three lines) in the top-right to navigate between pages on mobile. Tap outside the menu to close it.",
       "Flashcards and study mode are optimized for phone screens — swipe through cards and tap to flip.",
       "All buttons and interactive elements are sized for easy tapping — no need to pinch and zoom.",
       "The calendar defaults to a single-column view on mobile so you can see your full schedule without scrolling sideways.",
@@ -371,8 +387,11 @@ export default function HelpPage() {
         <div className="mt-8 rounded-xl border border-gray-200 bg-white p-6 text-center shadow-[var(--shadow-card)]">
           <p className="text-sm text-gray-500">
             BlockPlan is built for BYU-Idaho students to stay on top of their
-            coursework. If you have questions or feedback, reach out to your
-            instructor or the development team.
+            coursework. Have questions or suggestions?{" "}
+            <a href="/feedback" className="font-medium text-blue-600 hover:text-blue-700">
+              Send us feedback
+            </a>
+            .
           </p>
         </div>
       </main>
