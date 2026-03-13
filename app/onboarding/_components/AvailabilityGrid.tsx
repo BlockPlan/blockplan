@@ -228,6 +228,7 @@ export default function AvailabilityGrid({
         {/* Blocked label selector — only visible when paintMode === "blocked" */}
         {paintMode === "blocked" && (
           <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500">Reason:</span>
             <select
               value={blockedLabel}
               onChange={(e) => setBlockedLabel(e.target.value)}
@@ -292,7 +293,7 @@ export default function AvailabilityGrid({
           }}
         >
           {/* Header row */}
-          <div className="text-xs text-gray-400 pb-1" />
+          <div className="sticky left-0 z-10 bg-white text-xs text-gray-400 pb-1" />
           {DAYS.map((day, d) => (
             <div
               key={day}
@@ -308,9 +309,9 @@ export default function AvailabilityGrid({
             const showLabel = slot % 2 === 0; // show label on the hour
             return (
               <React.Fragment key={`row-${slot}`}>
-                {/* Time label */}
+                {/* Time label — sticky so it stays visible when scrolling */}
                 <div
-                  className="pr-1 text-right text-xs text-gray-400 leading-none"
+                  className="sticky left-0 z-10 bg-white pr-1 text-right text-xs text-gray-400 leading-none"
                   style={{ height: "28px", lineHeight: "28px" }}
                 >
                   {showLabel ? slotLabel(slot) : ""}
@@ -359,6 +360,7 @@ export default function AvailabilityGrid({
 
       <p className="mt-2 text-xs text-gray-400">
         Click or drag to paint cells. Click a painted cell again to clear it.
+        Use &ldquo;Blocked&rdquo; to mark times you&apos;re busy (work, church, etc.) so we won&apos;t schedule anything there.
       </p>
     </div>
   );
