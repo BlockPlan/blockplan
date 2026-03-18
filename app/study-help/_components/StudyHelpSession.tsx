@@ -166,12 +166,6 @@ export default function StudyHelpSession({
           >
             Create your own &rarr;
           </a>
-          <a
-            href="/study-help/illustrate"
-            className="text-sm text-purple-600 hover:underline"
-          >
-            AI Illustration &rarr;
-          </a>
         </div>
       </div>
 
@@ -294,6 +288,35 @@ export default function StudyHelpSession({
           </p>
         )}
       </form>
+
+      {/* AI Illustration section */}
+      <div className="mt-8 rounded-xl border border-purple-200 bg-gradient-to-br from-purple-50 to-white p-5 sm:p-6">
+        <div className="flex items-start gap-4">
+          <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-purple-100">
+            <svg className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <h2 className="text-base font-semibold text-gray-900">AI Illustration</h2>
+            <p className="mt-1 text-sm text-gray-600">
+              Generate professional diagrams from a text description, or upload a photo of your hand-drawn notes to get a polished version.
+            </p>
+            <a
+              href="/study-help/illustrate"
+              className="mt-3 inline-flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
+              </svg>
+              Create Illustration
+            </a>
+            {userPlan === "free" && (
+              <p className="mt-2 text-xs text-purple-600">Pro/Max feature</p>
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* Error display */}
       {state.error && (
