@@ -766,6 +766,7 @@ export async function generateIllustrationForSession(
   try {
     const context = {
       summary: existingData.summary,
+      keyTerms: existingData.keyTerms,
       courseName,
     };
 

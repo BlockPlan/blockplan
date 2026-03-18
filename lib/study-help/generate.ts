@@ -532,7 +532,7 @@ function getMockInfographic(): { type: "infographic"; title: string; mermaidCode
 export async function generateIllustration(
   mode: "cleanup" | "visualize",
   input: string, // text concept for visualize, or base64 data URL for cleanup
-  context?: { summary?: string[]; courseName?: string }
+  context?: { summary?: string[]; keyTerms?: { term: string; definition: string }[]; courseName?: string }
 ): Promise<{ imageBase64: string }> {
   if (!process.env.OPENAI_API_KEY) {
     // Return a placeholder SVG as base64 for mock mode
@@ -544,17 +544,41 @@ export async function generateIllustration(
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
   if (mode === "visualize") {
-    // Build a descriptive prompt from the user's concept + session context
-    const contextStr = context?.summary?.length
-      ? `\n\nContext from study material:\n- ${context.summary.slice(0, 5).join("\n- ")}`
+    // Build a comprehensive, detailed prompt from the user's concept + session context
+    const summaryCtx = context?.summary?.length
+      ? `\nKey points from study material:\n- ${context.summary.slice(0, 10).join("\n- ")}`
       : "";
-    const courseStr = context?.courseName ? ` for a ${context.courseName} course` : "";
+    const termsCtx = context?.keyTerms?.length
+      ? `\nRelevant terms and definitions:\n${context.keyTerms.slice(0, 10).map((kt) => `- ${kt.term}: ${kt.definition}`).join("\n")}`
+      : "";
+    const contextStr = (summaryCtx || termsCtx)
+      ? `\n\nRELEVANT CONTEXT FROM THE STUDENT'S STUDY MATERIAL (use this to ensure accuracy and completeness):${summaryCtx}${termsCtx}`
+      : "";
+    const courseStr = context?.courseName ? ` for a college-level ${context.courseName} course` : "";
 
     const prompt = [
-      `Create a clear, professional educational diagram or illustration${courseStr} that visually explains the following concept:`,
-      `"${input}"`,
+      `You are creating a HIGH-QUALITY, DETAILED educational illustration${courseStr} for a college student studying for exams. This illustration must be comprehensive enough to serve as a real study aid — not a simplified overview.`,
       "",
-      "Style: Clean, colorful educational illustration suitable for a textbook or study guide. Use labels, arrows, and clear visual hierarchy. No text walls — focus on visual explanation.",
+      `CONCEPT TO ILLUSTRATE: "${input}"`,
+      "",
+      "CRITICAL REQUIREMENTS:",
+      "1. ACCURACY: All scientific, mathematical, or technical details must be correct. Use proper terminology and accurate representations.",
+      "2. COMPLETENESS: Include ALL important components, stages, parts, or relationships — not just the main idea. A student should be able to learn from this image alone.",
+      "3. LABELS: Every significant element must have a clear, readable label. Use leader lines or callout boxes when needed. Labels should use proper academic terminology.",
+      "4. VISUAL HIERARCHY: Use size, color, and positioning to show which elements are most important. Group related items together.",
+      "5. FLOW & RELATIONSHIPS: Use arrows, connecting lines, or numbered steps to show processes, cause-and-effect, or sequential relationships.",
+      "6. ANNOTATIONS: Include brief explanatory notes (1-5 words) next to complex elements to clarify what is happening at each stage.",
+      "",
+      "STYLE REQUIREMENTS:",
+      "- Professional textbook-quality illustration with clean lines and modern design",
+      "- Rich, purposeful color palette — use distinct colors to differentiate categories, stages, or components (not just for decoration)",
+      "- White or light background for maximum readability and clean appearance",
+      "- Clear typography for all labels and annotations — large enough to read easily",
+      "- Balanced composition that fills the canvas without feeling cluttered",
+      "- Include a clear title at the top of the illustration",
+      "- If applicable, include a legend or key explaining color coding or symbols used",
+      "",
+      "DO NOT: Create overly simplified or cartoon-like images. This is for serious academic study.",
       contextStr,
     ].join("\n");
 
@@ -563,6 +587,7 @@ export async function generateIllustration(
       prompt,
       n: 1,
       size: "1024x1024",
+      quality: "high",
     });
 
     const imageData = response.data?.[0];
@@ -582,12 +607,23 @@ export async function generateIllustration(
     const imageBuffer = Buffer.from(base64Match[1], "base64");
     const imageFile = new File([imageBuffer], "drawing.png", { type: "image/png" });
 
+    const courseStr = context?.courseName ? ` This is for a college-level ${context.courseName} course.` : "";
+
     const prompt = [
-      "Redraw this hand-drawn illustration as a clean, professional, colorful educational diagram.",
-      "Preserve the original layout, labels, and structure, but make it look polished and textbook-quality.",
-      "Use clear lines, proper shapes, readable labels, and a professional color scheme.",
-      "Keep all the information from the original drawing — just make it look professional.",
-    ].join(" ");
+      `Redraw this hand-drawn illustration as a HIGH-QUALITY, professional, textbook-grade educational diagram.${courseStr}`,
+      "",
+      "CRITICAL REQUIREMENTS:",
+      "1. PRESERVE ALL CONTENT: Keep every label, annotation, arrow, relationship, and data point from the original drawing. Do NOT omit or simplify anything the student drew.",
+      "2. ENHANCE READABILITY: Replace messy handwriting with clean, properly sized typography. Make all text crisp and easy to read.",
+      "3. CLEAN GEOMETRY: Replace rough hand-drawn shapes with precise geometric shapes — perfect circles, straight lines, proper curves, aligned boxes.",
+      "4. PROFESSIONAL COLOR: Apply a purposeful, cohesive color scheme that enhances understanding. Use distinct colors to differentiate categories, stages, or components.",
+      "5. IMPROVE LAYOUT: Optimize spacing and alignment while preserving the original structure and spatial relationships the student intended.",
+      "6. ADD VISUAL POLISH: Add subtle shadows, gradients, or borders where appropriate to give depth and professionalism.",
+      "7. CORRECT PROPORTIONS: If the original has anatomical, scientific, or technical elements, make them proportionally accurate.",
+      "",
+      "STYLE: Clean white background, modern textbook illustration style, professional enough to include in a presentation or study guide.",
+      "The result should look like it was created by a professional graphic designer, not auto-traced from a sketch.",
+    ].join("\n");
 
     const response = await client.images.edit({
       model: "gpt-image-1",
