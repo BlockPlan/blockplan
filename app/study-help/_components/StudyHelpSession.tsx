@@ -166,6 +166,12 @@ export default function StudyHelpSession({
           >
             Create your own &rarr;
           </a>
+          <a
+            href="/study-help/illustrate"
+            className="text-sm text-purple-600 hover:underline"
+          >
+            AI Illustration &rarr;
+          </a>
         </div>
       </div>
 

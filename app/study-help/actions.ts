@@ -803,6 +803,102 @@ export async function generateIllustrationForSession(
 }
 
 // ---------------------------------------------------------------------------
+// Create a standalone illustration session (no flashcards/quiz needed)
+// ---------------------------------------------------------------------------
+
+export async function createIllustrationSession(
+  mode: "cleanup" | "visualize",
+  input: string,
+  courseId?: string
+): Promise<{ sessionId?: string; illustration?: Illustration; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  // Pro/Max only
+  const plan = await getUserPlan(user.id);
+  if (plan === "free") {
+    return { error: "AI Illustrations are available on Pro and Max plans. Upgrade to access this feature." };
+  }
+
+  // Validate input
+  if (mode === "visualize" && !input.trim()) {
+    return { error: "Please describe the concept you want to visualize." };
+  }
+  if (mode === "cleanup" && !input.startsWith("data:image/")) {
+    return { error: "Please upload an image to clean up." };
+  }
+
+  // Resolve course name
+  let courseName: string | undefined;
+  if (courseId) {
+    const { data: course } = await supabase
+      .from("courses")
+      .select("name")
+      .eq("id", courseId)
+      .eq("user_id", user.id)
+      .single();
+    courseName = (course?.name as string) ?? undefined;
+  }
+
+  try {
+    // Generate the illustration
+    const { imageBase64 } = await generateIllustration(mode, input, { courseName });
+
+    const illustration: Illustration = {
+      id: crypto.randomUUID(),
+      imageUrl: imageBase64,
+      prompt: mode === "visualize" ? input.trim() : "Hand-drawn illustration cleanup",
+      mode,
+      createdAt: new Date().toISOString(),
+    };
+
+    // Create a minimal session to hold the illustration
+    const now = new Date();
+    const dateLabel = now.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+    const title = courseName
+      ? `${courseName} — Illustration — ${dateLabel}`
+      : `AI Illustration — ${dateLabel}`;
+
+    const sessionData: StudyHelp = {
+      summary: [],
+      keyTerms: [],
+      flashcards: [],
+      quiz: [],
+      practiceTest: [],
+      illustrations: [illustration],
+    };
+
+    const { data: inserted, error } = await supabase
+      .from("study_help_sessions")
+      .insert({
+        user_id: user.id,
+        course_id: courseId || null,
+        title,
+        data: sessionData,
+      })
+      .select("id")
+      .single();
+
+    if (error) return { error: "Failed to save illustration session." };
+
+    revalidatePath("/study-help/history");
+    return { sessionId: inserted?.id as string, illustration };
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error("[createIllustrationSession] Error:", errMsg);
+    return { error: `Failed to generate illustration: ${errMsg}` };
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Get current usage info for the UI
 // ---------------------------------------------------------------------------
 
