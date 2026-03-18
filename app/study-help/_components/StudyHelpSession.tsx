@@ -273,6 +273,11 @@ export default function StudyHelpSession({
             </>
           )}
         </button>
+        {isPending && (
+          <p className="mt-2 text-sm text-gray-500">
+            This may take a minute or two — we&apos;re generating comprehensive study materials.
+          </p>
+        )}
         {/* Usage indicator */}
         {usage && usage.limit !== Infinity && (
           <p className={`mt-2 text-xs ${usage.used >= usage.limit ? "text-red-500" : "text-gray-400"}`}>
