@@ -22,6 +22,7 @@ export default function DiagramViewer({
   isGenerating,
   isGeneratingIllustration,
   userPlan,
+  illustrationUsage,
 }: {
   diagrams: Diagram[];
   illustrations?: Illustration[];
@@ -30,6 +31,7 @@ export default function DiagramViewer({
   isGenerating?: boolean;
   isGeneratingIllustration?: boolean;
   userPlan?: string;
+  illustrationUsage?: { used: number; limit: number };
 }) {
   const [selectedType, setSelectedType] = useState<DiagramType>("infographic");
 
@@ -70,6 +72,7 @@ export default function DiagramViewer({
           onGenerate={onGenerateIllustration}
           isGenerating={isGeneratingIllustration}
           userPlan={userPlan}
+          illustrationUsage={illustrationUsage}
         />
       ) : currentDiagram ? (
         <div>

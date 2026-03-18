@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { StudyHelp } from "@/lib/study-help/types";
 import type { RegeneratableSection } from "@/lib/study-help/types";
 import FlashcardViewer from "./FlashcardViewer";
@@ -13,6 +13,7 @@ import TutorChat from "./TutorChat";
 import TutorUpgradePrompt from "./TutorUpgradePrompt";
 import type { SubscriptionPlan } from "@/lib/subscription";
 import type { DiagramType } from "@/lib/study-help/types";
+import { getIllustrationUsageInfo } from "@/app/study-help/actions";
 
 const TABS = [
   { key: "summary", label: "Summary" },
@@ -55,6 +56,15 @@ export default function StudyHelpResults({
   const [regeneratingSection, setRegeneratingSection] = useState<RegeneratableSection | null>(null);
   const [generatingDiagram, setGeneratingDiagram] = useState(false);
   const [generatingIllustration, setGeneratingIllustration] = useState(false);
+  const [illustrationUsage, setIllustrationUsage] = useState<{ used: number; limit: number } | undefined>();
+
+  useEffect(() => {
+    getIllustrationUsageInfo().then((info) => {
+      if (info.limit !== Infinity) {
+        setIllustrationUsage({ used: info.used, limit: info.limit });
+      }
+    });
+  }, [data.illustrations]);
 
   const hasEli5 = !!(data.eli5Summary && data.eli5Summary.length > 0);
 
@@ -427,6 +437,7 @@ export default function StudyHelpResults({
               isGenerating={generatingDiagram}
               isGeneratingIllustration={generatingIllustration}
               userPlan={userPlan}
+              illustrationUsage={illustrationUsage}
             />
           </div>
         )}

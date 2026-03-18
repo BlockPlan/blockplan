@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   createIllustrationSession,
   generateIllustrationForSession,
+  getIllustrationUsageInfo,
 } from "@/app/study-help/actions";
 import type { Illustration } from "@/lib/study-help/types";
 import type { SubscriptionPlan } from "@/lib/subscription";
@@ -37,10 +38,20 @@ export default function IllustratePage({
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [illustrations, setIllustrations] = useState<Illustration[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [usageInfo, setUsageInfo] = useState<{ used: number; limit: number } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isPro = userPlan !== "free";
-  const atLimit = illustrations.length >= MAX_ILLUSTRATIONS;
+  const freeUsedUp = !isPro && usageInfo && usageInfo.used >= usageInfo.limit;
+  const atLimit = illustrations.length >= MAX_ILLUSTRATIONS || !!freeUsedUp;
+
+  useEffect(() => {
+    getIllustrationUsageInfo().then((info) => {
+      if (info.limit !== Infinity) {
+        setUsageInfo({ used: info.used, limit: info.limit });
+      }
+    });
+  }, [illustrations]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -123,37 +134,6 @@ export default function IllustratePage({
     }
   }, [mode, conceptText, uploadedImage, sessionId, courseId]);
 
-  // Free user gate
-  if (!isPro) {
-    return (
-      <div>
-        <div className="mb-6">
-          <h1 className="page-title">AI Illustration</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Generate professional visuals from text or clean up hand-drawn diagrams.
-          </p>
-        </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-8 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-purple-50">
-            <svg className="h-7 w-7 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
-            </svg>
-          </div>
-          <p className="text-base font-medium text-gray-900">AI Illustrations are a Pro/Max feature</p>
-          <p className="mt-1 text-sm text-gray-500">
-            Upgrade to generate professional diagrams and clean up hand-drawn illustrations.
-          </p>
-          <a
-            href="/pricing"
-            className="mt-4 inline-block rounded-lg bg-purple-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-purple-700"
-          >
-            Upgrade to Pro
-          </a>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div>
       {/* Header */}
@@ -193,9 +173,11 @@ export default function IllustratePage({
         >
           Clean Up Drawing
         </button>
-        {illustrations.length > 0 && (
+        {(illustrations.length > 0 || usageInfo) && (
           <span className="ml-auto text-xs text-gray-400">
-            {illustrations.length} of {MAX_ILLUSTRATIONS} used
+            {usageInfo
+              ? `${usageInfo.used} of ${usageInfo.limit} free illustrations used`
+              : `${illustrations.length} of ${MAX_ILLUSTRATIONS} this session`}
           </span>
         )}
       </div>
@@ -328,10 +310,27 @@ export default function IllustratePage({
       )}
 
       {atLimit && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-center">
-          <p className="text-sm text-amber-700">
-            Maximum of {MAX_ILLUSTRATIONS} illustrations per session reached.
-          </p>
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-center">
+          {freeUsedUp ? (
+            <>
+              <p className="text-sm font-medium text-amber-800">
+                You&apos;ve used all {usageInfo?.limit} free illustrations
+              </p>
+              <p className="mt-1 text-xs text-amber-600">
+                Upgrade to Pro for unlimited AI illustrations.
+              </p>
+              <a
+                href="/pricing"
+                className="mt-3 inline-block rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700"
+              >
+                Upgrade to Pro
+              </a>
+            </>
+          ) : (
+            <p className="text-sm text-amber-700">
+              Maximum of {MAX_ILLUSTRATIONS} illustrations per session reached.
+            </p>
+          )}
         </div>
       )}
 

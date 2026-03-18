@@ -11,6 +11,7 @@ interface IllustrationViewerProps {
   onGenerate?: (mode: "cleanup" | "visualize", input: string) => Promise<void>;
   isGenerating?: boolean;
   userPlan?: string;
+  illustrationUsage?: { used: number; limit: number };
 }
 
 export default function IllustrationViewer({
@@ -18,6 +19,7 @@ export default function IllustrationViewer({
   onGenerate,
   isGenerating,
   userPlan = "free",
+  illustrationUsage,
 }: IllustrationViewerProps) {
   const [mode, setMode] = useState<"visualize" | "cleanup">("visualize");
   const [conceptText, setConceptText] = useState("");
@@ -27,7 +29,8 @@ export default function IllustrationViewer({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isPro = userPlan !== "free";
-  const atLimit = illustrations.length >= MAX_ILLUSTRATIONS;
+  const freeUsedUp = !isPro && illustrationUsage && illustrationUsage.used >= illustrationUsage.limit;
+  const atLimit = illustrations.length >= MAX_ILLUSTRATIONS || !!freeUsedUp;
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -76,28 +79,45 @@ export default function IllustrationViewer({
     }
   };
 
-  // Free user gate
-  if (!isPro) {
+  // Free user — all used up
+  if (freeUsedUp) {
     return (
-      <div className="rounded-xl border border-gray-200 bg-white p-6 text-center sm:p-8">
-        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-purple-50">
-          <svg className="h-6 w-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
-          </svg>
+      <div className="space-y-4">
+        <div className="rounded-xl border border-gray-200 bg-white p-6 text-center sm:p-8">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-purple-50">
+            <svg className="h-6 w-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
+            </svg>
+          </div>
+          <p className="text-sm font-medium text-gray-700">
+            You&apos;ve used all {illustrationUsage.limit} free illustrations
+          </p>
+          <p className="mt-1 text-xs text-gray-500">
+            Upgrade to Pro for unlimited AI illustrations.
+          </p>
+          <a
+            href="/pricing"
+            className="mt-3 inline-block rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700"
+          >
+            Upgrade to Pro
+          </a>
         </div>
-        <p className="text-sm font-medium text-gray-700">AI Illustrations</p>
-        <p className="mt-1 text-xs text-gray-500">
-          Generate professional visuals from text or clean up hand-drawn diagrams.
-        </p>
-        <p className="mt-3 text-xs text-purple-600 font-medium">
-          Available on Pro and Max plans
-        </p>
-        <a
-          href="/pricing"
-          className="mt-3 inline-block rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700"
-        >
-          Upgrade to Pro
-        </a>
+        {/* Still show existing illustrations */}
+        {illustrations.length > 0 && (
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-gray-700">Your Illustrations</h3>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {illustrations.map((ill) => (
+                <div key={ill.id} className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                  <img src={ill.imageUrl} alt={ill.prompt} className="w-full object-contain" />
+                  <div className="border-t border-gray-100 px-3 py-2">
+                    <p className="text-xs text-gray-600 line-clamp-2">{ill.prompt}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -129,7 +149,9 @@ export default function IllustrationViewer({
           Clean Up Drawing
         </button>
         <span className="ml-auto text-xs text-gray-400">
-          {illustrations.length} of {MAX_ILLUSTRATIONS} used
+          {!isPro && illustrationUsage
+            ? `${illustrationUsage.used} of ${illustrationUsage.limit} free illustrations used`
+            : `${illustrations.length} of ${MAX_ILLUSTRATIONS} this session`}
         </span>
       </div>
 

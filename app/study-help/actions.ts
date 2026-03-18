@@ -9,7 +9,7 @@ import {
   imageToBase64,
 } from "@/lib/study-help/extract";
 import type { StudyHelp, RegeneratableSection, DiagramType, Diagram, Illustration } from "@/lib/study-help/types";
-import { getUserPlan, canGenerateStudyHelp, getMonthlyGenerationLimit, getUserGenerationsThisMonth } from "@/lib/subscription";
+import { getUserPlan, canGenerateStudyHelp, canGenerateIllustration, getMonthlyGenerationLimit, getUserGenerationsThisMonth } from "@/lib/subscription";
 import { revalidatePath } from "next/cache";
 import crypto from "crypto";
 
@@ -732,10 +732,11 @@ export async function generateIllustrationForSession(
 
   if (!user) return { error: "Not authenticated" };
 
-  // Pro/Max only
+  // Check illustration limit
   const plan = await getUserPlan(user.id);
-  if (plan === "free") {
-    return { error: "AI Illustrations are available on Pro and Max plans. Upgrade to access this feature." };
+  const illustrationUsage = await canGenerateIllustration(supabase, user.id, plan);
+  if (!illustrationUsage.allowed) {
+    return { error: `You've used all ${illustrationUsage.limit} free illustrations. Upgrade to Pro for unlimited illustrations.` };
   }
 
   // Fetch session
@@ -818,10 +819,11 @@ export async function createIllustrationSession(
 
   if (!user) return { error: "Not authenticated" };
 
-  // Pro/Max only
+  // Check illustration limit
   const plan = await getUserPlan(user.id);
-  if (plan === "free") {
-    return { error: "AI Illustrations are available on Pro and Max plans. Upgrade to access this feature." };
+  const illustrationUsage = await canGenerateIllustration(supabase, user.id, plan);
+  if (!illustrationUsage.allowed) {
+    return { error: `You've used all ${illustrationUsage.limit} free illustrations. Upgrade to Pro for unlimited illustrations.` };
   }
 
   // Validate input
@@ -896,6 +898,28 @@ export async function createIllustrationSession(
     console.error("[createIllustrationSession] Error:", errMsg);
     return { error: `Failed to generate illustration: ${errMsg}` };
   }
+}
+
+// ---------------------------------------------------------------------------
+// Get illustration usage info for the UI
+// ---------------------------------------------------------------------------
+
+export async function getIllustrationUsageInfo(): Promise<{
+  used: number;
+  limit: number;
+  plan: string;
+}> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { used: 0, limit: 0, plan: "free" };
+
+  const plan = await getUserPlan(user.id);
+  const usage = await canGenerateIllustration(supabase, user.id, plan);
+
+  return { used: usage.used, limit: usage.limit, plan };
 }
 
 // ---------------------------------------------------------------------------

@@ -63,6 +63,53 @@ export async function getUserGenerationsThisMonth(
   return count ?? 0;
 }
 
+// ---------------------------------------------------------------------------
+// Illustration limits — free users get 5 lifetime, Pro/Max unlimited (per session cap only)
+// ---------------------------------------------------------------------------
+
+const FREE_ILLUSTRATION_LIFETIME_LIMIT = 5;
+
+export async function getUserLifetimeIllustrations(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<number> {
+  // Count all illustrations across all sessions by summing the illustrations array lengths
+  const { data, error } = await supabase
+    .from("study_help_sessions")
+    .select("data")
+    .eq("user_id", userId);
+
+  if (error) {
+    console.error("[getUserLifetimeIllustrations] Error:", error);
+    return 0;
+  }
+
+  let total = 0;
+  for (const row of data ?? []) {
+    const sessionData = row.data as { illustrations?: unknown[] } | null;
+    total += sessionData?.illustrations?.length ?? 0;
+  }
+  return total;
+}
+
+export async function canGenerateIllustration(
+  supabase: SupabaseClient,
+  userId: string,
+  plan: SubscriptionPlan
+): Promise<{ allowed: boolean; used: number; limit: number }> {
+  // Pro/Max — unlimited (per-session cap handled separately)
+  if (plan !== "free") {
+    return { allowed: true, used: 0, limit: Infinity };
+  }
+
+  const used = await getUserLifetimeIllustrations(supabase, userId);
+  return {
+    allowed: used < FREE_ILLUSTRATION_LIFETIME_LIMIT,
+    used,
+    limit: FREE_ILLUSTRATION_LIFETIME_LIMIT,
+  };
+}
+
 export async function canGenerateStudyHelp(
   supabase: SupabaseClient,
   userId: string,
