@@ -271,6 +271,9 @@ export default function IllustrationViewer({
           <h3 className="text-sm font-medium text-gray-700">
             Generated Illustrations
           </h3>
+          <p className="text-xs text-gray-400">
+            AI-generated illustrations may contain spelling errors or inaccurate label placement. Always verify details.
+          </p>
           <div className="grid gap-4 sm:grid-cols-2">
             {illustrations.map((ill) => (
               <div
@@ -286,7 +289,7 @@ export default function IllustrationViewer({
                   <p className="text-xs text-gray-600 line-clamp-2">
                     {ill.prompt}
                   </p>
-                  <div className="mt-1 flex items-center gap-2">
+                  <div className="mt-1 flex items-center justify-between">
                     <span
                       className={[
                         "inline-block rounded-full px-2 py-0.5 text-[10px] font-medium",
@@ -297,6 +300,15 @@ export default function IllustrationViewer({
                     >
                       {ill.mode === "visualize" ? "Visualize" : "Cleanup"}
                     </span>
+                    {onGenerate && !atLimit && (
+                      <button
+                        onClick={() => onGenerate(ill.mode, ill.mode === "visualize" ? ill.prompt : ill.imageUrl)}
+                        disabled={isGenerating}
+                        className="text-xs font-medium text-purple-600 hover:text-purple-700 disabled:opacity-50"
+                      >
+                        Regenerate
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

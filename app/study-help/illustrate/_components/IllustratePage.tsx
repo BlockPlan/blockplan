@@ -350,6 +350,9 @@ export default function IllustratePage({
               </a>
             )}
           </div>
+          <p className="text-xs text-gray-400">
+            AI-generated illustrations may contain spelling errors or inaccurate label placement. Always verify details. Click &quot;Regenerate&quot; to try again.
+          </p>
           <div className="grid gap-4 sm:grid-cols-2">
             {illustrations.map((ill) => (
               <div
@@ -365,16 +368,33 @@ export default function IllustratePage({
                   <p className="text-xs text-gray-600 line-clamp-2">
                     {ill.prompt}
                   </p>
-                  <span
-                    className={[
-                      "mt-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-medium",
-                      ill.mode === "visualize"
-                        ? "bg-purple-100 text-purple-700"
-                        : "bg-blue-100 text-blue-700",
-                    ].join(" ")}
-                  >
-                    {ill.mode === "visualize" ? "Visualize" : "Cleanup"}
-                  </span>
+                  <div className="mt-1 flex items-center justify-between">
+                    <span
+                      className={[
+                        "inline-block rounded-full px-2 py-0.5 text-[10px] font-medium",
+                        ill.mode === "visualize"
+                          ? "bg-purple-100 text-purple-700"
+                          : "bg-blue-100 text-blue-700",
+                      ].join(" ")}
+                    >
+                      {ill.mode === "visualize" ? "Visualize" : "Cleanup"}
+                    </span>
+                    {!atLimit && (
+                      <button
+                        onClick={() => {
+                          if (ill.mode === "visualize") {
+                            setConceptText(ill.prompt);
+                            setMode("visualize");
+                          }
+                          handleGenerate();
+                        }}
+                        disabled={isGenerating}
+                        className="text-xs font-medium text-purple-600 hover:text-purple-700 disabled:opacity-50"
+                      >
+                        Regenerate
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
