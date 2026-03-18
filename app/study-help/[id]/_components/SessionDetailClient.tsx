@@ -12,6 +12,7 @@ import {
   regenerateStudyMaterial,
   generateEli5ForSession,
   generateDiagramsForSession,
+  generateIllustrationForSession,
 } from "@/app/study-help/actions";
 import type { DiagramType } from "@/lib/study-help/types";
 import type { SubscriptionPlan } from "@/lib/subscription";
@@ -120,6 +121,24 @@ export default function SessionDetailClient({
         setData((prev) => ({ ...prev, diagrams: result.diagrams }));
       }
       toast.success("Diagram generated!");
+    },
+    [sessionId, courseName]
+  );
+
+  const handleGenerateIllustration = useCallback(
+    async (mode: "cleanup" | "visualize", input: string) => {
+      const result = await generateIllustrationForSession(sessionId, mode, input, courseName);
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+      if (result.illustration) {
+        setData((prev) => ({
+          ...prev,
+          illustrations: [...(prev.illustrations ?? []), result.illustration!],
+        }));
+        toast.success("Illustration generated!");
+      }
     },
     [sessionId, courseName]
   );
@@ -242,6 +261,7 @@ export default function SessionDetailClient({
         onEditFlashcard={handleEditFlashcard}
         onGenerateEli5={handleGenerateEli5}
         onGenerateDiagram={handleGenerateDiagram}
+        onGenerateIllustration={handleGenerateIllustration}
         userPlan={userPlan}
       />
 

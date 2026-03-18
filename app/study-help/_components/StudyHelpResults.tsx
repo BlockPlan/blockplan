@@ -35,6 +35,7 @@ export default function StudyHelpResults({
   onEditFlashcard,
   onGenerateEli5,
   onGenerateDiagram,
+  onGenerateIllustration,
   userPlan,
 }: {
   data: StudyHelp;
@@ -44,6 +45,7 @@ export default function StudyHelpResults({
   onEditFlashcard?: (index: number, front: string, back: string) => void;
   onGenerateEli5?: () => Promise<void>;
   onGenerateDiagram?: (type: DiagramType) => Promise<void>;
+  onGenerateIllustration?: (mode: "cleanup" | "visualize", input: string) => Promise<void>;
   userPlan?: SubscriptionPlan;
 }) {
   const [activeTab, setActiveTab] = useState<TabKey>("summary");
@@ -52,6 +54,7 @@ export default function StudyHelpResults({
   const [generatingEli5, setGeneratingEli5] = useState(false);
   const [regeneratingSection, setRegeneratingSection] = useState<RegeneratableSection | null>(null);
   const [generatingDiagram, setGeneratingDiagram] = useState(false);
+  const [generatingIllustration, setGeneratingIllustration] = useState(false);
 
   const hasEli5 = !!(data.eli5Summary && data.eli5Summary.length > 0);
 
@@ -93,6 +96,16 @@ export default function StudyHelpResults({
       await onRegenerate([section]);
     } finally {
       setRegeneratingSection(null);
+    }
+  };
+
+  const handleGenerateIllustration = async (mode: "cleanup" | "visualize", input: string) => {
+    if (!onGenerateIllustration || generatingIllustration) return;
+    setGeneratingIllustration(true);
+    try {
+      await onGenerateIllustration(mode, input);
+    } finally {
+      setGeneratingIllustration(false);
     }
   };
 
@@ -403,13 +416,17 @@ export default function StudyHelpResults({
             <div className="mb-4">
               <h2 className="text-base font-semibold text-gray-900 sm:text-lg">Visualize</h2>
               <p className="text-sm text-gray-500">
-                AI-generated study guides, mind maps, flowcharts, and concept maps
+                AI-generated study guides, mind maps, flowcharts, concept maps, and illustrations
               </p>
             </div>
             <DiagramViewer
               diagrams={data.diagrams ?? []}
+              illustrations={data.illustrations}
               onGenerate={onGenerateDiagram ? handleGenerateDiagram : undefined}
+              onGenerateIllustration={onGenerateIllustration ? handleGenerateIllustration : undefined}
               isGenerating={generatingDiagram}
+              isGeneratingIllustration={generatingIllustration}
+              userPlan={userPlan}
             />
           </div>
         )}

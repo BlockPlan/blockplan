@@ -164,18 +164,20 @@ const sections = [
     title: "Visual Diagrams",
     icon: "📊",
     description:
-      "Generate AI-powered visual diagrams — mind maps, flowcharts, and concept maps — from your study material.",
+      "Generate AI-powered visual diagrams — mind maps, flowcharts, concept maps, and AI illustrations — from your study material.",
     steps: [
       'Click the "Visualize" tab in any study session.',
-      'Choose a diagram type: Mind Map, Flowchart, or Concept Map.',
+      'Choose a diagram type: Study Guide, Mind Map, Flowchart, Concept Map, or AI Illustration.',
       'Click "Generate Diagram" to create a visual from your summary and key terms.',
       "The AI generates valid diagram syntax and renders it as an interactive SVG in your browser.",
       "Mind Maps show topic hierarchy — great for seeing how subtopics branch from the main idea.",
       "Flowcharts show logical flow — useful for processes, decision trees, and step-by-step concepts.",
       "Concept Maps show relationships between terms — ideal for understanding how ideas connect.",
+      'AI Illustration (Pro/Max only) has two modes: "Visualize Concept" generates a professional diagram from a text description, and "Clean Up Drawing" redraws a photo of your hand-drawn illustration as a polished, professional image.',
+      "You can generate up to 5 AI illustrations per study session.",
       'Click "Regenerate" to get a different version of the same diagram type.',
       "A green dot on a diagram type button indicates it has already been generated.",
-      "Diagrams are saved to your session — come back later and they will still be there.",
+      "Diagrams and illustrations are saved to your session — come back later and they will still be there.",
     ],
   },
   {

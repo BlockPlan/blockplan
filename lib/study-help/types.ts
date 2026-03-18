@@ -70,9 +70,18 @@ export const studyHelpSchema = studyHelpGenerationSchema.extend({
   })).optional(),
   diagrams: z.array(
     z.object({
-      type: z.enum(["mindmap", "flowchart", "conceptMap", "infographic"]),
+      type: z.enum(["mindmap", "flowchart", "conceptMap", "infographic", "illustration"]),
       title: z.string().describe("Short descriptive title for the diagram"),
       mermaidCode: z.string().describe("Valid Mermaid.js syntax or JSON content for the diagram"),
+    })
+  ).optional(),
+  illustrations: z.array(
+    z.object({
+      id: z.string(),
+      imageUrl: z.string().describe("Base64 data URL of the generated illustration"),
+      prompt: z.string().describe("The text prompt or cleanup description used"),
+      mode: z.enum(["cleanup", "visualize"]),
+      createdAt: z.string(),
     })
   ).optional(),
 });
@@ -85,6 +94,7 @@ export type PracticeTestQuestion = StudyHelp["practiceTest"][number];
 export type PracticeProblem = NonNullable<StudyHelp["practiceProblems"]>[number];
 export type Diagram = NonNullable<StudyHelp["diagrams"]>[number];
 export type DiagramType = Diagram["type"];
+export type Illustration = NonNullable<StudyHelp["illustrations"]>[number];
 
 // ---------------------------------------------------------------------------
 // Partial schema for regenerating specific sections only

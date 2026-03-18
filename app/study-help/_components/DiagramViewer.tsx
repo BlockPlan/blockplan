@@ -1,25 +1,35 @@
 "use client";
 
 import { useState } from "react";
-import type { Diagram, DiagramType } from "@/lib/study-help/types";
+import type { Diagram, DiagramType, Illustration } from "@/lib/study-help/types";
 import MermaidDiagram from "./MermaidDiagram";
 import InfographicView from "./InfographicView";
+import IllustrationViewer from "./IllustrationViewer";
 
 const DIAGRAM_TYPES: { key: DiagramType; label: string }[] = [
   { key: "infographic", label: "Study Guide" },
   { key: "mindmap", label: "Mind Map" },
   { key: "flowchart", label: "Flowchart" },
   { key: "conceptMap", label: "Concept Map" },
+  { key: "illustration", label: "AI Illustration" },
 ];
 
 export default function DiagramViewer({
   diagrams,
+  illustrations,
   onGenerate,
+  onGenerateIllustration,
   isGenerating,
+  isGeneratingIllustration,
+  userPlan,
 }: {
   diagrams: Diagram[];
+  illustrations?: Illustration[];
   onGenerate?: (type: DiagramType) => Promise<void>;
+  onGenerateIllustration?: (mode: "cleanup" | "visualize", input: string) => Promise<void>;
   isGenerating?: boolean;
+  isGeneratingIllustration?: boolean;
+  userPlan?: string;
 }) {
   const [selectedType, setSelectedType] = useState<DiagramType>("infographic");
 
@@ -30,7 +40,9 @@ export default function DiagramViewer({
       {/* Diagram type selector */}
       <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
         {DIAGRAM_TYPES.map(({ key, label }) => {
-          const hasData = diagrams.some((d) => d.type === key);
+          const hasData = key === "illustration"
+            ? (illustrations?.length ?? 0) > 0
+            : diagrams.some((d) => d.type === key);
           return (
             <button
               key={key}
@@ -38,7 +50,7 @@ export default function DiagramViewer({
               className={[
                 "rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors sm:px-3 sm:text-sm",
                 selectedType === key
-                  ? "bg-blue-600 text-white"
+                  ? key === "illustration" ? "bg-purple-600 text-white" : "bg-blue-600 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200",
               ].join(" ")}
             >
@@ -51,8 +63,15 @@ export default function DiagramViewer({
         })}
       </div>
 
-      {/* Diagram display or generate prompt */}
-      {currentDiagram ? (
+      {/* Illustration tab */}
+      {selectedType === "illustration" ? (
+        <IllustrationViewer
+          illustrations={illustrations ?? []}
+          onGenerate={onGenerateIllustration}
+          isGenerating={isGeneratingIllustration}
+          userPlan={userPlan}
+        />
+      ) : currentDiagram ? (
         <div>
           <div className="mb-2 flex items-center justify-between">
             <h3 className="text-sm font-medium text-gray-700">

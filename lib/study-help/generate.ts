@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { generateText, Output, NoObjectGeneratedError } from "ai";
 import { openai } from "@ai-sdk/openai";
+import OpenAI from "openai";
 import {
   studyHelpGenerationSchema,
   buildRegenerateSchema,
@@ -522,6 +523,87 @@ function getMockInfographic(): { type: "infographic"; title: string; mermaidCode
     title: content.title,
     mermaidCode: JSON.stringify(content),
   };
+}
+
+// ---------------------------------------------------------------------------
+// Generate AI illustration (visualize concept or clean up hand-drawn image)
+// ---------------------------------------------------------------------------
+
+export async function generateIllustration(
+  mode: "cleanup" | "visualize",
+  input: string, // text concept for visualize, or base64 data URL for cleanup
+  context?: { summary?: string[]; courseName?: string }
+): Promise<{ imageBase64: string }> {
+  if (!process.env.OPENAI_API_KEY) {
+    // Return a placeholder SVG as base64 for mock mode
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"><rect fill="#f0f0f0" width="400" height="400"/><text x="200" y="200" text-anchor="middle" fill="#999" font-size="16">AI Illustration (mock)</text></svg>`;
+    const b64 = Buffer.from(svg).toString("base64");
+    return { imageBase64: `data:image/svg+xml;base64,${b64}` };
+  }
+
+  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+  if (mode === "visualize") {
+    // Build a descriptive prompt from the user's concept + session context
+    const contextStr = context?.summary?.length
+      ? `\n\nContext from study material:\n- ${context.summary.slice(0, 5).join("\n- ")}`
+      : "";
+    const courseStr = context?.courseName ? ` for a ${context.courseName} course` : "";
+
+    const prompt = [
+      `Create a clear, professional educational diagram or illustration${courseStr} that visually explains the following concept:`,
+      `"${input}"`,
+      "",
+      "Style: Clean, colorful educational illustration suitable for a textbook or study guide. Use labels, arrows, and clear visual hierarchy. No text walls — focus on visual explanation.",
+      contextStr,
+    ].join("\n");
+
+    const response = await client.images.generate({
+      model: "gpt-image-1",
+      prompt,
+      n: 1,
+      size: "1024x1024",
+    });
+
+    const imageData = response.data?.[0];
+    if (!imageData?.b64_json) {
+      throw new Error("AI did not return an image. Please try again.");
+    }
+
+    return { imageBase64: `data:image/png;base64,${imageData.b64_json}` };
+  } else {
+    // Cleanup mode — redraw the hand-drawn image professionally
+    // Extract raw base64 from data URL
+    const base64Match = input.match(/^data:image\/[^;]+;base64,(.+)$/);
+    if (!base64Match) {
+      throw new Error("Invalid image format. Please upload a PNG or JPG image.");
+    }
+
+    const imageBuffer = Buffer.from(base64Match[1], "base64");
+    const imageFile = new File([imageBuffer], "drawing.png", { type: "image/png" });
+
+    const prompt = [
+      "Redraw this hand-drawn illustration as a clean, professional, colorful educational diagram.",
+      "Preserve the original layout, labels, and structure, but make it look polished and textbook-quality.",
+      "Use clear lines, proper shapes, readable labels, and a professional color scheme.",
+      "Keep all the information from the original drawing — just make it look professional.",
+    ].join(" ");
+
+    const response = await client.images.edit({
+      model: "gpt-image-1",
+      image: imageFile,
+      prompt,
+      n: 1,
+      size: "1024x1024",
+    });
+
+    const imageData = response.data?.[0];
+    if (!imageData?.b64_json) {
+      throw new Error("AI could not process the image. Please try again.");
+    }
+
+    return { imageBase64: `data:image/png;base64,${imageData.b64_json}` };
+  }
 }
 
 function getMockDiagram(type: DiagramTypeKey): { type: DiagramTypeKey; title: string; mermaidCode: string } {

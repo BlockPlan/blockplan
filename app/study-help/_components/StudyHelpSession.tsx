@@ -7,6 +7,7 @@ import {
   regenerateStudyMaterial,
   updateStudyHelpData,
   generateDiagramsForSession,
+  generateIllustrationForSession,
   getUsageInfo,
   type StudyHelpState,
 } from "../actions";
@@ -92,6 +93,28 @@ export default function StudyHelpSession({
       toast.success("Diagram generated!");
     },
     [state.sessionId, state.courseName]
+  );
+
+  const handleGenerateIllustration = useCallback(
+    async (mode: "cleanup" | "visualize", input: string) => {
+      if (!state.sessionId) return;
+      const result = await generateIllustrationForSession(state.sessionId, mode, input, state.courseName);
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+      if (result.illustration) {
+        setDataOverride((prev) => {
+          const currentData = prev
+            ? { ...(state.data ?? {}), ...prev }
+            : (state.data ?? {});
+          const existing = (currentData as import("@/lib/study-help/types").StudyHelp).illustrations ?? [];
+          return { ...prev, illustrations: [...existing, result.illustration!] };
+        });
+        toast.success("Illustration generated!");
+      }
+    },
+    [state.sessionId, state.courseName, state.data]
   );
 
   const handleRegenerate = useCallback(
@@ -293,6 +316,7 @@ export default function StudyHelpSession({
             onRegenerate={state.sessionId ? handleRegenerate : undefined}
             onEditFlashcard={state.sessionId ? handleEditFlashcard : undefined}
             onGenerateDiagram={state.sessionId ? handleGenerateDiagram : undefined}
+            onGenerateIllustration={state.sessionId ? handleGenerateIllustration : undefined}
             userPlan={userPlan}
           />
         </>

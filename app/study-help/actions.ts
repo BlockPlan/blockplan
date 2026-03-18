@@ -1,14 +1,14 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { generateStudyHelp, regenerateStudyHelp, generateEli5, generateDiagrams, generateInfographic, type ContentPart } from "@/lib/study-help/generate";
+import { generateStudyHelp, regenerateStudyHelp, generateEli5, generateDiagrams, generateInfographic, generateIllustration, type ContentPart } from "@/lib/study-help/generate";
 import {
   extractTextFromPdf,
   extractTextFromPptx,
   extractTextFromDocx,
   imageToBase64,
 } from "@/lib/study-help/extract";
-import type { StudyHelp, RegeneratableSection, DiagramType, Diagram } from "@/lib/study-help/types";
+import type { StudyHelp, RegeneratableSection, DiagramType, Diagram, Illustration } from "@/lib/study-help/types";
 import { getUserPlan, canGenerateStudyHelp, getMonthlyGenerationLimit, getUserGenerationsThisMonth } from "@/lib/subscription";
 import { revalidatePath } from "next/cache";
 import crypto from "crypto";
@@ -490,6 +490,11 @@ export async function generateDiagramsForSession(
     return { error: "No summary available to visualize." };
   }
 
+  // Illustration type is handled by generateIllustrationForSession, not here
+  if (diagramType === "illustration") {
+    return { error: "Use the AI Illustration feature instead." };
+  }
+
   try {
     const { diagrams: newDiagrams } = diagramType === "infographic"
       ? await generateInfographic(
@@ -706,6 +711,94 @@ export async function regenerateStudyMaterial(
   revalidatePath(`/study-help/${sessionId}`);
 
   return { data: regenerated };
+}
+
+// ---------------------------------------------------------------------------
+// Generate AI illustration for an existing session
+// ---------------------------------------------------------------------------
+
+const MAX_ILLUSTRATIONS_PER_SESSION = 5;
+
+export async function generateIllustrationForSession(
+  sessionId: string,
+  mode: "cleanup" | "visualize",
+  input: string, // text concept for visualize, base64 data URL for cleanup
+  courseName?: string
+): Promise<{ illustration?: Illustration; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  // Pro/Max only
+  const plan = await getUserPlan(user.id);
+  if (plan === "free") {
+    return { error: "AI Illustrations are available on Pro and Max plans. Upgrade to access this feature." };
+  }
+
+  // Fetch session
+  const { data: session } = await supabase
+    .from("study_help_sessions")
+    .select("data")
+    .eq("id", sessionId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!session) return { error: "Session not found." };
+
+  const existingData = session.data as StudyHelp;
+  const existingIllustrations = existingData.illustrations ?? [];
+
+  if (existingIllustrations.length >= MAX_ILLUSTRATIONS_PER_SESSION) {
+    return { error: `Maximum of ${MAX_ILLUSTRATIONS_PER_SESSION} illustrations per session reached.` };
+  }
+
+  // Validate input
+  if (mode === "visualize" && !input.trim()) {
+    return { error: "Please describe the concept you want to visualize." };
+  }
+  if (mode === "cleanup" && !input.startsWith("data:image/")) {
+    return { error: "Please upload an image to clean up." };
+  }
+
+  try {
+    const context = {
+      summary: existingData.summary,
+      courseName,
+    };
+
+    const { imageBase64 } = await generateIllustration(mode, input, context);
+
+    const illustration: Illustration = {
+      id: crypto.randomUUID(),
+      imageUrl: imageBase64,
+      prompt: mode === "visualize" ? input.trim() : "Hand-drawn illustration cleanup",
+      mode,
+      createdAt: new Date().toISOString(),
+    };
+
+    const merged: StudyHelp = {
+      ...existingData,
+      illustrations: [...existingIllustrations, illustration],
+    };
+
+    const { error } = await supabase
+      .from("study_help_sessions")
+      .update({ data: merged })
+      .eq("id", sessionId)
+      .eq("user_id", user.id);
+
+    if (error) return { error: "Failed to save illustration." };
+
+    revalidatePath(`/study-help/${sessionId}`);
+    return { illustration };
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error("[generateIllustration] Error:", errMsg);
+    return { error: `Failed to generate illustration: ${errMsg}` };
+  }
 }
 
 // ---------------------------------------------------------------------------
