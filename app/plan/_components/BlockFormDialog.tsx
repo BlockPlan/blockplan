@@ -25,9 +25,16 @@ interface BlockFormData {
   status?: string;
 }
 
+interface CourseOption {
+  id: string;
+  name: string;
+}
+
 interface BlockFormDialogProps {
   /** Tasks available for selection */
   tasks: TaskOption[];
+  /** Courses available for custom blocks */
+  courses?: CourseOption[];
   /** Pre-filled data (for editing or pre-selecting a date/time) */
   initialData?: Partial<BlockFormData>;
   /** Called after successful save or delete */
@@ -58,6 +65,7 @@ function buildISO(dateStr: string, timeStr: string): string {
 
 export default function BlockFormDialog({
   tasks,
+  courses = [],
   initialData,
   onClose,
 }: BlockFormDialogProps) {
@@ -67,7 +75,12 @@ export default function BlockFormDialog({
   const isEditing = !!initialData?.blockId;
 
   // Form state
+  const [mode, setMode] = useState<"existing" | "custom">(
+    initialData?.taskId ? "existing" : "existing"
+  );
   const [taskId, setTaskId] = useState(initialData?.taskId ?? tasks[0]?.id ?? "");
+  const [customTitle, setCustomTitle] = useState("");
+  const [courseId, setCourseId] = useState(courses[0]?.id ?? "");
   const [date, setDate] = useState(
     initialData?.date ?? format(new Date(), "yyyy-MM-dd")
   );
@@ -92,8 +105,12 @@ export default function BlockFormDialog({
     e.preventDefault();
     setError(null);
 
-    if (!taskId) {
+    if (mode === "existing" && !taskId) {
       setError("Please select a task");
+      return;
+    }
+    if (mode === "custom" && !customTitle.trim()) {
+      setError("Please enter a name for this block");
       return;
     }
 
@@ -109,6 +126,8 @@ export default function BlockFormDialog({
       let result;
       if (isEditing) {
         result = await updateBlock(initialData!.blockId!, taskId, startISO, endISO);
+      } else if (mode === "custom") {
+        result = await addBlock(null, startISO, endISO, customTitle.trim(), courseId || undefined);
       } else {
         result = await addBlock(taskId, startISO, endISO);
       }
@@ -172,31 +191,102 @@ export default function BlockFormDialog({
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4">
-        {/* Task selector */}
-        <div>
-          <label htmlFor="block-task" className="block text-sm font-medium text-gray-700 mb-1">
-            Task
-          </label>
-          <select
-            id="block-task"
-            value={taskId}
-            onChange={(e) => setTaskId(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          >
-            {tasks.length === 0 && (
-              <option value="">No tasks available</option>
+        {/* Mode toggle — existing task or custom name */}
+        {!isEditing && (
+          <div className="flex rounded-lg border border-gray-300 p-0.5">
+            <button
+              type="button"
+              onClick={() => setMode("existing")}
+              className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                mode === "existing"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              Existing Task
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("custom")}
+              className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                mode === "custom"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              Custom Block
+            </button>
+          </div>
+        )}
+
+        {/* Task selector (existing mode) */}
+        {(mode === "existing" || isEditing) && (
+          <div>
+            <label htmlFor="block-task" className="block text-sm font-medium text-gray-700 mb-1">
+              Task
+            </label>
+            <select
+              id="block-task"
+              value={taskId}
+              onChange={(e) => setTaskId(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              {tasks.length === 0 && (
+                <option value="">No tasks available</option>
+              )}
+              {courseNames.map((course) => (
+                <optgroup key={course} label={course}>
+                  {tasksByCourse[course].map((task) => (
+                    <option key={task.id} value={task.id}>
+                      {task.title}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Custom block name (custom mode) */}
+        {mode === "custom" && !isEditing && (
+          <div>
+            <label htmlFor="block-custom" className="block text-sm font-medium text-gray-700 mb-1">
+              Block Name
+            </label>
+            <input
+              id="block-custom"
+              type="text"
+              value={customTitle}
+              onChange={(e) => setCustomTitle(e.target.value)}
+              placeholder="e.g., Review lecture notes, Group study session"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              This will create a personal task on your calendar.
+            </p>
+
+            {/* Course selector for custom blocks */}
+            {courses.length > 0 && (
+              <div className="mt-3">
+                <label htmlFor="block-course" className="block text-sm font-medium text-gray-700 mb-1">
+                  Course (optional)
+                </label>
+                <select
+                  id="block-course"
+                  value={courseId}
+                  onChange={(e) => setCourseId(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  {courses.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             )}
-            {courseNames.map((course) => (
-              <optgroup key={course} label={course}>
-                {tasksByCourse[course].map((task) => (
-                  <option key={task.id} value={task.id}>
-                    {task.title}
-                  </option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
-        </div>
+          </div>
+        )}
 
         {/* Date */}
         <div>
@@ -288,7 +378,7 @@ export default function BlockFormDialog({
             </button>
             <button
               type="submit"
-              disabled={isPending || !taskId}
+              disabled={isPending || (mode === "existing" && !taskId) || (mode === "custom" && !customTitle.trim())}
               className="btn-primary disabled:opacity-60"
             >
               {isPending

@@ -1340,6 +1340,7 @@ export default function CalendarView({
             courseName: t.courseName,
             type: t.type,
           }))}
+          courses={courses}
           initialData={blockFormData}
           onClose={() => setBlockFormData(null)}
         />

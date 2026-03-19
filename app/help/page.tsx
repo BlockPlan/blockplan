@@ -30,7 +30,7 @@ const sections = [
       'Click "Calendar" in the navigation bar.',
       "Toggle between Day, Week, and Month views using the buttons in the top-right.",
       'Click "Generate Plan" to auto-schedule study blocks based on your tasks and available time. This replaces all currently scheduled blocks but keeps done and missed blocks.',
-      'Click "Add Block" to manually create a single study block — pick a task, date, and start/end time. This does not affect any other blocks.',
+      'Click "Add Block" to manually create a single study block. You can link it to an existing task, or switch to "Custom Block" to type your own name (e.g., "Group study session", "Review lecture notes"). This does not affect any other blocks.',
       "Click any study block to edit it — change the assigned task, date, or time, or delete the block entirely.",
       'Click "Export to Calendar" to download an .ics file for Google Calendar or Apple Calendar.',
       "Mark blocks as done (checkmark) or missed (X) using the action buttons on each block.",

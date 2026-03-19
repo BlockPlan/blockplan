@@ -346,9 +346,11 @@ export async function moveBlock(blockId: string, newDateKey: string) {
 // ---------------------------------------------------------------------------
 
 export async function addBlock(
-  taskId: string,
+  taskId: string | null,
   startTime: string,
   endTime: string,
+  customTitle?: string,
+  courseId?: string,
 ) {
   const supabase = await createClient();
   const {
@@ -369,23 +371,68 @@ export async function addBlock(
     return { success: false as const, error: "End time must be after start time" };
   }
 
-  // Verify the task belongs to this user
-  const { data: task } = await supabase
-    .from("tasks")
-    .select("id")
-    .eq("id", taskId)
-    .eq("user_id", user.id)
-    .single();
+  let resolvedTaskId = taskId;
 
-  if (!task) {
-    return { success: false as const, error: "Task not found" };
+  if (!taskId && customTitle) {
+    // Create an ad-hoc task for the custom block
+    // Determine which course to assign it to
+    let resolvedCourseId = courseId;
+    if (!resolvedCourseId) {
+      // Fall back to user's first course
+      const { data: firstCourse } = await supabase
+        .from("courses")
+        .select("id")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .single();
+
+      if (!firstCourse) {
+        return { success: false as const, error: "Please add a course first before creating custom blocks" };
+      }
+      resolvedCourseId = firstCourse.id as string;
+    }
+
+    const durationMin = Math.round((end.getTime() - start.getTime()) / 60000);
+    const { data: newTask, error: taskError } = await supabase
+      .from("tasks")
+      .insert({
+        user_id: user.id,
+        course_id: resolvedCourseId,
+        title: customTitle,
+        type: "other",
+        status: "doing",
+        estimated_minutes: durationMin,
+        due_date: start.toISOString().split("T")[0],
+      })
+      .select("id")
+      .single();
+
+    if (taskError || !newTask) {
+      return { success: false as const, error: taskError?.message ?? "Failed to create task" };
+    }
+    resolvedTaskId = newTask.id as string;
+  } else if (taskId) {
+    // Verify the task belongs to this user
+    const { data: task } = await supabase
+      .from("tasks")
+      .select("id")
+      .eq("id", taskId)
+      .eq("user_id", user.id)
+      .single();
+
+    if (!task) {
+      return { success: false as const, error: "Task not found" };
+    }
+  } else {
+    return { success: false as const, error: "Please select a task or enter a custom name" };
   }
 
   const { data: block, error } = await supabase
     .from("plan_blocks")
     .insert({
       user_id: user.id,
-      task_id: taskId,
+      task_id: resolvedTaskId,
       start_time: start.toISOString(),
       end_time: end.toISOString(),
       status: "scheduled",
