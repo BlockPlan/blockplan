@@ -877,24 +877,56 @@ function MonthView({
                   taskStatus: t.status,
                   taskRow: t,
                 })),
-                ...subtasks.map((s) => ({
-                  id: `s-${s.id}`,
-                  label: `🏁 ${s.title}`,
-                  itemType: "subtask" as const,
-                  courseName: s.courseName,
-                  isDone: s.status === "done",
-                  taskStatus: s.status,
-                  taskRow: taskById.get(s.task_id) ?? null,
-                })),
-                ...blocks.map((b) => ({
-                  id: `b-${b.id}`,
-                  label: b.tasks?.title ?? "Block",
-                  itemType: "block" as const,
-                  courseName: b.tasks?.courses?.name ?? null,
-                  isDone: b.status === "done",
-                  taskStatus: b.tasks?.taskStatus ?? "todo",
-                  taskRow: b.task_id ? taskById.get(b.task_id) ?? null : null,
-                })),
+                ...subtasks.map((s) => {
+                  // Try to find the parent task; if not found, build a minimal TaskRow from subtask data
+                  let resolvedTaskRow: TaskRow | null = taskById.get(s.task_id) ?? null;
+                  if (!resolvedTaskRow) {
+                    resolvedTaskRow = {
+                      id: s.task_id,
+                      title: s.parentTitle,
+                      type: s.parentType as "assignment" | "exam" | "reading" | "other",
+                      status: s.status === "done" ? "done" : "todo",
+                      due_date: s.due_date,
+                      estimated_minutes: s.estimated_minutes,
+                      course_id: "",
+                      courseName: s.courseName,
+                    };
+                  }
+                  return {
+                    id: `s-${s.id}`,
+                    label: `🏁 ${s.title}`,
+                    itemType: "subtask" as const,
+                    courseName: s.courseName,
+                    isDone: s.status === "done",
+                    taskStatus: s.status,
+                    taskRow: resolvedTaskRow,
+                  };
+                }),
+                ...blocks.map((b) => {
+                  // Try to find the parent task in our lookup, or build a TaskRow from the block's embedded data
+                  let resolvedTaskRow: TaskRow | null = b.task_id ? taskById.get(b.task_id) ?? null : null;
+                  if (!resolvedTaskRow && b.task_id && b.tasks) {
+                    resolvedTaskRow = {
+                      id: b.task_id,
+                      title: b.tasks.title,
+                      type: b.tasks.type,
+                      status: b.tasks.taskStatus as "todo" | "doing" | "done",
+                      due_date: b.tasks.due_date,
+                      estimated_minutes: b.tasks.estimated_minutes,
+                      course_id: b.tasks.course_id,
+                      courseName: b.tasks.courses?.name ?? null,
+                    };
+                  }
+                  return {
+                    id: `b-${b.id}`,
+                    label: b.tasks?.title ?? "Block",
+                    itemType: "block" as const,
+                    courseName: b.tasks?.courses?.name ?? null,
+                    isDone: b.status === "done",
+                    taskStatus: b.tasks?.taskStatus ?? "todo",
+                    taskRow: resolvedTaskRow,
+                  };
+                }),
               ];
 
               return (
