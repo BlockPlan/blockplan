@@ -1,6 +1,6 @@
 "use client";
 
-import { useOptimistic, useTransition } from "react";
+import { useOptimistic, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useDraggable } from "@dnd-kit/core";
@@ -53,6 +53,24 @@ export default function PlanBlock({ block, onEditTask, draggable, variant = "sta
     data: { block },
     disabled: !isDraggableBlock,
   });
+
+  // Track pointer to differentiate click vs drag on draggable grid blocks
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    pointerStartRef.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (!pointerStartRef.current || !onEditTask) return;
+    const dx = Math.abs(e.clientX - pointerStartRef.current.x);
+    const dy = Math.abs(e.clientY - pointerStartRef.current.y);
+    pointerStartRef.current = null;
+    // Only treat as click if pointer barely moved (less than drag threshold)
+    if (dx < 5 && dy < 5) {
+      onEditTask();
+    }
+  };
 
   const taskTitle = block.tasks?.title ?? "Unknown task";
   const taskStatus = block.tasks?.taskStatus ?? "todo";
@@ -194,16 +212,18 @@ export default function PlanBlock({ block, onEditTask, draggable, variant = "sta
         isDraggableBlock && isGrid ? "cursor-grab touch-none active:cursor-grabbing" : "",
       ].join(" ")}
       style={isDragging ? { zIndex: 50 } : undefined}
+      onPointerDown={isDraggableBlock && isGrid && onEditTask ? handlePointerDown : undefined}
+      onPointerUp={isDraggableBlock && isGrid && onEditTask ? handlePointerUp : undefined}
       {...gridDragProps}
     >
       {/* Title row — drag handle + title */}
       <div
         className={[
           "flex items-start gap-1",
-          onEditTask && !(isDraggableBlock && isGrid) ? "cursor-pointer hover:text-blue-700 transition-colors" : "",
+          onEditTask ? "cursor-pointer hover:text-blue-700 transition-colors" : "",
         ].join(" ")}
         onClick={isDraggableBlock && isGrid ? undefined : onEditTask}
-        role={onEditTask && !(isDraggableBlock && isGrid) ? "button" : undefined}
+        role={onEditTask ? "button" : undefined}
         tabIndex={onEditTask && !(isDraggableBlock && isGrid) ? 0 : undefined}
         onKeyDown={onEditTask && !(isDraggableBlock && isGrid) ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onEditTask(); } } : undefined}
       >
