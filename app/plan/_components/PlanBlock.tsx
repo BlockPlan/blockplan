@@ -54,23 +54,13 @@ export default function PlanBlock({ block, onEditTask, draggable, variant = "sta
     disabled: !isDraggableBlock,
   });
 
-  // Track pointer to differentiate click vs drag on draggable grid blocks
-  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
+  // Track whether a drag actually started, so we can treat non-drags as clicks
+  const wasDraggingRef = useRef(false);
 
-  const handlePointerDown = (e: React.PointerEvent) => {
-    pointerStartRef.current = { x: e.clientX, y: e.clientY };
-  };
-
-  const handlePointerUp = (e: React.PointerEvent) => {
-    if (!pointerStartRef.current || !onEditTask) return;
-    const dx = Math.abs(e.clientX - pointerStartRef.current.x);
-    const dy = Math.abs(e.clientY - pointerStartRef.current.y);
-    pointerStartRef.current = null;
-    // Only treat as click if pointer barely moved (less than drag threshold)
-    if (dx < 5 && dy < 5) {
-      onEditTask();
-    }
-  };
+  // Update ref when drag state changes
+  if (isDragging) {
+    wasDraggingRef.current = true;
+  }
 
   const taskTitle = block.tasks?.title ?? "Unknown task";
   const taskStatus = block.tasks?.taskStatus ?? "todo";
@@ -202,6 +192,17 @@ export default function PlanBlock({ block, onEditTask, draggable, variant = "sta
   // in stacked mode, attach them only to the grip icon button.
   const gridDragProps = isDraggableBlock && isGrid ? { ...listeners, ...attributes } : {};
 
+  const handleBlockClick = (e: React.MouseEvent) => {
+    // Don't open edit if we just finished dragging
+    if (wasDraggingRef.current) {
+      wasDraggingRef.current = false;
+      return;
+    }
+    // Don't open edit if clicking action buttons
+    if ((e.target as HTMLElement).closest("button")) return;
+    onEditTask?.();
+  };
+
   return (
     <div
       ref={isDraggableBlock ? setNodeRef : undefined}
@@ -210,22 +211,18 @@ export default function PlanBlock({ block, onEditTask, draggable, variant = "sta
         isGrid ? "h-full w-full overflow-hidden px-1.5 py-1" : "px-2 py-1.5",
         isDragging ? "opacity-50" : "",
         isDraggableBlock && isGrid ? "cursor-grab touch-none active:cursor-grabbing" : "",
+        onEditTask ? "cursor-pointer" : "",
       ].join(" ")}
       style={isDragging ? { zIndex: 50 } : undefined}
-      onPointerDown={isDraggableBlock && isGrid && onEditTask ? handlePointerDown : undefined}
-      onPointerUp={isDraggableBlock && isGrid && onEditTask ? handlePointerUp : undefined}
       {...gridDragProps}
+      onClick={onEditTask ? handleBlockClick : undefined}
     >
       {/* Title row — drag handle + title */}
       <div
         className={[
           "flex items-start gap-1",
-          onEditTask ? "cursor-pointer hover:text-blue-700 transition-colors" : "",
+          onEditTask ? "hover:text-blue-700 transition-colors" : "",
         ].join(" ")}
-        onClick={isDraggableBlock && isGrid ? undefined : onEditTask}
-        role={onEditTask ? "button" : undefined}
-        tabIndex={onEditTask && !(isDraggableBlock && isGrid) ? 0 : undefined}
-        onKeyDown={onEditTask && !(isDraggableBlock && isGrid) ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onEditTask(); } } : undefined}
       >
         {isDraggableBlock && !isGrid && (
           <button
