@@ -890,29 +890,29 @@ function MonthView({
               ];
 
               return (
-                <button
+                <div
                   key={key}
-                  type="button"
-                  onClick={() => onDayClick(day)}
                   className={[
-                    "min-h-[80px] p-1 text-left transition-colors hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500",
+                    "min-h-[80px] p-1 text-left transition-colors",
                     inMonth ? "bg-white" : "bg-gray-50",
                   ].join(" ")}
                 >
-                  {/* Day number */}
+                  {/* Day number — clickable to drill into Day view */}
                   <div className="flex items-center justify-between mb-0.5">
-                    <span
+                    <button
+                      type="button"
+                      onClick={() => onDayClick(day)}
                       className={[
-                        "inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium",
+                        "inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium transition-colors hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500",
                         today
-                          ? "bg-blue-600 text-white"
+                          ? "bg-blue-600 text-white hover:bg-blue-700"
                           : inMonth
                             ? "text-gray-900"
                             : "text-gray-400",
                       ].join(" ")}
                     >
                       {format(day, "d")}
-                    </span>
+                    </button>
                     {allItems.length > 0 && (
                       <span className="text-[10px] text-gray-400">
                         {allItems.length}
@@ -920,30 +920,21 @@ function MonthView({
                     )}
                   </div>
 
-                  {/* Compact indicators — colored by course */}
+                  {/* Compact indicators — colored by course, all clickable */}
                   <div className="flex flex-col gap-0.5">
                     {allItems.slice(0, 3).map((item) => {
                       const colors = getCourseColor(item.courseName, colorMap);
 
                       if (item.itemType === "task") {
                         return (
-                          <div
+                          <button
                             key={item.id}
-                            role="button"
-                            tabIndex={0}
-                            onClick={(e) => {
-                              e.stopPropagation();
+                            type="button"
+                            onClick={() => {
                               if (item.taskRow) onTaskClick(item.taskRow);
                             }}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" || e.key === " ") {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                if (item.taskRow) onTaskClick(item.taskRow);
-                              }
-                            }}
                             className={[
-                              "flex items-center gap-0.5 truncate rounded px-1 py-0.5 text-[10px] leading-tight cursor-pointer transition-shadow hover:ring-1 hover:ring-blue-300",
+                              "flex items-center gap-0.5 truncate rounded px-1 py-0.5 text-[10px] leading-tight cursor-pointer transition-shadow hover:ring-1 hover:ring-blue-300 text-left w-full",
                               item.isDone ? "bg-gray-100 text-gray-400 line-through" : colors.chip,
                             ].join(" ")}
                           >
@@ -951,43 +942,51 @@ function MonthView({
                             <span className="truncate">{item.label}</span>
                             {item.taskStatus === "done" && <span className="flex-shrink-0 text-emerald-600">✓</span>}
                             {item.taskStatus === "doing" && <span className="flex-shrink-0 text-blue-600">◑</span>}
-                          </div>
+                          </button>
                         );
                       }
                       if (item.itemType === "subtask") {
                         return (
-                          <div
+                          <button
                             key={item.id}
+                            type="button"
+                            onClick={() => onDayClick(day)}
                             className={[
-                              "flex items-center gap-0.5 truncate rounded border border-dashed px-1 py-0.5 text-[10px] leading-tight",
+                              "flex items-center gap-0.5 truncate rounded border border-dashed px-1 py-0.5 text-[10px] leading-tight cursor-pointer hover:ring-1 hover:ring-blue-300 text-left w-full",
                               item.isDone ? "bg-gray-100 text-gray-400 border-gray-300 line-through" : colors.chip + " border-current",
                             ].join(" ")}
                           >
                             <span className="truncate">{item.label}</span>
-                          </div>
+                          </button>
                         );
                       }
-                      // block
+                      // block — click to go to day view
                       return (
-                        <div
+                        <button
                           key={item.id}
+                          type="button"
+                          onClick={() => onDayClick(day)}
                           className={[
-                            "flex items-center gap-0.5 truncate rounded px-1 py-0.5 text-[10px] leading-tight",
+                            "flex items-center gap-0.5 truncate rounded px-1 py-0.5 text-[10px] leading-tight cursor-pointer hover:ring-1 hover:ring-blue-300 text-left w-full",
                             item.isDone ? "bg-green-100 text-green-700" : colors.chip,
                           ].join(" ")}
                         >
                           <span className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${item.isDone ? "bg-green-500" : colors.dot}`} />
                           <span className="truncate">{item.label}</span>
-                        </div>
+                        </button>
                       );
                     })}
                     {allItems.length > 3 && (
-                      <span className="text-[10px] text-gray-400 px-1">
+                      <button
+                        type="button"
+                        onClick={() => onDayClick(day)}
+                        className="text-[10px] text-blue-500 hover:text-blue-700 px-1 text-left cursor-pointer"
+                      >
                         +{allItems.length - 3} more
-                      </span>
+                      </button>
                     )}
                   </div>
-                </button>
+                </div>
               );
             })}
           </div>
