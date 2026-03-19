@@ -38,6 +38,8 @@ import PlanBlock from "./PlanBlock";
 import TimeGrid from "./TimeGrid";
 import RiskBadge from "./RiskBadge";
 import ExportButton from "./ExportButton";
+import BlockFormDialog from "./BlockFormDialog";
+import type { BlockFormData } from "./BlockFormDialog";
 import TaskForm from "@/app/tasks/_components/TaskForm";
 import type { RiskTask } from "@/lib/types/risk";
 import { TYPE_LABELS } from "@/lib/constants/tasks";
@@ -454,6 +456,7 @@ function DayView({
   subtasksByDate,
   colorMap,
   onTaskClick,
+  onBlockClick,
 }: {
   date: Date;
   blocksByDate: Map<string, PlanBlockRow[]>;
@@ -461,6 +464,7 @@ function DayView({
   subtasksByDate: Map<string, SubtaskRow[]>;
   colorMap: CourseColorMap;
   onTaskClick: (task: TaskRow) => void;
+  onBlockClick: (block: PlanBlockRow) => void;
 }) {
   const key = getDateKey(date);
   const blocks = blocksByDate.get(key) ?? [];
@@ -540,16 +544,13 @@ function DayView({
           </p>
         ) : (
           <div className="flex flex-col gap-2">
-            {blocks.map((block) => {
-              const taskRow = blockToTaskRow(block);
-              return (
-                <PlanBlock
-                  key={block.id}
-                  block={block}
-                  onEditTask={taskRow ? () => onTaskClick(taskRow) : undefined}
-                />
-              );
-            })}
+            {blocks.map((block) => (
+              <PlanBlock
+                key={block.id}
+                block={block}
+                onEditTask={() => onBlockClick(block)}
+              />
+            ))}
           </div>
         )}
       </div>
@@ -559,9 +560,9 @@ function DayView({
         <div className="rounded-lg border border-gray-200 bg-white px-6 py-8 text-center">
           <p className="text-sm text-gray-400">Nothing scheduled for this day</p>
           <p className="mt-2 text-sm text-gray-500">
-            Add tasks with due dates, then click{" "}
+            Use <span className="font-medium text-gray-700">&ldquo;Add Block&rdquo;</span> to schedule a study session, or{" "}
             <span className="font-medium text-gray-700">&ldquo;Generate Plan&rdquo;</span>{" "}
-            to create your study schedule.
+            to auto-create your schedule.
           </p>
           <Link
             href="/tasks"
@@ -1014,6 +1015,7 @@ export default function CalendarView({
   const [editingTask, setEditingTask] = useState<TaskRow | null>(null);
   const [showConfirmGenerate, setShowConfirmGenerate] = useState(false);
   const confirmDialogRef = useRef<HTMLDialogElement>(null);
+  const [blockFormData, setBlockFormData] = useState<Partial<BlockFormData> | null>(null);
 
   // Initialize from URL params
   const initialView = (searchParams.get("view") as ViewMode) || "week";
@@ -1095,6 +1097,17 @@ export default function CalendarView({
     updateUrl("day", day);
   };
 
+  const handleBlockClick = useCallback((block: PlanBlockRow) => {
+    setBlockFormData({
+      blockId: block.id,
+      taskId: block.task_id ?? undefined,
+      date: format(new Date(block.start_time), "yyyy-MM-dd"),
+      startTime: `${String(new Date(block.start_time).getHours()).padStart(2, "0")}:${String(new Date(block.start_time).getMinutes()).padStart(2, "0")}`,
+      endTime: `${String(new Date(block.end_time).getHours()).padStart(2, "0")}:${String(new Date(block.end_time).getMinutes()).padStart(2, "0")}`,
+      status: block.status,
+    });
+  }, []);
+
   const handleGenerate = () => {
     startTransition(async () => {
       const result = await generatePlan();
@@ -1125,6 +1138,17 @@ export default function CalendarView({
           <h2 className="page-title">Your Plan</h2>
           <div className="flex items-center gap-2">
             <ExportButton />
+            <button
+              onClick={() => setBlockFormData({ date: format(currentDate, "yyyy-MM-dd") })}
+              className="rounded-lg border border-blue-300 bg-white px-3 py-2 text-sm font-medium text-blue-600 transition-all duration-150 hover:bg-blue-50 hover:border-blue-400 active:scale-[0.98]"
+            >
+              <span className="flex items-center gap-1.5">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                Add Block
+              </span>
+            </button>
             <button
               onClick={() => {
                 setShowConfirmGenerate(true);
@@ -1250,6 +1274,7 @@ export default function CalendarView({
             subtasksByDate={subtasksByDate}
             colorMap={courseColorMap}
             onTaskClick={setEditingTask}
+            onBlockClick={handleBlockClick}
           />
         </div>
       )}
@@ -1264,6 +1289,7 @@ export default function CalendarView({
           subtasksByDate={subtasksByDate}
           colorMap={courseColorMap}
           onTaskClick={setEditingTask}
+          onBlockClick={handleBlockClick}
         />
       )}
       {viewMode === "month" && (
@@ -1302,6 +1328,20 @@ export default function CalendarView({
           task={editingTask}
           courses={courses}
           onClose={() => setEditingTask(null)}
+        />
+      )}
+
+      {/* ---- Add/Edit Block Dialog ---- */}
+      {blockFormData && (
+        <BlockFormDialog
+          tasks={tasks.filter((t) => t.status !== "done").map((t) => ({
+            id: t.id,
+            title: t.title,
+            courseName: t.courseName,
+            type: t.type,
+          }))}
+          initialData={blockFormData}
+          onClose={() => setBlockFormData(null)}
         />
       )}
 

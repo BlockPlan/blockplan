@@ -169,6 +169,7 @@ interface TimeGridProps {
   subtasksByDate: Map<string, SubtaskRow[]>;
   colorMap: CourseColorMap;
   onTaskClick: (task: TaskRow) => void;
+  onBlockClick?: (block: PlanBlockRow) => void;
 }
 
 export default function TimeGrid({
@@ -178,6 +179,7 @@ export default function TimeGrid({
   subtasksByDate,
   colorMap,
   onTaskClick,
+  onBlockClick,
 }: TimeGridProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const isMultiDay = days.length > 1;
@@ -432,7 +434,6 @@ export default function TimeGrid({
                 {/* Positioned blocks */}
                 {positioned.map((pb) => {
                   const block = pb.item;
-                  const taskRow = blockToTaskRow(block);
                   return (
                     <div
                       key={block.id}
@@ -446,7 +447,7 @@ export default function TimeGrid({
                     >
                       <PlanBlock
                         block={block}
-                        onEditTask={taskRow ? () => onTaskClick(taskRow) : undefined}
+                        onEditTask={onBlockClick ? () => onBlockClick(block) : undefined}
                         draggable={isMultiDay}
                         variant="grid"
                         gridHeight={pb.height}

@@ -342,6 +342,159 @@ export async function moveBlock(blockId: string, newDateKey: string) {
 }
 
 // ---------------------------------------------------------------------------
+// addBlock — manually create a single study block
+// ---------------------------------------------------------------------------
+
+export async function addBlock(
+  taskId: string,
+  startTime: string,
+  endTime: string,
+) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false as const, error: "Not authenticated" };
+  }
+
+  // Validate times
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    return { success: false as const, error: "Invalid times" };
+  }
+  if (end <= start) {
+    return { success: false as const, error: "End time must be after start time" };
+  }
+
+  // Verify the task belongs to this user
+  const { data: task } = await supabase
+    .from("tasks")
+    .select("id")
+    .eq("id", taskId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!task) {
+    return { success: false as const, error: "Task not found" };
+  }
+
+  const { data: block, error } = await supabase
+    .from("plan_blocks")
+    .insert({
+      user_id: user.id,
+      task_id: taskId,
+      start_time: start.toISOString(),
+      end_time: end.toISOString(),
+      status: "scheduled",
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    return { success: false as const, error: error.message };
+  }
+
+  revalidatePath("/plan");
+  revalidatePath("/dashboard");
+
+  return { success: true as const, blockId: block.id as string };
+}
+
+// ---------------------------------------------------------------------------
+// updateBlock — edit an existing block's task, start time, or end time
+// ---------------------------------------------------------------------------
+
+export async function updateBlock(
+  blockId: string,
+  taskId: string,
+  startTime: string,
+  endTime: string,
+) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false as const, error: "Not authenticated" };
+  }
+
+  // Validate times
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    return { success: false as const, error: "Invalid times" };
+  }
+  if (end <= start) {
+    return { success: false as const, error: "End time must be after start time" };
+  }
+
+  // Verify block belongs to user and is still scheduled
+  const { data: existing } = await supabase
+    .from("plan_blocks")
+    .select("status")
+    .eq("id", blockId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!existing) {
+    return { success: false as const, error: "Block not found" };
+  }
+
+  const { error } = await supabase
+    .from("plan_blocks")
+    .update({
+      task_id: taskId,
+      start_time: start.toISOString(),
+      end_time: end.toISOString(),
+    })
+    .eq("id", blockId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { success: false as const, error: error.message };
+  }
+
+  revalidatePath("/plan");
+  revalidatePath("/dashboard");
+
+  return { success: true as const };
+}
+
+// ---------------------------------------------------------------------------
+// deleteBlock — remove a single block without affecting others
+// ---------------------------------------------------------------------------
+
+export async function deleteBlock(blockId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false as const, error: "Not authenticated" };
+  }
+
+  const { error } = await supabase
+    .from("plan_blocks")
+    .delete()
+    .eq("id", blockId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { success: false as const, error: error.message };
+  }
+
+  revalidatePath("/plan");
+  revalidatePath("/dashboard");
+
+  return { success: true as const };
+}
+
+// ---------------------------------------------------------------------------
 // undoMoveBlock — restore a block to its previous times after a drag-and-drop
 // ---------------------------------------------------------------------------
 
