@@ -21,17 +21,14 @@ export function getMonthlyGenerationLimit(plan: SubscriptionPlan): number {
 // Plan lookup
 // ---------------------------------------------------------------------------
 
-export async function getUserPlan(_userId: string): Promise<SubscriptionPlan> {
-  // TODO: Re-enable DB lookup once Stripe billing is live
-  // const supabase = await createClient();
-  // const { data } = await supabase
-  //   .from("user_profiles")
-  //   .select("subscription_plan")
-  //   .eq("id", _userId)
-  //   .single();
-  // return (data?.subscription_plan as SubscriptionPlan) ?? "free";
-
-  return "max";
+export async function getUserPlan(userId: string): Promise<SubscriptionPlan> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("user_profiles")
+    .select("subscription_plan")
+    .eq("id", userId)
+    .single();
+  return (data?.subscription_plan as SubscriptionPlan) ?? "free";
 }
 
 export function canUseTutorChat(plan: SubscriptionPlan): boolean {
