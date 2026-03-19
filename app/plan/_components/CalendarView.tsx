@@ -809,6 +809,7 @@ function MonthView({
   blocksByDate,
   tasksByDate,
   subtasksByDate,
+  allTasks,
   colorMap,
   onDayClick,
   onTaskClick,
@@ -817,10 +818,17 @@ function MonthView({
   blocksByDate: Map<string, PlanBlockRow[]>;
   tasksByDate: Map<string, TaskRow[]>;
   subtasksByDate: Map<string, SubtaskRow[]>;
+  allTasks: TaskRow[];
   colorMap: CourseColorMap;
   onDayClick: (day: Date) => void;
   onTaskClick: (task: TaskRow) => void;
 }) {
+  // Build a lookup for finding parent tasks by ID
+  const taskById = useMemo(() => {
+    const map = new Map<string, TaskRow>();
+    for (const t of allTasks) map.set(t.id, t);
+    return map;
+  }, [allTasks]);
   const monthStart = startOfMonth(date);
   const monthEnd = endOfMonth(date);
 
@@ -876,7 +884,7 @@ function MonthView({
                   courseName: s.courseName,
                   isDone: s.status === "done",
                   taskStatus: s.status,
-                  taskRow: null as TaskRow | null,
+                  taskRow: taskById.get(s.task_id) ?? null,
                 })),
                 ...blocks.map((b) => ({
                   id: `b-${b.id}`,
@@ -885,7 +893,7 @@ function MonthView({
                   courseName: b.tasks?.courses?.name ?? null,
                   isDone: b.status === "done",
                   taskStatus: b.tasks?.taskStatus ?? "todo",
-                  taskRow: null as TaskRow | null,
+                  taskRow: b.task_id ? taskById.get(b.task_id) ?? null : null,
                 })),
               ];
 
@@ -950,7 +958,10 @@ function MonthView({
                           <button
                             key={item.id}
                             type="button"
-                            onClick={() => onDayClick(day)}
+                            onClick={() => {
+                              if (item.taskRow) onTaskClick(item.taskRow);
+                              else onDayClick(day);
+                            }}
                             className={[
                               "flex items-center gap-0.5 truncate rounded border border-dashed px-1 py-0.5 text-[10px] leading-tight cursor-pointer hover:ring-1 hover:ring-blue-300 text-left w-full",
                               item.isDone ? "bg-gray-100 text-gray-400 border-gray-300 line-through" : colors.chip + " border-current",
@@ -960,12 +971,15 @@ function MonthView({
                           </button>
                         );
                       }
-                      // block — click to go to day view
+                      // block — click to edit the parent task
                       return (
                         <button
                           key={item.id}
                           type="button"
-                          onClick={() => onDayClick(day)}
+                          onClick={() => {
+                            if (item.taskRow) onTaskClick(item.taskRow);
+                            else onDayClick(day);
+                          }}
                           className={[
                             "flex items-center gap-0.5 truncate rounded px-1 py-0.5 text-[10px] leading-tight cursor-pointer hover:ring-1 hover:ring-blue-300 text-left w-full",
                             item.isDone ? "bg-green-100 text-green-700" : colors.chip,
@@ -1297,6 +1311,7 @@ export default function CalendarView({
           blocksByDate={blocksByDate}
           tasksByDate={tasksByDate}
           subtasksByDate={subtasksByDate}
+          allTasks={tasks}
           colorMap={courseColorMap}
           onDayClick={handleDayClick}
           onTaskClick={setEditingTask}
