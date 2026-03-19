@@ -1358,13 +1358,17 @@ export default function CalendarView({
             Risk warnings
           </p>
           <div className="flex flex-wrap gap-2">
-            {riskTasks.map((rt) => (
-              <RiskBadge
-                key={rt.taskId}
-                level={rt.level}
-                taskTitle={rt.taskTitle}
-              />
-            ))}
+            {riskTasks.map((rt) => {
+              const riskTask = tasks.find((t) => t.id === rt.taskId);
+              return (
+                <RiskBadge
+                  key={rt.taskId}
+                  level={rt.level}
+                  taskTitle={rt.taskTitle}
+                  onClick={riskTask ? () => setEditingTask(riskTask) : undefined}
+                />
+              );
+            })}
           </div>
         </div>
       )}

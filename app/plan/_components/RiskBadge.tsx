@@ -3,13 +3,24 @@
 interface RiskBadgeProps {
   level: "at_risk" | "overdue_risk";
   taskTitle: string;
+  onClick?: () => void;
 }
 
-export default function RiskBadge({ level, taskTitle }: RiskBadgeProps) {
+export default function RiskBadge({ level, taskTitle, onClick }: RiskBadgeProps) {
+  const Tag = onClick ? "button" : "span";
+  const clickProps = onClick
+    ? { onClick, type: "button" as const }
+    : {};
+
   if (level === "overdue_risk") {
     return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-700">
-        {/* Alert icon */}
+      <Tag
+        {...clickProps}
+        className={[
+          "inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-700",
+          onClick ? "cursor-pointer transition-shadow hover:ring-1 hover:ring-red-400 hover:shadow-sm" : "",
+        ].join(" ")}
+      >
         <svg
           className="h-3.5 w-3.5 flex-shrink-0"
           viewBox="0 0 20 20"
@@ -23,13 +34,18 @@ export default function RiskBadge({ level, taskTitle }: RiskBadgeProps) {
           />
         </svg>
         Overdue risk — {taskTitle}
-      </span>
+      </Tag>
     );
   }
 
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700">
-      {/* Warning icon */}
+    <Tag
+      {...clickProps}
+      className={[
+        "inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700",
+        onClick ? "cursor-pointer transition-shadow hover:ring-1 hover:ring-amber-400 hover:shadow-sm" : "",
+      ].join(" ")}
+    >
       <svg
         className="h-3.5 w-3.5 flex-shrink-0"
         viewBox="0 0 20 20"
@@ -43,6 +59,6 @@ export default function RiskBadge({ level, taskTitle }: RiskBadgeProps) {
         />
       </svg>
       At risk — {taskTitle}
-    </span>
+    </Tag>
   );
 }
