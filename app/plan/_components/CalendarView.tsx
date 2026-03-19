@@ -1150,6 +1150,7 @@ export default function CalendarView({
       startTime: `${String(new Date(block.start_time).getHours()).padStart(2, "0")}:${String(new Date(block.start_time).getMinutes()).padStart(2, "0")}`,
       endTime: `${String(new Date(block.end_time).getHours()).padStart(2, "0")}:${String(new Date(block.end_time).getMinutes()).padStart(2, "0")}`,
       status: block.status,
+      taskStatus: (block.tasks?.taskStatus as "todo" | "doing" | "done") ?? "todo",
     });
   }, []);
 

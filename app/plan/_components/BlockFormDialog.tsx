@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { addBlock, updateBlock, deleteBlock } from "../actions";
+import { updateTaskStatus } from "@/app/tasks/actions";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -23,6 +24,7 @@ interface BlockFormData {
   startTime: string; // HH:mm
   endTime: string; // HH:mm
   status?: string;
+  taskStatus?: "todo" | "doing" | "done";
 }
 
 interface CourseOption {
@@ -86,6 +88,9 @@ export default function BlockFormDialog({
   );
   const [startTime, setStartTime] = useState(initialData?.startTime ?? "09:00");
   const [endTime, setEndTime] = useState(initialData?.endTime ?? "10:00");
+  const [taskStatus, setTaskStatus] = useState<"todo" | "doing" | "done">(
+    initialData?.taskStatus ?? "todo"
+  );
   const [error, setError] = useState<string | null>(null);
 
   // Open dialog on mount
@@ -285,6 +290,50 @@ export default function BlockFormDialog({
                 </select>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Task status toggle (only when editing a block with an assigned task) */}
+        {isEditing && taskId && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Task Status
+            </label>
+            <div className="flex rounded-lg border border-gray-300 p-0.5">
+              {([
+                { value: "todo" as const, label: "To Do", icon: "○" },
+                { value: "doing" as const, label: "In Progress", icon: "◑" },
+                { value: "done" as const, label: "Completed", icon: "●" },
+              ]).map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => {
+                    setTaskStatus(opt.value);
+                    startTransition(async () => {
+                      const result = await updateTaskStatus(taskId, opt.value);
+                      if (result.error) {
+                        setError(result.error);
+                      } else {
+                        toast(`Task marked as ${opt.label.toLowerCase()}`);
+                      }
+                    });
+                  }}
+                  disabled={isPending}
+                  className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-colors ${
+                    taskStatus === opt.value
+                      ? opt.value === "done"
+                        ? "bg-emerald-600 text-white shadow-sm"
+                        : opt.value === "doing"
+                          ? "bg-blue-600 text-white shadow-sm"
+                          : "bg-gray-700 text-white shadow-sm"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  {opt.icon} {opt.label}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
