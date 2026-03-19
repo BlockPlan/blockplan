@@ -3,13 +3,15 @@ import Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-// Disable body parsing — Stripe needs the raw body for signature verification
 export const runtime = "nodejs";
 
 // ---------------------------------------------------------------------------
 // Map Stripe price IDs to subscription plans
 // ---------------------------------------------------------------------------
 function planFromPriceId(priceId: string): "pro" | "max" | null {
+  console.log("[webhook] Comparing priceId:", priceId);
+  console.log("[webhook] PRO_PRICE_ID:", process.env.STRIPE_PRO_PRICE_ID);
+  console.log("[webhook] MAX_PRICE_ID:", process.env.STRIPE_MAX_PRICE_ID);
   if (priceId === process.env.STRIPE_PRO_PRICE_ID) return "pro";
   if (priceId === process.env.STRIPE_MAX_PRICE_ID) return "max";
   return null;
@@ -37,8 +39,6 @@ export async function POST(req: NextRequest) {
       );
     }
   } else {
-    // No webhook secret configured — parse the event directly
-    // This is fine during development; configure STRIPE_WEBHOOK_SECRET in production
     try {
       event = JSON.parse(body) as Stripe.Event;
     } catch {
@@ -49,58 +49,127 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  console.log("[webhook] Event type:", event.type);
+
   const supabase = createAdminClient();
 
   try {
     switch (event.type) {
       // ─── Checkout completed ──────────────────────────────────────────
       case "checkout.session.completed": {
-        const session = event.data.object as Stripe.Checkout.Session;
-        const userId =
-          session.metadata?.supabase_user_id ??
-          (session.subscription
-            ? undefined
-            : undefined);
+        const sessionFromEvent = event.data.object as Stripe.Checkout.Session;
+
+        // Always retrieve the full session from Stripe to get metadata
+        const session = await stripe.checkout.sessions.retrieve(
+          sessionFromEvent.id,
+          { expand: ["subscription"] }
+        );
+
+        console.log("[webhook] Session ID:", session.id);
+        console.log("[webhook] Session metadata:", JSON.stringify(session.metadata));
+        console.log("[webhook] Session customer:", session.customer);
+        console.log("[webhook] Session subscription:", session.subscription);
+
+        // Try to get user ID from metadata
+        let userId = session.metadata?.supabase_user_id;
+
+        // Fallback: look up user by stripe_customer_id
+        if (!userId) {
+          const customerId =
+            typeof session.customer === "string"
+              ? session.customer
+              : session.customer?.id;
+
+          console.log("[webhook] No metadata userId, looking up by customer:", customerId);
+
+          if (customerId) {
+            const { data: profile } = await supabase
+              .from("user_profiles")
+              .select("id")
+              .eq("stripe_customer_id", customerId)
+              .single();
+
+            if (profile) {
+              userId = profile.id;
+              console.log("[webhook] Found user by customer ID:", userId);
+            }
+          }
+        }
+
+        // Fallback 2: look up by email
+        if (!userId) {
+          const customerEmail = session.customer_details?.email;
+          console.log("[webhook] Trying email lookup:", customerEmail);
+
+          if (customerEmail) {
+            const { data: userData } = await supabase.auth.admin.listUsers();
+            const matchingUser = userData?.users?.find(
+              (u) => u.email === customerEmail
+            );
+            if (matchingUser) {
+              userId = matchingUser.id;
+              console.log("[webhook] Found user by email:", userId);
+            }
+          }
+        }
 
         if (!userId) {
-          console.warn("[webhook] No supabase_user_id in session metadata");
+          console.error("[webhook] Could not find user for session:", session.id);
           break;
         }
 
-        // Retrieve subscription to get the price ID
-        const subscriptionId =
-          typeof session.subscription === "string"
-            ? session.subscription
-            : session.subscription?.id;
+        // Get subscription details
+        let subscriptionId: string | undefined;
+        let priceId: string | undefined;
 
-        if (!subscriptionId) break;
+        if (typeof session.subscription === "string") {
+          subscriptionId = session.subscription;
+          const sub = await stripe.subscriptions.retrieve(subscriptionId);
+          priceId = sub.items.data[0]?.price?.id;
+        } else if (session.subscription && typeof session.subscription === "object") {
+          const sub = session.subscription as Stripe.Subscription;
+          subscriptionId = sub.id;
+          priceId = sub.items.data[0]?.price?.id;
+        }
 
-        const subscription =
-          await stripe.subscriptions.retrieve(subscriptionId);
-        const priceId = subscription.items.data[0]?.price?.id;
-        const plan = priceId ? planFromPriceId(priceId) : null;
+        console.log("[webhook] subscriptionId:", subscriptionId);
+        console.log("[webhook] priceId:", priceId);
+
+        if (!subscriptionId || !priceId) {
+          console.error("[webhook] Missing subscription or price ID");
+          break;
+        }
+
+        const plan = planFromPriceId(priceId);
+        console.log("[webhook] Determined plan:", plan);
 
         if (!plan) {
-          console.warn("[webhook] Unknown price ID:", priceId);
+          console.error("[webhook] Unknown price ID:", priceId);
           break;
         }
 
-        await supabase
+        const customerId =
+          typeof session.customer === "string"
+            ? session.customer
+            : session.customer?.id ?? null;
+
+        const { error: updateError } = await supabase
           .from("user_profiles")
           .update({
             subscription_plan: plan,
             subscription_status: "active",
-            stripe_customer_id:
-              typeof session.customer === "string"
-                ? session.customer
-                : session.customer?.id ?? null,
+            stripe_customer_id: customerId,
             stripe_subscription_id: subscriptionId,
           })
           .eq("id", userId);
 
-        console.log(
-          `[webhook] User ${userId} subscribed to ${plan} (sub: ${subscriptionId})`
-        );
+        if (updateError) {
+          console.error("[webhook] Supabase update error:", updateError);
+        } else {
+          console.log(
+            `[webhook] SUCCESS: User ${userId} subscribed to ${plan} (sub: ${subscriptionId})`
+          );
+        }
         break;
       }
 
@@ -110,7 +179,6 @@ export async function POST(req: NextRequest) {
         const priceId = subscription.items.data[0]?.price?.id;
         const plan = priceId ? planFromPriceId(priceId) : null;
 
-        // Look up user by stripe_customer_id
         const customerId =
           typeof subscription.customer === "string"
             ? subscription.customer
@@ -123,10 +191,7 @@ export async function POST(req: NextRequest) {
           .single();
 
         if (!profile) {
-          console.warn(
-            "[webhook] No profile found for customer:",
-            customerId
-          );
+          console.warn("[webhook] No profile found for customer:", customerId);
           break;
         }
 
@@ -168,10 +233,7 @@ export async function POST(req: NextRequest) {
           .single();
 
         if (!profile) {
-          console.warn(
-            "[webhook] No profile for deleted subscription customer:",
-            customerId
-          );
+          console.warn("[webhook] No profile for deleted subscription:", customerId);
           break;
         }
 
@@ -184,9 +246,7 @@ export async function POST(req: NextRequest) {
           })
           .eq("id", profile.id);
 
-        console.log(
-          `[webhook] Subscription deleted — user ${profile.id} reverted to free`
-        );
+        console.log(`[webhook] Subscription deleted — user ${profile.id} reverted to free`);
         break;
       }
 
@@ -213,14 +273,11 @@ export async function POST(req: NextRequest) {
           .update({ subscription_status: "past_due" })
           .eq("id", profile.id);
 
-        console.log(
-          `[webhook] Payment failed — user ${profile.id} set to past_due`
-        );
+        console.log(`[webhook] Payment failed — user ${profile.id} set to past_due`);
         break;
       }
 
       default:
-        // Unhandled event type — ignore
         break;
     }
   } catch (err) {
