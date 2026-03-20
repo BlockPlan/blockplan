@@ -52,11 +52,16 @@ export async function generateStudyAidsAction(
     };
   }
 
-  const result = await generateStudyAids(notes);
+  try {
+    const result = await generateStudyAids(notes);
 
-  return {
-    data: result.data,
-    isMock: result.isMock,
-    taskTitle: task.title,
-  };
+    return {
+      data: result.data,
+      isMock: result.isMock,
+      taskTitle: task.title,
+    };
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : "Something went wrong with the AI service. Please try again.";
+    return { error: errMsg };
+  }
 }

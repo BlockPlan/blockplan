@@ -683,11 +683,16 @@ export async function regenerateStudyMaterial(
   if (!session) return { error: "Session not found." };
 
   // Generate new questions
-  const { data: regenerated, isMock } = await regenerateStudyHelp(
-    existingData,
-    sections,
-    courseName
-  );
+  let regenerated: Partial<StudyHelp>;
+  let isMock: boolean;
+  try {
+    const result = await regenerateStudyHelp(existingData, sections, courseName);
+    regenerated = result.data;
+    isMock = result.isMock;
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : "Something went wrong with the AI service. Please try again.";
+    return { error: errMsg };
+  }
 
   if (isMock && process.env.OPENAI_API_KEY) {
     return { error: "Failed to generate new questions. Please try again." };

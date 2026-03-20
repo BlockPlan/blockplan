@@ -9,6 +9,7 @@ import {
   type RegeneratableSection,
 } from "./types";
 import { getMockStudyHelp } from "./mock";
+import { classifyAIError } from "@/lib/ai-errors";
 
 // Maximum characters for text content sent to the LLM
 const MAX_TEXT_CHARS = 30_000;
@@ -105,8 +106,9 @@ export async function generateStudyHelp(
       console.warn("[generateStudyHelp] NoObjectGeneratedError");
       throw new Error("AI could not generate study materials from this content. Try providing more text or a different file.");
     }
-    console.error("[generateStudyHelp] Unexpected error:", err);
-    throw err;
+    const classified = classifyAIError(err);
+    console.error("[generateStudyHelp] AI error:", classified.type);
+    throw new Error(classified.userMessage);
   }
 }
 
@@ -228,7 +230,12 @@ export async function regenerateStudyHelp(
     if (err instanceof NoObjectGeneratedError) {
       console.warn("[regenerateStudyHelp] NoObjectGeneratedError — returning mock");
     } else {
-      console.error("[regenerateStudyHelp] Unexpected error:", err);
+      const classified = classifyAIError(err);
+      console.error("[regenerateStudyHelp] AI error:", classified.type);
+      // For non-retryable errors, throw with user-friendly message
+      if (!classified.retryable) {
+        throw new Error(classified.userMessage);
+      }
     }
     const mock = getMockStudyHelp();
     const partial: Partial<StudyHelp> = {};
@@ -291,8 +298,9 @@ export async function generateEli5(
 
     return experimental_output;
   } catch (err) {
-    console.error("[generateEli5] Error:", err);
-    throw new Error("Failed to generate simplified explanations. Please try again.");
+    const classified = classifyAIError(err);
+    console.error("[generateEli5] AI error:", classified.type);
+    throw new Error(classified.userMessage);
   }
 }
 
@@ -389,8 +397,9 @@ export async function generateDiagrams(
       diagrams: output.diagrams.map((d) => ({ ...d, type: diagramType })),
     };
   } catch (err) {
-    console.error("[generateDiagrams] Error:", err);
-    throw new Error("Failed to generate diagram. Please try again.");
+    const classified = classifyAIError(err);
+    console.error("[generateDiagrams] AI error:", classified.type);
+    throw new Error(classified.userMessage);
   }
 }
 
@@ -478,8 +487,9 @@ export async function generateInfographic(
       }],
     };
   } catch (err) {
-    console.error("[generateInfographic] Error:", err);
-    throw new Error("Failed to generate study guide. Please try again.");
+    const classified = classifyAIError(err);
+    console.error("[generateInfographic] AI error:", classified.type);
+    throw new Error(classified.userMessage);
   }
 }
 
@@ -588,13 +598,20 @@ export async function generateIllustration(
       contextStr,
     ].join("\n");
 
-    const response = await client.images.generate({
-      model: "gpt-image-1",
-      prompt,
-      n: 1,
-      size: "1024x1024",
-      quality: "high",
-    });
+    let response;
+    try {
+      response = await client.images.generate({
+        model: "gpt-image-1",
+        prompt,
+        n: 1,
+        size: "1024x1024",
+        quality: "high",
+      });
+    } catch (err) {
+      const classified = classifyAIError(err);
+      console.error("[generateIllustration:visualize] AI error:", classified.type);
+      throw new Error(classified.userMessage);
+    }
 
     const imageData = response.data?.[0];
     if (!imageData?.b64_json) {
@@ -632,13 +649,20 @@ export async function generateIllustration(
       "The result should look like it was created by a professional graphic designer, not auto-traced from a sketch.",
     ].join("\n");
 
-    const response = await client.images.edit({
-      model: "gpt-image-1",
-      image: imageFile,
-      prompt,
-      n: 1,
-      size: "1024x1024",
-    });
+    let response;
+    try {
+      response = await client.images.edit({
+        model: "gpt-image-1",
+        image: imageFile,
+        prompt,
+        n: 1,
+        size: "1024x1024",
+      });
+    } catch (err) {
+      const classified = classifyAIError(err);
+      console.error("[generateIllustration:cleanup] AI error:", classified.type);
+      throw new Error(classified.userMessage);
+    }
 
     const imageData = response.data?.[0];
     if (!imageData?.b64_json) {

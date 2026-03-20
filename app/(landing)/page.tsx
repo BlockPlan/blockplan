@@ -129,7 +129,7 @@ const aiFeatures = [
     icon: SparklesIcon,
     title: "AI Study Guides",
     description:
-      "Get comprehensive study guides that break down complex topics into clear, organized sections. Export as .docx to print or share with classmates.",
+      "Get comprehensive study guides that break down complex topics into clear, organized sections. Export as PDF to print or share with classmates.",
   },
   {
     icon: PaintBrushIcon,
@@ -816,6 +816,12 @@ export default function LandingPage() {
               </a>
               <Link href="/auth" className="text-sm text-gray-500 hover:text-gray-700">
                 Sign In
+              </Link>
+              <Link href="/terms" className="text-sm text-gray-500 hover:text-gray-700">
+                Terms of Service
+              </Link>
+              <Link href="/privacy" className="text-sm text-gray-500 hover:text-gray-700">
+                Privacy Policy
               </Link>
             </nav>
           </div>

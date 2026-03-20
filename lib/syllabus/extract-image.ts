@@ -1,6 +1,7 @@
 import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { createClient } from "@/lib/supabase/server";
+import { classifyAIError } from "@/lib/ai-errors";
 
 /**
  * Downloads an image from Supabase Storage and extracts syllabus text
@@ -41,24 +42,32 @@ export async function extractSyllabusTextFromImage(
   const dataUrl = `data:${mimeType};base64,${base64}`;
 
   // Use OpenAI Vision to extract text from the image
-  const { text } = await generateText({
-    model: openai("gpt-4o-mini"),
-    messages: [
-      {
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: "Extract ALL text from this syllabus image. Reproduce the text exactly as it appears, preserving structure, dates, assignment names, and due dates. Output only the extracted text, nothing else.",
-          },
-          {
-            type: "image",
-            image: dataUrl,
-          },
-        ],
-      },
-    ],
-  });
+  let text: string;
+  try {
+    const result = await generateText({
+      model: openai("gpt-4o-mini"),
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "Extract ALL text from this syllabus image. Reproduce the text exactly as it appears, preserving structure, dates, assignment names, and due dates. Output only the extracted text, nothing else.",
+            },
+            {
+              type: "image",
+              image: dataUrl,
+            },
+          ],
+        },
+      ],
+    });
+    text = result.text;
+  } catch (err) {
+    const classified = classifyAIError(err);
+    console.error("[extractSyllabusTextFromImage] AI error:", classified.type);
+    throw new Error(classified.userMessage);
+  }
 
   const isEmpty = text.trim().length < 50;
 

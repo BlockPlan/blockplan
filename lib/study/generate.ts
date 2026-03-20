@@ -2,6 +2,7 @@ import { generateText, Output, NoObjectGeneratedError } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { studyAidsSchema, type StudyAids } from "./types";
 import { getMockStudyAids } from "./mock";
+import { classifyAIError } from "@/lib/ai-errors";
 
 // Maximum characters sent to the LLM to stay within context limits
 const MAX_NOTES_CHARS = 12_000;
@@ -59,7 +60,12 @@ export async function generateStudyAids(
         "[generateStudyAids] NoObjectGeneratedError — returning mock"
       );
     } else {
-      console.error("[generateStudyAids] Unexpected error:", err);
+      const classified = classifyAIError(err);
+      console.error("[generateStudyAids] AI error:", classified.type);
+      // For non-retryable config errors, throw to surface the issue
+      if (!classified.retryable) {
+        throw new Error(classified.userMessage);
+      }
     }
     return { data: getMockStudyAids(), isMock: true };
   }

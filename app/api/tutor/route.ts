@@ -3,6 +3,7 @@ import { openai } from "@ai-sdk/openai";
 import { createClient } from "@/lib/supabase/server";
 import { getUserPlan, canUseTutorChat } from "@/lib/subscription";
 import type { StudyHelp } from "@/lib/study-help/types";
+import { classifyAIError } from "@/lib/ai-errors";
 
 export async function POST(req: Request) {
   const supabase = await createClient();
@@ -80,20 +81,26 @@ export async function POST(req: Request) {
     });
   }
 
-  const result = streamText({
-    model: openai("gpt-4o-mini"),
-    system: systemMessage,
-    messages,
-    onFinish: async ({ text }) => {
-      // Save assistant response
-      await supabase.from("tutor_messages").insert({
-        user_id: user.id,
-        session_id: sessionId,
-        role: "assistant",
-        content: text,
-      });
-    },
-  });
+  try {
+    const result = streamText({
+      model: openai("gpt-4o-mini"),
+      system: systemMessage,
+      messages,
+      onFinish: async ({ text }) => {
+        // Save assistant response
+        await supabase.from("tutor_messages").insert({
+          user_id: user.id,
+          session_id: sessionId,
+          role: "assistant",
+          content: text,
+        });
+      },
+    });
 
-  return result.toTextStreamResponse();
+    return result.toTextStreamResponse();
+  } catch (err) {
+    const classified = classifyAIError(err);
+    console.error("[tutor] AI error:", classified.type);
+    return new Response(classified.userMessage, { status: 503 });
+  }
 }

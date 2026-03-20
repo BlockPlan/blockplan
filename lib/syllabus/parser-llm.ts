@@ -2,6 +2,7 @@ import { generateText, Output, NoObjectGeneratedError } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import type { ParsedItem } from "@/lib/syllabus/types";
+import { classifyAIError } from "@/lib/ai-errors";
 
 // ---------------------------------------------------------------------------
 // Inline Zod schema for LLM structured output
@@ -87,7 +88,13 @@ export async function parseWithLLM(
     if (err instanceof NoObjectGeneratedError) {
       console.warn("[parseWithLLM] NoObjectGeneratedError — falling back to rule-based only");
     } else {
-      console.error("[parseWithLLM] Unexpected error:", err);
+      const classified = classifyAIError(err);
+      console.error("[parseWithLLM] AI error:", classified.type);
+      // For non-retryable config errors (invalid key, billing), throw to
+      // surface the issue instead of silently falling back
+      if (!classified.retryable) {
+        throw new Error(classified.userMessage);
+      }
     }
     return [];
   }
