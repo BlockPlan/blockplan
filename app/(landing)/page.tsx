@@ -413,27 +413,29 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* ---- Social Proof ---- */}
+      {/* ---- Social Proof (hidden until we have real numbers) ---- */}
+      {/* TODO: Uncomment when we have real user stats to display
       <section className="border-y border-gray-100 bg-gray-50/50 py-12">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="flex flex-col items-center justify-center gap-6 text-center sm:flex-row sm:gap-12">
             <div>
-              <p className="text-3xl font-bold text-gray-900">500+</p>
+              <p className="text-3xl font-bold text-gray-900">X+</p>
               <p className="mt-1 text-sm text-gray-500">Students using BlockPlan</p>
             </div>
             <div className="hidden h-8 w-px bg-gray-200 sm:block" aria-hidden="true" />
             <div>
-              <p className="text-3xl font-bold text-gray-900">10,000+</p>
+              <p className="text-3xl font-bold text-gray-900">X+</p>
               <p className="mt-1 text-sm text-gray-500">Study materials generated</p>
             </div>
             <div className="hidden h-8 w-px bg-gray-200 sm:block" aria-hidden="true" />
             <div>
-              <p className="text-3xl font-bold text-gray-900">4.8/5</p>
+              <p className="text-3xl font-bold text-gray-900">X/5</p>
               <p className="mt-1 text-sm text-gray-500">Average student rating</p>
             </div>
           </div>
         </div>
       </section>
+      */}
 
       {/* ---- Features Section ---- */}
       <section id="features" className="scroll-mt-16 py-20 sm:py-28">
