@@ -106,9 +106,9 @@ const planningFeatures = [
   },
   {
     icon: DocumentIcon,
-    title: "Export to Google & Apple Calendar",
+    title: "Import & Export Calendars",
     description:
-      "Sync your study plan with the calendar you already use. One click to export and your study blocks show up on your phone.",
+      "Import your existing class schedule from Google or Apple Calendar (.ics file), and export your study plan back. Keep everything in sync.",
   },
 ];
 

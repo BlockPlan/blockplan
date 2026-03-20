@@ -38,6 +38,7 @@ import PlanBlock from "./PlanBlock";
 import TimeGrid from "./TimeGrid";
 import RiskBadge from "./RiskBadge";
 import ExportButton from "./ExportButton";
+import ImportCalendarDialog from "./ImportCalendarDialog";
 import BlockFormDialog from "./BlockFormDialog";
 import type { BlockFormData } from "./BlockFormDialog";
 import TaskForm from "@/app/tasks/_components/TaskForm";
@@ -1061,6 +1062,7 @@ export default function CalendarView({
   const [showConfirmGenerate, setShowConfirmGenerate] = useState(false);
   const confirmDialogRef = useRef<HTMLDialogElement>(null);
   const [blockFormData, setBlockFormData] = useState<Partial<BlockFormData> | null>(null);
+  const [showImportDialog, setShowImportDialog] = useState(false);
 
   // Initialize from URL params
   const initialView = (searchParams.get("view") as ViewMode) || "week";
@@ -1183,6 +1185,12 @@ export default function CalendarView({
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="page-title">Your Plan</h2>
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowImportDialog(true)}
+              className="btn-secondary"
+            >
+              Import Calendar
+            </button>
             <ExportButton />
             <button
               onClick={() => setBlockFormData({ date: format(currentDate, "yyyy-MM-dd") })}
@@ -1383,6 +1391,12 @@ export default function CalendarView({
       )}
 
       {/* ---- Add/Edit Block Dialog ---- */}
+      {showImportDialog && (
+        <ImportCalendarDialog
+          onClose={() => setShowImportDialog(false)}
+        />
+      )}
+
       {blockFormData && (
         <BlockFormDialog
           tasks={tasks.filter((t) => t.status !== "done").map((t) => ({

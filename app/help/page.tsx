@@ -32,6 +32,7 @@ const sections = [
       'Click "Generate Plan" to auto-schedule study blocks based on your tasks and available time. This replaces all currently scheduled blocks but keeps done and missed blocks.',
       'Click "Add Block" to manually create a single study block. You can link it to an existing task, or switch to "Custom Block" to type your own name (e.g., "Group study session", "Review lecture notes"). This does not affect any other blocks.',
       "Click any study block to edit it — change the assigned task, date, or time, or delete the block entirely.",
+      'Click "Import Calendar" to upload an .ics file from Google Calendar, Apple Calendar, or Outlook. Your existing class schedule and events will be imported as study blocks. You can preview and select which events to import before confirming.',
       'Click "Export to Calendar" to download an .ics file for Google Calendar or Apple Calendar.',
       "Mark blocks as done (checkmark) or missed (X) using the action buttons on each block.",
       "Done blocks turn green, missed blocks turn red. Missed blocks auto-reschedule remaining work.",
