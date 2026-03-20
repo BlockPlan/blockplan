@@ -73,42 +73,81 @@ function StarIcon({ className }: { className?: string }) {
 /*  Data                                                               */
 /* ------------------------------------------------------------------ */
 
-const features = [
-  {
-    icon: SparklesIcon,
-    title: "AI Study Materials",
-    description:
-      "Generate flash cards, practice quizzes, and comprehensive study guides from your course content in seconds.",
-  },
-  {
-    icon: CalendarIcon,
-    title: "Smart Calendar & Planning",
-    description:
-      "Auto-schedule study sessions around your classes. Drag-and-drop blocks to rearrange your week effortlessly.",
-  },
+const planningFeatures = [
   {
     icon: DocumentIcon,
     title: "Syllabus Upload",
     description:
-      "Snap a photo or upload a PDF of your syllabus. AI extracts every assignment, exam, and deadline automatically.",
+      "Snap a photo or upload a PDF of your syllabus. AI extracts every assignment, exam, and deadline automatically — no manual data entry.",
   },
   {
-    icon: PaintBrushIcon,
-    title: "AI Illustrations",
+    icon: CalendarIcon,
+    title: "Smart Calendar & Auto-Scheduling",
     description:
-      "Turn text descriptions into study diagrams, or clean up hand-drawn sketches into polished illustrations.",
+      "Generate a complete study plan with one click. AI schedules study blocks around your classes, then drag-and-drop to adjust as life happens.",
   },
   {
     icon: ChartBarIcon,
     title: "Task & Grade Tracking",
     description:
-      "Track assignments, monitor your GPA, and see exactly where you stand in every course at a glance.",
+      "See every assignment across all your courses in one place. Track completion, monitor grades, and know exactly where you stand.",
   },
   {
     icon: ShieldExclamationIcon,
-    title: "Risk Alerts",
+    title: "Risk Alerts & Deadline Warnings",
     description:
-      "Get notified before deadlines sneak up on you. Smart alerts keep you ahead of upcoming due dates.",
+      "Get notified before deadlines sneak up on you. BlockPlan flags at-risk assignments so you can course-correct before it's too late.",
+  },
+  {
+    icon: CalendarIcon,
+    title: "Day, Week & Month Views",
+    description:
+      "Switch between daily, weekly, and monthly calendar views. Click any task to edit it, add new study blocks manually, or drag to reschedule.",
+  },
+  {
+    icon: DocumentIcon,
+    title: "Export to Google & Apple Calendar",
+    description:
+      "Sync your study plan with the calendar you already use. One click to export and your study blocks show up on your phone.",
+  },
+];
+
+const aiFeatures = [
+  {
+    icon: SparklesIcon,
+    title: "AI Flash Cards",
+    description:
+      "Paste your notes or textbook content and get comprehensive, in-depth flash cards generated instantly. Way beyond basic Q&A — these test real understanding.",
+  },
+  {
+    icon: SparklesIcon,
+    title: "AI Practice Quizzes",
+    description:
+      "Generate realistic practice tests from your course material. Multiple choice, short answer, and true/false — designed to prepare you for the real exam.",
+  },
+  {
+    icon: SparklesIcon,
+    title: "AI Study Guides",
+    description:
+      "Get comprehensive study guides that break down complex topics into clear, organized sections. Export as .docx to print or share with classmates.",
+  },
+  {
+    icon: PaintBrushIcon,
+    title: "AI Illustrations — Visualize Any Concept",
+    description:
+      "Paste a block of text and get a visual diagram that explains the concept. Perfect for visual learners who need to see ideas, not just read them.",
+  },
+  {
+    icon: PaintBrushIcon,
+    title: "AI Illustration Cleanup",
+    description:
+      "Snap a photo of your hand-drawn diagram and AI transforms it into a clean, polished illustration. Great for turning messy whiteboard notes into study materials.",
+  },
+  {
+    icon: SparklesIcon,
+    title: "AI Tutor Chat",
+    description:
+      "Stuck on a concept? Ask the AI tutor and get clear, patient explanations tailored to your course material. It's like having a study buddy available 24/7.",
   },
 ];
 
@@ -437,26 +476,27 @@ export default function LandingPage() {
       </section>
       */}
 
-      {/* ---- Features Section ---- */}
+      {/* ---- Planning & Organization Features ---- */}
       <section id="features" className="scroll-mt-16 py-20 sm:py-28">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Everything You Need to Ace Your Semester
+            <p className="text-sm font-semibold uppercase tracking-wider text-blue-600">Plan & Organize</p>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              Never Miss a Deadline Again
             </h2>
             <p className="mt-4 text-lg text-gray-600">
-              From AI-powered study tools to smart scheduling, BlockPlan has
-              every feature you need to stay organized and study effectively.
+              Upload your syllabus and let BlockPlan build your entire semester plan.
+              Track every assignment, schedule study time, and stay ahead of every due date.
             </p>
           </div>
 
           <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {features.map((feature) => (
+            {planningFeatures.map((feature) => (
               <div
                 key={feature.title}
                 className="landing-reveal group rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all duration-300 hover:border-blue-100 hover:shadow-md"
               >
-                <div className="mb-4 inline-flex rounded-xl bg-gradient-to-br from-blue-50 to-purple-50 p-3">
+                <div className="mb-4 inline-flex rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 p-3">
                   <feature.icon className="h-6 w-6 text-blue-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900">{feature.title}</h3>
@@ -465,6 +505,58 @@ export default function LandingPage() {
                 </p>
               </div>
             ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            <Link
+              href="/auth"
+              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-blue-600/25 transition-all hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-600/30"
+            >
+              Start Planning for Free
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ---- AI-Powered Study Tools ---- */}
+      <section className="bg-gradient-to-b from-gray-50 to-white py-20 sm:py-28">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-sm font-semibold uppercase tracking-wider text-purple-600">AI-Powered Study Tools</p>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              Study Smarter with AI That Actually Helps
+            </h2>
+            <p className="mt-4 text-lg text-gray-600">
+              Stop re-reading your notes and hoping for the best. BlockPlan&apos;s AI generates
+              flash cards, practice quizzes, study guides, and even visual diagrams — all tailored
+              to your actual course material. It&apos;s like having a personal tutor on demand.
+            </p>
+          </div>
+
+          <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {aiFeatures.map((feature) => (
+              <div
+                key={feature.title}
+                className="landing-reveal group rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all duration-300 hover:border-purple-100 hover:shadow-md"
+              >
+                <div className="mb-4 inline-flex rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 p-3">
+                  <feature.icon className="h-6 w-6 text-purple-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">{feature.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-gray-600">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            <Link
+              href="/auth"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-purple-600/25 transition-all hover:shadow-xl hover:shadow-purple-600/30"
+            >
+              Try AI Study Tools Free
+            </Link>
           </div>
         </div>
       </section>
