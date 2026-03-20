@@ -88,9 +88,9 @@ const planningFeatures = [
   },
   {
     icon: ChartBarIcon,
-    title: "Task & Grade Tracking",
+    title: "Task & Progress Tracking",
     description:
-      "See every assignment across all your courses in one place. Track completion, monitor grades, and know exactly where you stand.",
+      "See every assignment across all your courses in one place. Track completion status, mark tasks as done, and always know what's left to do.",
   },
   {
     icon: ShieldExclamationIcon,
