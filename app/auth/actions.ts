@@ -9,13 +9,24 @@ export async function signup(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
   });
 
   if (error) {
     redirect(`/auth?error=${encodeURIComponent(error.message)}`);
+  }
+
+  // Ensure a user_profiles row exists (belt-and-suspenders alongside DB trigger)
+  if (data?.user) {
+    const adminSupabase = (await import("@/lib/supabase/admin")).createAdminClient();
+    await adminSupabase
+      .from("user_profiles")
+      .upsert(
+        { id: data.user.id, timezone: "America/Boise" },
+        { onConflict: "id", ignoreDuplicates: true }
+      );
   }
 
   redirect("/onboarding");
@@ -27,13 +38,23 @@ export async function signin(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
 
   if (error) {
     redirect(`/auth?error=${encodeURIComponent(error.message)}`);
+  }
+
+  // Ensure a user_profiles row exists for users who signed up before the trigger
+  if (data?.user) {
+    await supabase
+      .from("user_profiles")
+      .upsert(
+        { id: data.user.id, timezone: "America/Boise" },
+        { onConflict: "id", ignoreDuplicates: true }
+      );
   }
 
   redirect("/dashboard");

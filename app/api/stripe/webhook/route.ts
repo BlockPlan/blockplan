@@ -153,18 +153,22 @@ export async function POST(req: NextRequest) {
             ? session.customer
             : session.customer?.id ?? null;
 
-        const { error: updateError } = await supabase
+        // Use upsert so we create the profile row if it doesn't exist yet
+        const { error: upsertError } = await supabase
           .from("user_profiles")
-          .update({
-            subscription_plan: plan,
-            subscription_status: "active",
-            stripe_customer_id: customerId,
-            stripe_subscription_id: subscriptionId,
-          })
-          .eq("id", userId);
+          .upsert(
+            {
+              id: userId,
+              subscription_plan: plan,
+              subscription_status: "active",
+              stripe_customer_id: customerId,
+              stripe_subscription_id: subscriptionId,
+            },
+            { onConflict: "id" }
+          );
 
-        if (updateError) {
-          console.error("[webhook] Supabase update error:", updateError);
+        if (upsertError) {
+          console.error("[webhook] Supabase upsert error:", upsertError);
         } else {
           console.log(
             `[webhook] SUCCESS: User ${userId} subscribed to ${plan} (sub: ${subscriptionId})`

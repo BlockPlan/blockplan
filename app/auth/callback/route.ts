@@ -10,6 +10,19 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
+      // Ensure a user_profiles row exists (belt-and-suspenders alongside DB trigger)
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        await supabase
+          .from("user_profiles")
+          .upsert(
+            { id: user.id, timezone: "America/Boise" },
+            { onConflict: "id", ignoreDuplicates: true }
+          );
+      }
+
       return NextResponse.redirect(`${origin}/dashboard`);
     }
     console.error("[auth/callback] Code exchange failed:", error.message);

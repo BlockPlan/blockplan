@@ -42,11 +42,13 @@ export async function POST(req: NextRequest) {
       });
       customerId = customer.id;
 
-      // Save customer ID to profile immediately
+      // Save customer ID to profile immediately (upsert in case profile missing)
       await supabase
         .from("user_profiles")
-        .update({ stripe_customer_id: customerId })
-        .eq("id", userId);
+        .upsert(
+          { id: userId, stripe_customer_id: customerId },
+          { onConflict: "id" }
+        );
     }
 
     // Create checkout session
