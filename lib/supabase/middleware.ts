@@ -37,9 +37,11 @@ export async function updateSession(request: NextRequest) {
 
   // Public routes that don't require authentication
   const publicRoutes = ["/auth", "/auth/callback", "/api/stripe/webhook"];
-  const isPublicRoute = publicRoutes.some((route) =>
-    request.nextUrl.pathname.startsWith(route)
-  );
+  const isPublicRoute =
+    request.nextUrl.pathname === "/" ||
+    publicRoutes.some((route) =>
+      request.nextUrl.pathname.startsWith(route)
+    );
 
   // Redirect unauthenticated users to /auth
   if (!user && !isPublicRoute) {

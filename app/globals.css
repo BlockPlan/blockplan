@@ -95,3 +95,49 @@ dialog[open] {
     transform: translateY(0) scale(1);
   }
 }
+
+/* ---- Landing page styles ---- */
+
+/* Sticky nav with blur */
+.landing-nav {
+  @apply sticky top-0 z-50 border-b border-gray-100/80;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Hero fade-in animations */
+@keyframes landing-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.landing-fade-in {
+  animation: landing-fade-in 0.7s ease-out both;
+}
+.landing-delay-1 { animation-delay: 0.1s; }
+.landing-delay-2 { animation-delay: 0.2s; }
+.landing-delay-3 { animation-delay: 0.35s; }
+.landing-delay-4 { animation-delay: 0.5s; }
+
+/* Scroll-reveal: elements start hidden, appear when they enter the viewport */
+.landing-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.landing-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Smooth scroll for anchor links */
+html {
+  scroll-behavior: smooth;
+}
