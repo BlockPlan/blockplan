@@ -12,8 +12,12 @@ function planFromPriceId(priceId: string): "pro" | "max" | null {
   console.log("[webhook] Comparing priceId:", priceId);
   console.log("[webhook] PRO_PRICE_ID:", process.env.STRIPE_PRO_PRICE_ID);
   console.log("[webhook] MAX_PRICE_ID:", process.env.STRIPE_MAX_PRICE_ID);
+  console.log("[webhook] PRO_ANNUAL_PRICE_ID:", process.env.STRIPE_PRO_ANNUAL_PRICE_ID);
+  console.log("[webhook] MAX_ANNUAL_PRICE_ID:", process.env.STRIPE_MAX_ANNUAL_PRICE_ID);
   if (priceId === process.env.STRIPE_PRO_PRICE_ID) return "pro";
+  if (priceId === process.env.STRIPE_PRO_ANNUAL_PRICE_ID) return "pro";
   if (priceId === process.env.STRIPE_MAX_PRICE_ID) return "max";
+  if (priceId === process.env.STRIPE_MAX_ANNUAL_PRICE_ID) return "max";
   return null;
 }
 
