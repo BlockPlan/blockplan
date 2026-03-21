@@ -31,6 +31,20 @@ export async function getUserPlan(userId: string): Promise<SubscriptionPlan> {
   return (data?.subscription_plan as SubscriptionPlan) ?? "free";
 }
 
+// ---------------------------------------------------------------------------
+// Trial status — each user gets ONE 14-day free trial across all plans
+// ---------------------------------------------------------------------------
+
+export async function hasUsedTrial(userId: string): Promise<boolean> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("user_profiles")
+    .select("has_used_trial")
+    .eq("id", userId)
+    .single();
+  return data?.has_used_trial === true;
+}
+
 export function canUseTutorChat(plan: SubscriptionPlan): boolean {
   return plan === "pro" || plan === "max";
 }

@@ -2,7 +2,7 @@
 
 ## What This Is
 
-BlockPlan is a web app that turns BYU-Idaho students' syllabi into adaptive weekly plans with time-blocked study schedules. Students upload syllabus PDFs, confirm extracted tasks, set their availability around work and church commitments, and get a generated weekly plan that reschedules automatically when life happens.
+BlockPlan is a web app that turns BYU-Idaho students' syllabi into adaptive weekly plans with time-blocked study schedules. Students upload syllabus PDFs (or PPTX), confirm extracted tasks, set their availability around work and church commitments, and get a generated weekly plan that reschedules automatically when life happens. An AI Study Help suite generates summaries, flashcards, quizzes, practice problems, visual diagrams, and an AI tutor chat from uploaded study materials.
 
 ## Core Value
 
@@ -32,10 +32,32 @@ Students always know exactly what to work on next and when — the plan adapts t
 - ✓ Calendar export as .ics download — v1.0
 - ✓ Responsive web design (mobile-friendly, no native app) — v1.0
 - ✓ Private per-user storage with RLS on all tables — v1.0
+- ✓ Quick Notes dashboard widget and task notes — post-v1.0
+- ✓ Flashcard Study Mode with spaced repetition (Leitner box system) — post-v1.0
+- ✓ Flashcard confidence buttons (Got It / Still Learning) in viewer — post-v1.0
+- ✓ Inline flashcard editing — post-v1.0
+- ✓ Export study sessions to PDF — post-v1.0
+- ✓ Share study sessions (requires BlockPlan account) — post-v1.0
+- ✓ Guided tour for new users and empty state guidance — post-v1.0
+- ✓ Drag-and-drop to reschedule study blocks in Week view — post-v1.0
+- ✓ Loading skeletons, error boundaries, confirmation dialogs — post-v1.0
+- ✓ Profile page (consolidated Settings/Help/Pricing) — post-v1.0
+- ✓ Pricing page with Free, Pro, MAX tiers — post-v1.0
+- ✓ PPT/PPTX upload support for study materials — post-v1.0
+- ✓ Regenerate study materials per section — post-v1.0
+- ✓ ELI5 Mode (simplified summaries with analogies) — post-v1.0
+- ✓ Practice Problems with step-by-step solutions — post-v1.0
+- ✓ AI Tutor Chat (conversational Q&A about study material) — post-v1.0
+- ✓ AI Visual Diagrams: mind maps, flowcharts, concept maps (Mermaid.js) — post-v1.0
+- ✓ 12-hour time format across all views — post-v1.0
+- ✓ Compact calendar blocks with full task names — post-v1.0
+- ✓ Removed Grades feature (out of scope) — post-v1.0
+- ✓ Beta testing mode: all users get MAX plan access — post-v1.0
 
 ### Active
 
-(None yet — define in next milestone)
+- Stripe billing integration (pricing page exists, payments not wired)
+- Re-enable DB-based subscription plan lookup when billing is live
 
 ### Out of Scope
 
@@ -56,8 +78,8 @@ Students always know exactly what to work on next and when — the plan adapts t
 - **Competitive landscape**: Existing planners (Notion, Google Calendar, paper planners) are manual. LMS systems (Canvas) are passive notification tools. No tool converts syllabi into executable plans.
 - **Business model**: Freemium — free core planning features (onboarding, task management, weekly plan, calendar export). Paid tier unlocks LLM-powered features (syllabus parsing, study session generation). LLM API costs baked into subscription pricing.
 - **Launch target**: Fall 2026 semester. Enough runway to build all MVP features properly.
-- **Current state**: v1.0 MVP shipped (2026-03-05). 98 TypeScript/TSX files, 14,359 LOC. Deployed on Vercel with Supabase backend. All 45 v1 requirements satisfied. Tech stack: Next.js 16 (App Router) + TypeScript + Tailwind CSS + Supabase (auth, Postgres, storage) + Vercel.
-- **Known tech debt**: Phases 5, 6, 7 missing VERIFICATION.md files (non-blocking). Single active term per user (MVP limitation).
+- **Current state**: v1.0 MVP shipped (2026-03-05), followed by 37 post-v1.0 commits adding AI study features, UX polish, and pricing. Deployed on Vercel with Supabase backend. Tech stack: Next.js 16 (App Router) + TypeScript + Tailwind CSS + Supabase (auth, Postgres, storage) + Vercel + Mermaid.js (diagrams).
+- **Known tech debt**: Phases 5, 6, 7 missing VERIFICATION.md files (non-blocking). Single active term per user (MVP limitation). `getUserPlan()` hardcoded to return "max" for beta testing (needs Stripe integration). OpenAI structured output requires separate generation vs storage schemas (split in types.ts).
 
 ## Constraints
 
@@ -87,6 +109,13 @@ Students always know exactly what to work on next and when — the plan adapts t
 | vitest (not jest) | Zero config, ESM-native | ✓ Good — instant setup |
 | CalendarView over PlanGrid | Single component handles week/day toggle; superseded separate components | ⚠️ Revisit — caused integration gaps (fixed in Phase 8) |
 | Service role key for signed URLs | createSignedUploadUrl requires admin privileges, not anon key | ✓ Good — fixed production upload bug |
+| Mermaid.js for visual diagrams | Client-side rendering, no server cost, supports mindmap/flowchart/concept map | ✓ Good — zero additional infra cost |
+| Split generation vs storage schemas | OpenAI structured output requires all fields in `required`; storage needs optional fields for backward compat | ✓ Good — fixed schema validation errors |
+| Leitner box spaced repetition | Well-established memory algorithm; 5-box progression (New → Mastered) | ✓ Good — effective study tracking |
+| Beta: hardcode MAX plan | Skip Stripe for now; all beta testers get full access | — Temporary — revert when billing is live |
+| Remove Grades feature | FERPA liability, not core to planning; was out of scope | ✓ Good — reduced scope and risk |
+| Pricing tiers: Free/$1.99/$5 | Low barrier; Pro covers API costs, MAX adds premium AI features | — Pending (Stripe not yet integrated) |
+| PPT/PPTX support via parseOffice | Extends study material uploads beyond PDF; toText() extraction | ✓ Good — broadens content sources |
 
 ---
-*Last updated: 2026-03-05 after v1.0 milestone*
+*Last updated: 2026-03-09 after post-v1.0 feature work*

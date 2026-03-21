@@ -3,6 +3,7 @@
 ## Milestones
 
 - ✅ **v1.0 MVP** — Phases 1-8 (shipped 2026-03-05)
+- 🚧 **Post-v1.0** — Ad-hoc feature work (2026-03-05 → 2026-03-09, 37 commits, no formal milestone)
 
 ## Phases
 
@@ -22,6 +23,39 @@ Full details: `milestones/v1.0-ROADMAP.md`
 
 </details>
 
+<details open>
+<summary>🚧 Post-v1.0 Ad-Hoc Work (37 commits, 2026-03-05 → 2026-03-09)</summary>
+
+**AI Study Help Enhancements:**
+- [x] ELI5 Mode — simplified summaries with everyday analogies
+- [x] Practice Problems — step-by-step solutions with difficulty levels
+- [x] AI Tutor Chat — conversational Q&A about study material
+- [x] Visual Diagrams — mind maps, flowcharts, concept maps (Mermaid.js)
+- [x] Flashcard Study Mode — spaced repetition (Leitner box system)
+- [x] Flashcard confidence buttons (Got It / Still Learning)
+- [x] Inline flashcard editing
+- [x] Regenerate study materials per section
+- [x] PPT/PPTX upload support
+- [x] Export study sessions to PDF
+- [x] Share study sessions
+
+**UX & Polish:**
+- [x] Quick Notes dashboard widget and task notes
+- [x] Guided tour for new users
+- [x] Drag-and-drop reschedule in Week view
+- [x] Loading skeletons, error boundaries, confirmation dialogs
+- [x] Profile page (consolidated nav)
+- [x] 12-hour time format, compact calendar blocks
+- [x] Removed Grades feature
+
+**Business:**
+- [x] Pricing page (Free / Pro $1.99 / MAX $5)
+- [x] Beta testing mode (all users get MAX)
+- [ ] Stripe billing integration
+- [ ] DB-based subscription plan lookup
+
+</details>
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -34,3 +68,4 @@ Full details: `milestones/v1.0-ROADMAP.md`
 | 6. Study Sessions | v1.0 | 2/2 | Complete | 2026-03-02 |
 | 7. Export and Polish | v1.0 | 3/3 | Complete | 2026-03-02 |
 | 8. Integration Fixes | v1.0 | 1/1 | Complete | 2026-03-05 |
+| Post-v1.0 Ad-Hoc | — | 37 commits | In Progress | — |

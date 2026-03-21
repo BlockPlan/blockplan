@@ -125,19 +125,23 @@ export async function POST(req: NextRequest) {
         // Get subscription details
         let subscriptionId: string | undefined;
         let priceId: string | undefined;
+        let subscriptionStatus: string | undefined;
 
         if (typeof session.subscription === "string") {
           subscriptionId = session.subscription;
           const sub = await stripe.subscriptions.retrieve(subscriptionId);
           priceId = sub.items.data[0]?.price?.id;
+          subscriptionStatus = sub.status;
         } else if (session.subscription && typeof session.subscription === "object") {
           const sub = session.subscription as Stripe.Subscription;
           subscriptionId = sub.id;
           priceId = sub.items.data[0]?.price?.id;
+          subscriptionStatus = sub.status;
         }
 
         console.log("[webhook] subscriptionId:", subscriptionId);
         console.log("[webhook] priceId:", priceId);
+        console.log("[webhook] subscriptionStatus:", subscriptionStatus);
 
         if (!subscriptionId || !priceId) {
           console.error("[webhook] Missing subscription or price ID");
@@ -157,25 +161,33 @@ export async function POST(req: NextRequest) {
             ? session.customer
             : session.customer?.id ?? null;
 
+        // Check if this checkout started a trial — if so, mark trial as used
+        const startedTrial = subscriptionStatus === "trialing";
+
         // Use upsert so we create the profile row if it doesn't exist yet
+        const upsertData: Record<string, unknown> = {
+          id: userId,
+          subscription_plan: plan,
+          subscription_status: "active",
+          stripe_customer_id: customerId,
+          stripe_subscription_id: subscriptionId,
+        };
+
+        // Mark trial as used if this checkout started a trial
+        if (startedTrial) {
+          upsertData.has_used_trial = true;
+          console.log(`[webhook] User ${userId} started a free trial — marking has_used_trial`);
+        }
+
         const { error: upsertError } = await supabase
           .from("user_profiles")
-          .upsert(
-            {
-              id: userId,
-              subscription_plan: plan,
-              subscription_status: "active",
-              stripe_customer_id: customerId,
-              stripe_subscription_id: subscriptionId,
-            },
-            { onConflict: "id" }
-          );
+          .upsert(upsertData, { onConflict: "id" });
 
         if (upsertError) {
           console.error("[webhook] Supabase upsert error:", upsertError);
         } else {
           console.log(
-            `[webhook] SUCCESS: User ${userId} subscribed to ${plan} (sub: ${subscriptionId})`
+            `[webhook] SUCCESS: User ${userId} subscribed to ${plan} (sub: ${subscriptionId})${startedTrial ? " [trial]" : ""}`
           );
         }
         break;

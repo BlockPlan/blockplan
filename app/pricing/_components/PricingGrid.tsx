@@ -41,11 +41,13 @@ export default function PricingGrid({
   userId,
   currentPlan,
   hasStripeCustomer,
+  trialEligible,
 }: {
   tiers: TierConfig[];
   userId: string;
   currentPlan: string;
   hasStripeCustomer: boolean;
+  trialEligible: boolean;
 }) {
   const [interval, setInterval] = useState<BillingInterval>("monthly");
 
@@ -206,6 +208,7 @@ export default function PricingGrid({
                 isCurrentPlan={isCurrentPlan}
                 isUpgrade={isUpgrade}
                 hasStripeCustomer={hasStripeCustomer}
+                trialEligible={trialEligible}
               />
 
               {/* Divider */}

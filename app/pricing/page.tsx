@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import NavHeader from "@/app/plan/_components/NavHeader";
 import PricingGrid from "./_components/PricingGrid";
 import PricingToasts from "./_components/PricingToasts";
-import { getUserPlan, type SubscriptionPlan } from "@/lib/subscription";
+import { getUserPlan, hasUsedTrial, type SubscriptionPlan } from "@/lib/subscription";
 
 export const metadata: Metadata = {
   title: "Pricing | BlockPlan",
@@ -102,7 +102,10 @@ export default async function PricingPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth");
 
-  const currentPlan = await getUserPlan(user.id);
+  const [currentPlan, trialUsed] = await Promise.all([
+    getUserPlan(user.id),
+    hasUsedTrial(user.id),
+  ]);
 
   // Check if user has a stripe customer (for "Manage Subscription" button)
   const { data: profile } = await supabase
@@ -112,6 +115,7 @@ export default async function PricingPage() {
     .single();
 
   const hasStripeCustomer = !!profile?.stripe_customer_id;
+  const trialEligible = !trialUsed;
 
   return (
     <div className="page-bg">
@@ -140,6 +144,7 @@ export default async function PricingPage() {
           userId={user.id}
           currentPlan={currentPlan}
           hasStripeCustomer={hasStripeCustomer}
+          trialEligible={trialEligible}
         />
 
         {/* FAQ / Footer */}

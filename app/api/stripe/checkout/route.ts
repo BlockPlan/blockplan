@@ -40,10 +40,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if user already has a stripe_customer_id
+    // Check if user already has a stripe_customer_id and trial status
     const { data: profile } = await supabase
       .from("user_profiles")
-      .select("stripe_customer_id")
+      .select("stripe_customer_id, has_used_trial")
       .eq("id", userId)
       .single();
 
@@ -66,7 +66,10 @@ export async function POST(req: NextRequest) {
         );
     }
 
-    // Create checkout session
+    // Determine if user is eligible for a free trial
+    const hasUsedTrial = profile?.has_used_trial === true;
+
+    // Create checkout session — add 14-day trial if user hasn't used one yet
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: "subscription",
@@ -75,6 +78,7 @@ export async function POST(req: NextRequest) {
       cancel_url: `${req.nextUrl.origin}/pricing?canceled=true`,
       subscription_data: {
         metadata: { supabase_user_id: userId },
+        ...(!hasUsedTrial ? { trial_period_days: 14 } : {}),
       },
       metadata: { supabase_user_id: userId },
     });

@@ -13,6 +13,7 @@ export default function PricingButtons({
   isCurrentPlan,
   isUpgrade,
   hasStripeCustomer,
+  trialEligible,
 }: {
   tierKey: string;
   tierName: string;
@@ -23,6 +24,7 @@ export default function PricingButtons({
   isCurrentPlan: boolean;
   isUpgrade: boolean;
   hasStripeCustomer: boolean;
+  trialEligible: boolean;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -101,6 +103,8 @@ export default function PricingButtons({
     buttonLabel = "Manage Subscription";
   } else if (isCurrentPlan) {
     buttonLabel = "Current Plan";
+  } else if (tierKey !== "free" && trialEligible) {
+    buttonLabel = "Start 14-Day Free Trial";
   }
 
   const isDisabled = isCurrentPlan && tierKey === "free";
