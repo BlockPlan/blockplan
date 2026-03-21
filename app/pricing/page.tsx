@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import NavHeader from "@/app/plan/_components/NavHeader";
-import PricingButtons from "./_components/PricingButtons";
+import PricingGrid from "./_components/PricingGrid";
 import PricingToasts from "./_components/PricingToasts";
 import { getUserPlan, type SubscriptionPlan } from "@/lib/subscription";
 
@@ -16,12 +16,17 @@ const tiers = [
   {
     key: "free" as const,
     name: "Free",
-    price: "$0",
+    monthlyPrice: "$0",
+    annualPrice: "$0",
+    annualTotal: "$0",
+    savingsPercent: "",
     period: "forever",
     description:
       "Everything you need to get organized and stay on top of coursework.",
     cta: "Get Started",
     highlighted: false,
+    monthlyPriceId: null,
+    annualPriceId: null,
     features: [
       "2 courses",
       "1 AI study material / month",
@@ -36,14 +41,18 @@ const tiers = [
   {
     key: "pro" as const,
     name: "Pro",
-    price: "$4.99",
+    monthlyPrice: "$4.99",
+    annualPrice: "$3.99",
+    annualTotal: "$47.88",
+    savingsPercent: "20%",
     period: "/month",
     description:
       "Supercharge your study routine with AI and smart scheduling.",
     cta: "Upgrade to Pro",
     highlighted: true,
     badge: "Most Popular",
-    priceId: process.env.STRIPE_PRO_PRICE_ID,
+    monthlyPriceId: process.env.STRIPE_PRO_PRICE_ID ?? null,
+    annualPriceId: process.env.STRIPE_PRO_ANNUAL_PRICE_ID ?? null,
     features: [
       "Unlimited courses",
       "15 AI study materials / month",
@@ -60,14 +69,18 @@ const tiers = [
   {
     key: "max" as const,
     name: "MAX",
-    price: "$7.99",
+    monthlyPrice: "$7.99",
+    annualPrice: "$5.99",
+    annualTotal: "$71.88",
+    savingsPercent: "25%",
     period: "/month",
     description:
       "The ultimate academic toolkit — no limits, no compromises.",
     cta: "Go MAX",
     highlighted: false,
     badge: "Best Value",
-    priceId: process.env.STRIPE_MAX_PRICE_ID,
+    monthlyPriceId: process.env.STRIPE_MAX_PRICE_ID ?? null,
+    annualPriceId: process.env.STRIPE_MAX_ANNUAL_PRICE_ID ?? null,
     features: [
       "Unlimited courses",
       "50 AI study materials / month",
@@ -80,21 +93,7 @@ const tiers = [
       "Early access to new features",
     ],
   },
-] as const;
-
-function CheckIcon() {
-  return (
-    <svg
-      className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-500"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2.5}
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-    </svg>
-  );
-}
+];
 
 export default async function PricingPage() {
   const supabase = await createClient();
@@ -135,90 +134,13 @@ export default async function PricingPage() {
           </p>
         </div>
 
-        {/* Pricing Grid */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {tiers.map((tier) => {
-            const isCurrentPlan = tier.key === currentPlan;
-            const isUpgrade = tierRank(tier.key) > tierRank(currentPlan);
-
-            return (
-              <div
-                key={tier.name}
-                className={`relative flex flex-col rounded-xl border-2 bg-white p-6 shadow-[var(--shadow-card)] transition-shadow duration-200 hover:shadow-[var(--shadow-card-hover)] ${
-                  tier.highlighted
-                    ? "border-blue-500 ring-1 ring-blue-500/20"
-                    : isCurrentPlan
-                      ? "border-emerald-400 ring-1 ring-emerald-400/20"
-                      : "border-gray-200"
-                }`}
-              >
-                {/* Badge */}
-                {"badge" in tier && tier.badge && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold text-white shadow-sm ${
-                        tier.highlighted ? "bg-blue-600" : "bg-purple-600"
-                      }`}
-                    >
-                      {tier.badge}
-                    </span>
-                  </div>
-                )}
-
-                {/* Current Plan indicator */}
-                {isCurrentPlan && (
-                  <div className="absolute -top-3 right-4">
-                    <span className="rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white shadow-sm">
-                      Current Plan
-                    </span>
-                  </div>
-                )}
-
-                {/* Tier name */}
-                <h2 className="text-lg font-semibold text-gray-900">
-                  {tier.name}
-                </h2>
-
-                {/* Price */}
-                <div className="mt-3 flex items-baseline gap-1">
-                  <span className="text-4xl font-bold tracking-tight text-gray-900">
-                    {tier.price}
-                  </span>
-                  <span className="text-sm text-gray-500">{tier.period}</span>
-                </div>
-
-                {/* Description */}
-                <p className="mt-3 text-sm text-gray-500">{tier.description}</p>
-
-                {/* CTA */}
-                <PricingButtons
-                  tierKey={tier.key}
-                  tierName={tier.name}
-                  cta={tier.cta}
-                  highlighted={tier.highlighted}
-                  priceId={"priceId" in tier ? (tier.priceId ?? null) : null}
-                  userId={user.id}
-                  isCurrentPlan={isCurrentPlan}
-                  isUpgrade={isUpgrade}
-                  hasStripeCustomer={hasStripeCustomer}
-                />
-
-                {/* Divider */}
-                <div className="my-6 border-t border-gray-100" />
-
-                {/* Features */}
-                <ul className="flex flex-1 flex-col gap-3">
-                  {tier.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2.5">
-                      <CheckIcon />
-                      <span className="text-sm text-gray-700">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })}
-        </div>
+        {/* Billing Toggle + Pricing Grid */}
+        <PricingGrid
+          tiers={tiers}
+          userId={user.id}
+          currentPlan={currentPlan}
+          hasStripeCustomer={hasStripeCustomer}
+        />
 
         {/* FAQ / Footer */}
         <div className="mt-12 rounded-xl border border-gray-200 bg-white p-6 text-center shadow-[var(--shadow-card)]">
@@ -233,16 +155,4 @@ export default async function PricingPage() {
       </main>
     </div>
   );
-}
-
-// Helper to rank tiers for comparison
-function tierRank(plan: SubscriptionPlan): number {
-  switch (plan) {
-    case "free":
-      return 0;
-    case "pro":
-      return 1;
-    case "max":
-      return 2;
-  }
 }

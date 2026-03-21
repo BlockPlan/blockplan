@@ -13,6 +13,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Validate priceId against allowed price IDs (monthly + annual)
+    const allowedPriceIds = [
+      process.env.STRIPE_PRO_PRICE_ID,
+      process.env.STRIPE_MAX_PRICE_ID,
+      process.env.STRIPE_PRO_ANNUAL_PRICE_ID,
+      process.env.STRIPE_MAX_ANNUAL_PRICE_ID,
+    ].filter(Boolean);
+
+    if (!allowedPriceIds.includes(priceId)) {
+      return NextResponse.json(
+        { error: "Invalid price ID" },
+        { status: 400 }
+      );
+    }
+
     // Fetch user email from Supabase
     const supabase = createAdminClient();
     const { data: userData, error: userError } =
