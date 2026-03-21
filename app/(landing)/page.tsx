@@ -693,6 +693,9 @@ export default function LandingPage() {
               <Link href="/privacy" className="text-sm text-gray-500 hover:text-gray-700">
                 Privacy Policy
               </Link>
+              <a href="mailto:support@block-plan.com" className="text-sm text-gray-500 hover:text-gray-700">
+                Contact
+              </a>
             </nav>
           </div>
 

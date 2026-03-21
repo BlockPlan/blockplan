@@ -20,6 +20,16 @@ export default function FeedbackPage() {
         <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-[var(--shadow-card)] sm:p-6">
           <FeedbackForm />
         </div>
+
+        <p className="mt-4 text-center text-sm text-gray-500">
+          You can also email us directly at{" "}
+          <a
+            href="mailto:support@block-plan.com"
+            className="font-medium text-blue-600 hover:text-blue-700"
+          >
+            support@block-plan.com
+          </a>
+        </p>
       </main>
     </div>
   );
