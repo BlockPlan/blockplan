@@ -126,6 +126,11 @@ dialog[open] {
 .landing-delay-3 { animation-delay: 0.35s; }
 .landing-delay-4 { animation-delay: 0.5s; }
 
+.landing-hero-mockup {
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+  will-change: opacity, transform;
+}
+
 /* Scroll-reveal: elements start hidden, appear when they enter the viewport */
 .landing-reveal {
   opacity: 0;

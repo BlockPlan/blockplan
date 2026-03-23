@@ -26,6 +26,32 @@ export default function ScrollReveal() {
 
     elements.forEach((el) => observer.observe(el));
 
+    /* Hero mockup: fade out quickly as user scrolls */
+    const mockup = document.querySelector(".landing-hero-mockup") as HTMLElement | null;
+    if (mockup) {
+      const onScroll = () => {
+        const scrollY = window.scrollY;
+        const fadeStart = 50;
+        const fadeEnd = 300;
+        if (scrollY <= fadeStart) {
+          mockup.style.opacity = "1";
+          mockup.style.transform = "translateY(0)";
+        } else if (scrollY >= fadeEnd) {
+          mockup.style.opacity = "0";
+          mockup.style.transform = "translateY(-30px)";
+        } else {
+          const progress = (scrollY - fadeStart) / (fadeEnd - fadeStart);
+          mockup.style.opacity = String(1 - progress);
+          mockup.style.transform = `translateY(${-30 * progress}px)`;
+        }
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      return () => {
+        observer.disconnect();
+        window.removeEventListener("scroll", onScroll);
+      };
+    }
+
     return () => observer.disconnect();
   }, []);
 

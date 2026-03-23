@@ -307,6 +307,67 @@ export default function LandingPage() {
 
           </div>
 
+          {/* Hero mockup area — fades out on scroll */}
+          <div className="landing-fade-in landing-delay-4 landing-hero-mockup mx-auto mt-16 max-w-4xl">
+            <div className="relative rounded-2xl border border-gray-200 bg-gradient-to-b from-gray-50 to-white p-2 shadow-2xl shadow-gray-900/10">
+              <div className="rounded-xl bg-white">
+                <div className="flex items-center gap-2 border-b border-gray-100 px-4 py-3">
+                  <div className="h-3 w-3 rounded-full bg-red-400" />
+                  <div className="h-3 w-3 rounded-full bg-yellow-400" />
+                  <div className="h-3 w-3 rounded-full bg-green-400" />
+                  <span className="ml-3 text-xs text-gray-400">block-plan.com/dashboard</span>
+                </div>
+                <div className="grid grid-cols-12 gap-3 p-6" role="img" aria-label="BlockPlan dashboard preview showing calendar, tasks, and AI study tools">
+                  <div className="col-span-3 space-y-3">
+                    <div className="h-4 w-3/4 rounded bg-gray-100" />
+                    <div className="h-3 w-full rounded bg-blue-100" />
+                    <div className="h-3 w-full rounded bg-gray-100" />
+                    <div className="h-3 w-5/6 rounded bg-gray-100" />
+                    <div className="h-3 w-full rounded bg-gray-100" />
+                    <div className="mt-4 h-4 w-3/4 rounded bg-gray-100" />
+                    <div className="h-3 w-full rounded bg-purple-100" />
+                    <div className="h-3 w-4/5 rounded bg-gray-100" />
+                  </div>
+                  <div className="col-span-6 space-y-3">
+                    <div className="h-5 w-1/3 rounded bg-gray-200" />
+                    <div className="grid grid-cols-7 gap-1">
+                      {Array.from({ length: 21 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className={`h-8 rounded ${
+                            i === 9
+                              ? "bg-blue-200"
+                              : i === 14
+                                ? "bg-purple-200"
+                                : i === 17
+                                  ? "bg-blue-100"
+                                  : "bg-gray-50"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <div className="h-3 w-full rounded bg-gray-100" />
+                    <div className="h-3 w-2/3 rounded bg-gray-100" />
+                  </div>
+                  <div className="col-span-3 space-y-3">
+                    <div className="h-4 w-2/3 rounded bg-gray-200" />
+                    <div className="rounded-lg border border-blue-100 bg-blue-50 p-3">
+                      <div className="h-3 w-full rounded bg-blue-200" />
+                      <div className="mt-2 h-3 w-3/4 rounded bg-blue-100" />
+                    </div>
+                    <div className="rounded-lg border border-gray-100 bg-gray-50 p-3">
+                      <div className="h-3 w-full rounded bg-gray-200" />
+                      <div className="mt-2 h-3 w-1/2 rounded bg-gray-100" />
+                    </div>
+                    <div className="rounded-lg border border-purple-100 bg-purple-50 p-3">
+                      <div className="h-3 w-full rounded bg-purple-200" />
+                      <div className="mt-2 h-3 w-2/3 rounded bg-purple-100" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </header>
 
