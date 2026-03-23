@@ -28,23 +28,29 @@ export default function ScrollReveal() {
       elements.forEach((el) => observer!.observe(el));
     }
 
-    /* Hero mockup: fade out fast as user scrolls */
+    /* Hero mockup: fade out and collapse as user scrolls */
     const mockup = document.querySelector(".landing-hero-mockup") as HTMLElement | null;
+    const mockupHeight = mockup?.offsetHeight ?? 0;
     const onScroll = mockup
       ? () => {
           const scrollY = window.scrollY;
-          const fadeEnd = 150;
+          const fadeEnd = 100;
           if (scrollY <= 0) {
             mockup.style.opacity = "1";
-            mockup.style.transform = "scale(1)";
+            mockup.style.maxHeight = mockupHeight + "px";
+            mockup.style.marginTop = "4rem";
+            mockup.style.overflow = "visible";
           } else if (scrollY >= fadeEnd) {
             mockup.style.opacity = "0";
-            mockup.style.transform = "scale(0.95)";
-            mockup.style.pointerEvents = "none";
+            mockup.style.maxHeight = "0px";
+            mockup.style.marginTop = "0px";
+            mockup.style.overflow = "hidden";
           } else {
             const progress = scrollY / fadeEnd;
             mockup.style.opacity = String(1 - progress);
-            mockup.style.transform = `scale(${1 - 0.05 * progress})`;
+            mockup.style.maxHeight = mockupHeight * (1 - progress) + "px";
+            mockup.style.marginTop = 4 * (1 - progress) + "rem";
+            mockup.style.overflow = "hidden";
           }
         }
       : null;
