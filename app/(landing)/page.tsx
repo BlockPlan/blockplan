@@ -109,7 +109,7 @@ const planningFeatures = [
     icon: DocumentIcon,
     title: "Import & Export Calendars",
     description:
-      "Import your existing class schedule from Google or Apple Calendar (.ics file), and export your study plan back. Keep everything in sync.",
+      "Import your class schedule from Google or Apple Calendar, then export your study plan to stay organized across all your devices.",
   },
 ];
 
@@ -124,7 +124,7 @@ const aiFeatures = [
     icon: SparklesIcon,
     title: "AI Practice Quizzes",
     description:
-      "Generate realistic practice tests from your course material. Multiple choice, short answer, and true/false — designed to prepare you for the real exam.",
+      "Generate realistic practice tests from your course material. Multiple choice, short answer, and true/false — designed to prepare you for the actual exam.",
   },
   {
     icon: SparklesIcon,
@@ -148,7 +148,7 @@ const aiFeatures = [
     icon: SparklesIcon,
     title: "AI Tutor Chat",
     description:
-      "Stuck on a concept? Ask the AI tutor and get clear, patient explanations tailored to your course material. It's like having a study buddy available 24/7.",
+      "Stuck on something? Ask your AI tutor for clear, step-by-step explanations tailored to your course—anytime, day or night.",
   },
 ];
 
@@ -465,7 +465,7 @@ export default function LandingPage() {
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-sm font-semibold uppercase tracking-wider text-purple-600">AI-Powered Study Tools</p>
             <h2 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Study Smarter with AI That Actually Helps
+              Study Smarter with Helpful AI Tools
             </h2>
             <p className="mt-4 text-lg text-gray-600">
               Stop re-reading your notes and hoping for the best. BlockPlan&apos;s AI generates
