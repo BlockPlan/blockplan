@@ -89,6 +89,12 @@ export default async function OnboardingPage() {
           <p className="mt-2 text-gray-500">
             Let&apos;s set up your term and courses so you can start planning.
           </p>
+          <a
+            href="/dashboard"
+            className="mt-3 inline-block text-sm text-blue-600 hover:text-blue-800 hover:underline"
+          >
+            Skip for now — go to dashboard →
+          </a>
         </div>
 
         <WizardShell

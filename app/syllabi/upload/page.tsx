@@ -35,9 +35,25 @@ export default async function SyllabiUploadPage() {
 
   const courseList: Course[] = courses ?? [];
 
-  // No courses — redirect to onboarding
+  // No courses — show helpful message instead of forcing onboarding
   if (courseList.length === 0) {
-    redirect("/onboarding");
+    return (
+      <div className="page-bg">
+        <NavHeader />
+        <main className="mx-auto max-w-2xl px-4 py-10 text-center">
+          <h2 className="text-xl font-semibold text-gray-900">No courses yet</h2>
+          <p className="mt-2 text-gray-500">Add your courses first, then you can upload syllabi.</p>
+          <div className="mt-4 flex justify-center gap-3">
+            <Link href="/onboarding" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+              Set up courses
+            </Link>
+            <Link href="/dashboard" className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+              Back to dashboard
+            </Link>
+          </div>
+        </main>
+      </div>
+    );
   }
 
   return (

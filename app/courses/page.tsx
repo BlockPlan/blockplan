@@ -31,7 +31,18 @@ export default async function CoursesPage() {
     .maybeSingle();
 
   if (!term) {
-    redirect("/onboarding");
+    return (
+      <div className="page-bg">
+        <NavHeader />
+        <main className="mx-auto max-w-3xl px-4 py-10 text-center">
+          <h2 className="text-xl font-semibold text-gray-900">No term set up yet</h2>
+          <p className="mt-2 text-gray-500">Set up your term and courses to get started.</p>
+          <a href="/onboarding" className="mt-4 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+            Set up now
+          </a>
+        </main>
+      </div>
+    );
   }
 
   // Fetch courses for this term
