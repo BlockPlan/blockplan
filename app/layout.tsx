@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
+import MetaPixel from "./_components/MetaPixel";
 import ServiceWorkerRegistrar from "./_components/ServiceWorkerRegistrar";
 import TourProvider from "./_components/TourProvider";
 import "./globals.css";
@@ -33,6 +34,7 @@ export default function RootLayout({
         <TourProvider>
           {children}
         </TourProvider>
+        <MetaPixel />
         <ServiceWorkerRegistrar />
         <Toaster position="bottom-right" />
       </body>
