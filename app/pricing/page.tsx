@@ -30,7 +30,8 @@ const tiers = [
     features: [
       "2 courses",
       "1 AI study material / month",
-      "5 lifetime illustrations",
+      "1 illustration / month",
+      "2 saved study sessions",
       "Basic calendar (Day, Week & Month)",
       "Task management & grade tracking",
       "Syllabus upload & auto-extraction",
@@ -55,8 +56,9 @@ const tiers = [
     annualPriceId: process.env.STRIPE_PRO_ANNUAL_PRICE_ID ?? null,
     features: [
       "Unlimited courses",
-      "15 AI study materials / month",
-      "15 illustrations / month",
+      "100 AI study materials / month",
+      "Unlimited illustrations",
+      "50 saved study sessions",
       "Full calendar with all views",
       "AI-powered study help (summaries, flashcards, quizzes)",
       "Smart plan generation with auto-scheduling",
@@ -83,8 +85,9 @@ const tiers = [
     annualPriceId: process.env.STRIPE_MAX_ANNUAL_PRICE_ID ?? null,
     features: [
       "Unlimited courses",
-      "50 AI study materials / month",
-      "Unlimited illustrations (5 / session)",
+      "Unlimited AI study materials",
+      "Unlimited illustrations",
+      "Unlimited saved sessions",
       "Everything in Pro, plus:",
       "Export study materials to .docx",
       "Priority AI processing (faster responses)",

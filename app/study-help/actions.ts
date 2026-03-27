@@ -9,7 +9,7 @@ import {
   imageToBase64,
 } from "@/lib/study-help/extract";
 import type { StudyHelp, RegeneratableSection, DiagramType, Diagram, Illustration } from "@/lib/study-help/types";
-import { getUserPlan, canGenerateStudyHelp, canGenerateIllustration, getMonthlyGenerationLimit, getUserGenerationsThisMonth } from "@/lib/subscription";
+import { getUserPlan, canGenerateStudyHelp, canGenerateIllustration, canSaveSession, getMonthlyGenerationLimit, getUserGenerationsThisMonth } from "@/lib/subscription";
 import { revalidatePath } from "next/cache";
 import crypto from "crypto";
 
@@ -162,9 +162,14 @@ export async function generateStudyHelpAction(
   try {
     const { data, isMock } = await generateStudyHelp(contentParts, courseName);
 
-    // Auto-save to database (non-blocking — user gets results even if save fails)
+    // Auto-save to database (check session limit first)
     let sessionId: string | undefined;
+    const sessionCheck = await canSaveSession(supabase, user.id, plan);
     try {
+      if (!sessionCheck.allowed) {
+        // Still return results, just don't save
+        return { data, isMock, courseName };
+      }
       const now = new Date();
       const dateLabel = now.toLocaleDateString("en-US", {
         month: "short",
@@ -221,6 +226,13 @@ export async function createManualSession(fields: {
 
   if (fields.flashcards.length === 0 && fields.quiz.length === 0) {
     return { error: "Add at least one flashcard or quiz question." };
+  }
+
+  // Check saved session limit
+  const plan = await getUserPlan(user.id);
+  const sessionCheck = await canSaveSession(supabase, user.id, plan);
+  if (!sessionCheck.allowed) {
+    return { error: `You've reached the limit of ${sessionCheck.limit} saved sessions on the free plan. Delete an old session or upgrade to save more.` };
   }
 
   // Build full StudyHelp object with empty sections for non-manual parts
@@ -862,6 +874,12 @@ export async function createIllustrationSession(
       mode,
       createdAt: new Date().toISOString(),
     };
+
+    // Check saved session limit before creating illustration session
+    const sessionCheck = await canSaveSession(supabase, user.id, plan);
+    if (!sessionCheck.allowed) {
+      return { error: `You've reached the limit of ${sessionCheck.limit} saved sessions on the free plan. Delete an old session or upgrade to save more.` };
+    }
 
     // Create a minimal session to hold the illustration
     const now = new Date();

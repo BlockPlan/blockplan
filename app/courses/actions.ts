@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { courseSchema } from "@/lib/validations/onboarding";
 import { revalidatePath } from "next/cache";
+import { getUserPlan, canAddCourse } from "@/lib/subscription";
 
 export type CourseActionState = {
   errors?: Record<string, string[]>;
@@ -24,6 +25,13 @@ export async function createCourse(
 
   if (!user) {
     return { error: "Not authenticated" };
+  }
+
+  // Check course limit
+  const plan = await getUserPlan(user.id);
+  const courseCheck = await canAddCourse(supabase, user.id, plan);
+  if (!courseCheck.allowed) {
+    return { error: `You've reached the limit of ${courseCheck.limit} courses on the free plan. Upgrade to add more courses.` };
   }
 
   // Get the user's active term

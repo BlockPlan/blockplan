@@ -44,9 +44,9 @@ You must be at least 13 years of age to create an account and use BlockPlan. If 
     title: "4. Subscription & Payments",
     content: `BlockPlan offers the following subscription tiers:
 
-- Free: Core planning features with limited AI generations (1 per month)
-- Pro ($4.99/month): Expanded AI features, unlimited courses, AI Tutor Chat, and 15 AI generations per month
-- Max ($7.99/month): All Pro features plus 50 AI generations per month, priority AI processing, advanced analytics, and early access to new features
+- Free: Core planning features with 1 AI generation per month, 2 courses, 1 illustration per month, 2 saved study sessions
+- Pro ($4.99/month): 100 AI generations per month, unlimited courses, unlimited illustrations, 50 saved sessions, AI Tutor Chat
+- Max ($7.99/month): All Pro features plus unlimited AI generations, unlimited illustrations, unlimited saved sessions, priority AI processing, advanced analytics, and early access to new features
 
 Payment terms:
 

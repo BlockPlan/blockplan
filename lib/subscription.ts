@@ -9,8 +9,8 @@ export type SubscriptionPlan = "free" | "pro" | "max";
 
 const GENERATION_LIMITS: Record<SubscriptionPlan, number> = {
   free: 1,
-  pro: 15,
-  max: 50,
+  pro: 100,
+  max: Infinity,
 };
 
 export function getMonthlyGenerationLimit(plan: SubscriptionPlan): number {
@@ -75,23 +75,27 @@ export async function getUserGenerationsThisMonth(
 }
 
 // ---------------------------------------------------------------------------
-// Illustration limits — free users get 5 lifetime, Pro/Max unlimited (per session cap only)
+// Illustration limits — free users get 1/month, Pro/Max unlimited (per session cap only)
 // ---------------------------------------------------------------------------
 
-const FREE_ILLUSTRATION_LIFETIME_LIMIT = 5;
+const FREE_ILLUSTRATION_MONTHLY_LIMIT = 1;
 
-export async function getUserLifetimeIllustrations(
+export async function getUserMonthlyIllustrations(
   supabase: SupabaseClient,
   userId: string
 ): Promise<number> {
-  // Count all illustrations across all sessions by summing the illustrations array lengths
+  const now = new Date();
+  const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+  // Count illustrations created this month
   const { data, error } = await supabase
     .from("study_help_sessions")
     .select("data")
-    .eq("user_id", userId);
+    .eq("user_id", userId)
+    .gte("created_at", firstOfMonth);
 
   if (error) {
-    console.error("[getUserLifetimeIllustrations] Error:", error);
+    console.error("[getUserMonthlyIllustrations] Error:", error);
     return 0;
   }
 
@@ -113,11 +117,11 @@ export async function canGenerateIllustration(
     return { allowed: true, used: 0, limit: Infinity };
   }
 
-  const used = await getUserLifetimeIllustrations(supabase, userId);
+  const used = await getUserMonthlyIllustrations(supabase, userId);
   return {
-    allowed: used < FREE_ILLUSTRATION_LIFETIME_LIMIT,
+    allowed: used < FREE_ILLUSTRATION_MONTHLY_LIMIT,
     used,
-    limit: FREE_ILLUSTRATION_LIFETIME_LIMIT,
+    limit: FREE_ILLUSTRATION_MONTHLY_LIMIT,
   };
 }
 
@@ -134,5 +138,83 @@ export async function canGenerateStudyHelp(
   }
 
   const used = await getUserGenerationsThisMonth(supabase, userId);
+  return { allowed: used < limit, used, limit };
+}
+
+// ---------------------------------------------------------------------------
+// Syllabus / course limits — free users limited to 2 courses
+// ---------------------------------------------------------------------------
+
+const COURSE_LIMITS: Record<SubscriptionPlan, number> = {
+  free: 2,
+  pro: 10,
+  max: Infinity,
+};
+
+export function getCourseLimitForPlan(plan: SubscriptionPlan): number {
+  return COURSE_LIMITS[plan];
+}
+
+export async function canAddCourse(
+  supabase: SupabaseClient,
+  userId: string,
+  plan: SubscriptionPlan
+): Promise<{ allowed: boolean; used: number; limit: number }> {
+  const limit = getCourseLimitForPlan(plan);
+
+  if (limit === Infinity) {
+    return { allowed: true, used: 0, limit };
+  }
+
+  const { count, error } = await supabase
+    .from("courses")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId);
+
+  if (error) {
+    console.error("[canAddCourse] Error:", error);
+    return { allowed: true, used: 0, limit };
+  }
+
+  const used = count ?? 0;
+  return { allowed: used < limit, used, limit };
+}
+
+// ---------------------------------------------------------------------------
+// Saved study session limits — free users limited to 2 saved sessions
+// ---------------------------------------------------------------------------
+
+const SAVED_SESSION_LIMITS: Record<SubscriptionPlan, number> = {
+  free: 2,
+  pro: 50,
+  max: Infinity,
+};
+
+export function getSavedSessionLimit(plan: SubscriptionPlan): number {
+  return SAVED_SESSION_LIMITS[plan];
+}
+
+export async function canSaveSession(
+  supabase: SupabaseClient,
+  userId: string,
+  plan: SubscriptionPlan
+): Promise<{ allowed: boolean; used: number; limit: number }> {
+  const limit = getSavedSessionLimit(plan);
+
+  if (limit === Infinity) {
+    return { allowed: true, used: 0, limit };
+  }
+
+  const { count, error } = await supabase
+    .from("study_help_sessions")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId);
+
+  if (error) {
+    console.error("[canSaveSession] Error:", error);
+    return { allowed: true, used: 0, limit };
+  }
+
+  const used = count ?? 0;
   return { allowed: used < limit, used, limit };
 }
