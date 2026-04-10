@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ScrollReveal from "./ScrollReveal";
 import LandingPricing from "./_components/LandingPricing";
+import MobileNav from "./_components/MobileNav";
 
 /* ------------------------------------------------------------------ */
 /*  Icon components (inline SVGs to avoid external dependencies)      */
@@ -241,7 +242,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-white">
       <ScrollReveal />
       {/* ---- Navigation ---- */}
-      <nav className="landing-nav" aria-label="Main navigation">
+      <nav className="landing-nav relative" aria-label="Main navigation">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <Link href="/" className="text-xl font-bold tracking-tight text-gray-900">
             <span className="text-blue-600">Block</span>Plan
@@ -260,6 +261,7 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <MobileNav />
             <Link
               href="/auth"
               className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"

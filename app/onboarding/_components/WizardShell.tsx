@@ -146,6 +146,7 @@ export default function WizardShell({
         {currentStep === 3 && (
           <StepAvailability
             initialRules={availabilityRules}
+            courses={currentCourses}
             onNext={() => setCurrentStep(4)}
           />
         )}

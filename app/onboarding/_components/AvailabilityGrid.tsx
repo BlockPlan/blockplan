@@ -114,20 +114,56 @@ function rulesToCells(rules: AvailabilityRule[]): Map<CellKey, CellState> {
   return cells;
 }
 
+// ─── Course meeting times → locked cell set ────────────────────────────────
+
+type CourseProp = {
+  id: string;
+  name: string;
+  meeting_times: unknown;
+};
+
+type MeetingTime = { day_of_week: number; start_time: string; end_time: string };
+
+function buildClassCells(
+  courses: CourseProp[]
+): Map<CellKey, string> {
+  const locked = new Map<CellKey, string>(); // key → course name
+  for (const course of courses) {
+    const times = Array.isArray(course.meeting_times)
+      ? (course.meeting_times as MeetingTime[])
+      : [];
+    for (const t of times) {
+      const [startH, startM] = t.start_time.split(":").map(Number);
+      const [endH, endM] = t.end_time.split(":").map(Number);
+      const startSlot = (startH - START_HOUR) * 2 + startM / 30;
+      const endSlot = (endH - START_HOUR) * 2 + endM / 30;
+      for (let slot = startSlot; slot < endSlot; slot++) {
+        if (slot >= 0 && slot < SLOT_COUNT) {
+          locked.set(`${t.day_of_week}-${slot}`, course.name);
+        }
+      }
+    }
+  }
+  return locked;
+}
+
 // ─── Component ───────────────────────────────────────────────────────────────
 
 type AvailabilityGridProps = {
   initialRules?: AvailabilityRule[];
+  courses?: CourseProp[];
   onChange: (rules: AvailabilityRule[]) => void;
 };
 
 export default function AvailabilityGrid({
   initialRules = [],
+  courses = [],
   onChange,
 }: AvailabilityGridProps) {
   const [cells, setCells] = useState<Map<CellKey, CellState>>(() =>
     rulesToCells(initialRules)
   );
+  const classCells = React.useMemo(() => buildClassCells(courses), [courses]);
   const [paintMode, setPaintMode] = useState<RuleType>("available");
   const [blockedLabel, setBlockedLabel] = useState("Work");
   const [customLabel, setCustomLabel] = useState("");
@@ -167,6 +203,7 @@ export default function AvailabilityGrid({
 
   function handleCellMouseDown(day: number, slot: number) {
     const key: CellKey = `${day}-${slot}`;
+    if (classCells.has(key)) return; // locked class cell
     const existing = cells.get(key);
     // If cell is already painted with the same type, dragging clears it
     dragMode.current =
@@ -179,6 +216,8 @@ export default function AvailabilityGrid({
 
   function handleCellMouseEnter(day: number, slot: number) {
     if (isDragging.current) {
+      const key: CellKey = `${day}-${slot}`;
+      if (classCells.has(key)) return; // locked class cell
       toggleCell(day, slot);
     }
   }
@@ -278,6 +317,12 @@ export default function AvailabilityGrid({
           <span className="inline-block h-3 w-3 rounded-sm bg-blue-400" />
           Preferred
         </span>
+        {classCells.size > 0 && (
+          <span className="flex items-center gap-1">
+            <span className="inline-block h-3 w-3 rounded-sm bg-purple-300" />
+            Class (locked)
+          </span>
+        )}
       </div>
 
       {/* Grid */}
@@ -320,7 +365,24 @@ export default function AvailabilityGrid({
                 {/* Day cells */}
                 {Array.from({ length: 7 }, (_, day) => {
                   const key: CellKey = `${day}-${slot}`;
+                  const courseName = classCells.get(key);
                   const state = cells.get(key);
+
+                  // Class cells take priority — locked, distinct style
+                  if (courseName) {
+                    return (
+                      <div
+                        key={`${day}-${slot}`}
+                        onMouseDown={() => handleCellMouseDown(day, slot)}
+                        onMouseEnter={() => handleCellMouseEnter(day, slot)}
+                        title={`${DAY_FULL[day]} ${slotToTime(slot)} — ${courseName} (class)`}
+                        className="border bg-purple-300 border-purple-400 cursor-not-allowed"
+                        style={{ height: "28px" }}
+                        aria-label={`${DAY_FULL[day]} ${slotToTime(slot)} class ${courseName}`}
+                      />
+                    );
+                  }
+
                   const cellColor = state
                     ? state.type === "available"
                       ? "bg-green-400 border-green-500"

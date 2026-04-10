@@ -5,8 +5,15 @@ import AvailabilityGrid from "./AvailabilityGrid";
 import { saveAvailabilityRules, type AvailabilityState } from "../actions";
 import type { AvailabilityRule } from "@/lib/validations/availability";
 
+type Course = {
+  id: string;
+  name: string;
+  meeting_times: unknown;
+};
+
 type StepAvailabilityProps = {
   initialRules: AvailabilityRule[];
+  courses: Course[];
   onNext: () => void;
 };
 
@@ -14,6 +21,7 @@ const initialState: AvailabilityState = {};
 
 export default function StepAvailability({
   initialRules,
+  courses,
   onNext,
 }: StepAvailabilityProps) {
   const [state, formAction, isPending] = useActionState(
@@ -46,7 +54,7 @@ export default function StepAvailability({
       </div>
 
       {/* Availability grid */}
-      <AvailabilityGrid initialRules={initialRules} onChange={setRules} />
+      <AvailabilityGrid initialRules={initialRules} courses={courses} onChange={setRules} />
 
       {/* Server-side errors */}
       {state.error && (
