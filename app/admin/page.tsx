@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 
 // Add additional admin emails here (lowercase)
 const ADMIN_EMAILS = [
+  "trevorperkes@gmail.com",
   "trevor@prohealthcareproducts.com",
 ];
 
