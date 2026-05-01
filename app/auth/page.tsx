@@ -110,6 +110,30 @@ function AuthForm() {
             </div>
           )}
 
+          {/* Honeypot — hidden from real users, bots fill it and get rejected */}
+          {mode === "signup" && (
+            <div
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                left: "-10000px",
+                top: "auto",
+                width: "1px",
+                height: "1px",
+                overflow: "hidden",
+              }}
+            >
+              <label htmlFor="website">Website (leave empty)</label>
+              <input
+                id="website"
+                name="website"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
+          )}
+
           <button
             type="submit"
             className="btn-primary w-full"
