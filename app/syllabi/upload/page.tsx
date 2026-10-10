@@ -35,27 +35,6 @@ export default async function SyllabiUploadPage() {
 
   const courseList: Course[] = courses ?? [];
 
-  // No courses — show helpful message instead of forcing onboarding
-  if (courseList.length === 0) {
-    return (
-      <div className="page-bg">
-        <NavHeader />
-        <main className="mx-auto max-w-2xl px-4 py-10 text-center">
-          <h2 className="text-xl font-semibold text-gray-900">No courses yet</h2>
-          <p className="mt-2 text-gray-500">Add your courses first, then you can upload syllabi.</p>
-          <div className="mt-4 flex justify-center gap-3">
-            <Link href="/onboarding" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-              Set up courses
-            </Link>
-            <Link href="/dashboard" className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-              Back to dashboard
-            </Link>
-          </div>
-        </main>
-      </div>
-    );
-  }
-
   return (
     <div className="page-bg">
       <NavHeader />
@@ -64,8 +43,9 @@ export default async function SyllabiUploadPage() {
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900">Upload Syllabus</h2>
           <p className="mt-1 text-sm text-gray-500">
-            Select a course, upload your syllabus PDF or snap a photo of it,
-            and we&apos;ll automatically extract your assignments and exams.
+            {courseList.length === 0
+              ? "Upload your syllabus PDF or a photo of it — we'll create the course and extract your assignments and exams automatically."
+              : "Select a course, upload your syllabus PDF or snap a photo of it, and we'll automatically extract your assignments and exams."}
           </p>
         </div>
 

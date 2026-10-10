@@ -44,7 +44,20 @@ export async function signup(formData: FormData) {
       );
   }
 
-  redirect("/dashboard");
+  // If Supabase did not return a session, email confirmation is required.
+  // Tell the user to check their inbox instead of silently dropping them
+  // onto a blank sign-in form.
+  if (!data?.session) {
+    redirect(
+      "/auth?message=" +
+        encodeURIComponent(
+          "Check your email to confirm your account. The link may take a minute to arrive — remember to look in Promotions or Spam."
+        )
+    );
+  }
+
+  // Auto-confirmed (e.g. confirmations disabled in Supabase) → go straight in.
+  redirect("/onboarding");
 }
 
 export async function signin(formData: FormData) {
@@ -70,6 +83,18 @@ export async function signin(formData: FormData) {
         { id: data.user.id, timezone: "America/Boise" },
         { onConflict: "id", ignoreDuplicates: true }
       );
+  }
+
+  // Send users who have never set up a term through onboarding first — the
+  // empty dashboard was confusing and most never returned after seeing it.
+  if (data?.user) {
+    const { count: termCount } = await supabase
+      .from("terms")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", data.user.id);
+    if (!termCount || termCount === 0) {
+      redirect("/onboarding");
+    }
   }
 
   redirect("/dashboard");

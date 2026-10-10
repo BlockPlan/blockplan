@@ -269,7 +269,7 @@ export default function LandingPage() {
               Sign In
             </Link>
             <Link
-              href="/auth"
+              href="/auth?mode=signup"
               className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-blue-700 hover:shadow"
             >
               Get Started
@@ -430,7 +430,7 @@ export default function LandingPage() {
 
           <div className="mt-12 text-center">
             <Link
-              href="/auth"
+              href="/auth?mode=signup"
               className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-blue-600/25 transition-all hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-600/30"
             >
               Start Planning for Free
@@ -473,7 +473,7 @@ export default function LandingPage() {
 
           <div className="mt-12 text-center">
             <Link
-              href="/auth"
+              href="/auth?mode=signup"
               className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-purple-600/25 transition-all hover:shadow-xl hover:shadow-purple-600/30"
             >
               Try AI Study Tools Free
@@ -514,7 +514,7 @@ export default function LandingPage() {
 
           <div className="mt-14 text-center">
             <Link
-              href="/auth"
+              href="/auth?mode=signup"
               className="rounded-xl bg-blue-600 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-blue-600/25 transition-all hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-600/30"
             >
               Get Started Free
@@ -624,7 +624,7 @@ export default function LandingPage() {
               </p>
               <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <Link
-                  href="/auth"
+                  href="/auth?mode=signup"
                   className="w-full rounded-xl bg-white px-8 py-3.5 text-base font-semibold text-blue-600 shadow-lg transition-all hover:bg-blue-50 hover:shadow-xl sm:w-auto"
                 >
                   Get Started Free

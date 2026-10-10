@@ -41,6 +41,7 @@ interface DashboardContentProps {
   todayTaskCount: number;
   todayTaskDoneCount: number;
   upcomingDeadlines: UpcomingDeadline[];
+  isFirstVisit?: boolean;
 }
 
 function getDeadlineLabel(dueDate: string): { text: string; color: string } {
@@ -71,6 +72,7 @@ export default function DashboardContent({
   todayTaskCount,
   todayTaskDoneCount,
   upcomingDeadlines,
+  isFirstVisit = false,
 }: DashboardContentProps) {
   const todayLabel = new Intl.DateTimeFormat(undefined, {
     weekday: "long",
@@ -91,8 +93,14 @@ export default function DashboardContent({
     <div>
       {/* Welcome card */}
       <div data-tour="dashboard-welcome" className="mb-4 rounded-xl border border-gray-200 bg-white p-6 shadow-[var(--shadow-card)]">
-        <h2 className="text-xl font-semibold tracking-tight text-gray-900">Welcome back</h2>
-        <p className="mt-1 text-sm text-gray-500">{todayLabel}</p>
+        <h2 className="text-xl font-semibold tracking-tight text-gray-900">
+          {isFirstVisit ? "Welcome to BlockPlan!" : "Welcome back"}
+        </h2>
+        <p className="mt-1 text-sm text-gray-500">
+          {isFirstVisit
+            ? "Upload a syllabus below and we'll build your plan automatically."
+            : todayLabel}
+        </p>
 
         {hasTasks && (
           <div className="mt-4">

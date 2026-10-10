@@ -163,6 +163,14 @@ export default async function DashboardPage() {
   const totalTaskCount = safeAllTasks.length;
   const totalTaskDoneCount = safeAllTasks.filter((t) => t.status === "done").length;
 
+  // Detect brand-new users (never set up a course/task) so we can greet them
+  // differently and point them straight at the syllabus upload.
+  const { count: courseCount } = await supabase
+    .from("courses")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id);
+  const isFirstVisit = (courseCount ?? 0) === 0 && totalTaskCount === 0;
+
   // Map priority tasks
   const safePriorities = (priorityTasks ?? []).map((t) => ({
     id: t.id as string,
@@ -223,6 +231,7 @@ export default async function DashboardPage() {
           todayTaskCount={totalTaskCount}
           todayTaskDoneCount={totalTaskDoneCount}
           upcomingDeadlines={upcomingDeadlines}
+          isFirstVisit={isFirstVisit}
         />
         <QuickNotes initialNotes={quickNotes} />
         <ReminderInit tasks={reminderTasks} />

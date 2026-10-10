@@ -6,10 +6,12 @@ import { signup, signin, requestPasswordReset } from "./actions";
 import { Suspense } from "react";
 
 function AuthForm() {
-  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
   const message = searchParams.get("message");
+  const initialMode =
+    searchParams.get("mode") === "signup" ? "signup" : "signin";
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">(initialMode);
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-50">

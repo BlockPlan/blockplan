@@ -21,7 +21,10 @@ export default function UploadForm({ courses }: UploadFormProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const hasExistingCourses = courses.length > 0;
+
   const [selectedCourseId, setSelectedCourseId] = useState<string>("");
+  const [newCourseName, setNewCourseName] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<UploadStatus>("idle");
   const [progress, setProgress] = useState<number>(0);
@@ -60,18 +63,39 @@ export default function UploadForm({ courses }: UploadFormProps) {
   }
 
   async function handleUpload() {
-    if (!selectedCourseId || !file || status !== "idle") return;
+    if (!file || status !== "idle") return;
+    if (hasExistingCourses && !selectedCourseId) return;
+    if (!hasExistingCourses && newCourseName.trim().length === 0) return;
 
     setStatus("uploading");
     setProgress(0);
     setErrorMessage(null);
 
     try {
+      // If the user has no courses yet, create one on the fly from the name
+      // they typed. The AI parse step will fill in the course content.
+      let courseId = selectedCourseId;
+      if (!hasExistingCourses) {
+        const quickResp = await fetch("/api/courses/quick-create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: newCourseName.trim() }),
+        });
+        if (!quickResp.ok) {
+          const data = await quickResp.json().catch(() => ({}));
+          throw new Error(
+            (data as { error?: string }).error ?? "Failed to create course"
+          );
+        }
+        const quickData = (await quickResp.json()) as { courseId: string };
+        courseId = quickData.courseId;
+      }
+
       // Step 1: Get a signed upload URL
       const urlResponse = await fetch("/api/syllabi/upload-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ courseId: selectedCourseId, filename: file.name }),
+        body: JSON.stringify({ courseId, filename: file.name }),
       });
 
       if (!urlResponse.ok) {
@@ -123,7 +147,7 @@ export default function UploadForm({ courses }: UploadFormProps) {
       const extractResponse = await fetch("/api/syllabi/extract", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ storagePath, courseId: selectedCourseId }),
+        body: JSON.stringify({ storagePath, courseId }),
       });
 
       if (extractResponse.status === 422) {
@@ -152,11 +176,11 @@ export default function UploadForm({ courses }: UploadFormProps) {
 
       // Step 4: Store parsed items in sessionStorage and navigate to review
       sessionStorage.setItem(
-        `parsedItems-${selectedCourseId}`,
+        `parsedItems-${courseId}`,
         JSON.stringify(extractData.items)
       );
 
-      router.push(`/syllabi/review?course_id=${selectedCourseId}`);
+      router.push(`/syllabi/review?course_id=${courseId}`);
     } catch (err) {
       setStatus("error");
       setErrorMessage(
@@ -175,36 +199,67 @@ export default function UploadForm({ courses }: UploadFormProps) {
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
+  const courseInputValid = hasExistingCourses
+    ? Boolean(selectedCourseId)
+    : newCourseName.trim().length > 0;
+
   const isDisabled =
-    !selectedCourseId || !file || status === "uploading" || status === "extracting";
+    !courseInputValid ||
+    !file ||
+    status === "uploading" ||
+    status === "extracting";
 
   const fileSizeMB = file ? (file.size / (1024 * 1024)).toFixed(1) : null;
 
   return (
     <div className="space-y-6">
-      {/* Course selector */}
-      <div>
-        <label
-          htmlFor="course-select"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Course
-        </label>
-        <select
-          id="course-select"
-          value={selectedCourseId}
-          onChange={(e) => setSelectedCourseId(e.target.value)}
-          disabled={status === "uploading" || status === "extracting"}
-          className="input mt-1.5 cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400"
-        >
-          <option value="">Select a course…</option>
-          {courses.map((course) => (
-            <option key={course.id} value={course.id}>
-              {course.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      {/* Course selector or quick-add input */}
+      {hasExistingCourses ? (
+        <div>
+          <label
+            htmlFor="course-select"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Course
+          </label>
+          <select
+            id="course-select"
+            value={selectedCourseId}
+            onChange={(e) => setSelectedCourseId(e.target.value)}
+            disabled={status === "uploading" || status === "extracting"}
+            className="input mt-1.5 cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400"
+          >
+            <option value="">Select a course…</option>
+            {courses.map((course) => (
+              <option key={course.id} value={course.id}>
+                {course.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : (
+        <div>
+          <label
+            htmlFor="course-name"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Course name
+          </label>
+          <input
+            id="course-name"
+            type="text"
+            value={newCourseName}
+            onChange={(e) => setNewCourseName(e.target.value)}
+            disabled={status === "uploading" || status === "extracting"}
+            placeholder="e.g. BIOL 211 — Human Anatomy"
+            maxLength={100}
+            className="input mt-1.5 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400"
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            We&apos;ll create this course for you so you can start right away.
+          </p>
+        </div>
+      )}
 
       {/* File input */}
       <div>

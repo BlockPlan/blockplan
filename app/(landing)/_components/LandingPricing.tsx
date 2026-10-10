@@ -222,7 +222,7 @@ export default function LandingPricing() {
                 </p>
 
                 <Link
-                  href="/auth"
+                  href="/auth?mode=signup"
                   className={`mt-6 block rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition-all ${
                     tier.highlighted
                       ? "bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow"
