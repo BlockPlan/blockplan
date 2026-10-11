@@ -4,9 +4,9 @@ import { redirect } from "next/navigation";
 import LandingPage from "./(landing)/page";
 
 export const metadata: Metadata = {
-  title: "BlockPlan - AI-Powered Study Planner for College Students",
+  title: "BlockPlan — Syllabus-to-Study-Plan AI for College Students",
   description:
-    "BlockPlan helps college students study smarter with AI-generated flash cards, quizzes, smart calendar scheduling, syllabus upload, and grade tracking. Start free today.",
+    "Upload your syllabus. BlockPlan builds the plan: every assignment, every exam, every study block, scheduled around your classes. AI tutoring built around your actual courses. Free to start.",
   keywords: [
     "student planner",
     "AI study tools",
@@ -20,9 +20,9 @@ export const metadata: Metadata = {
     "smart scheduling",
   ],
   openGraph: {
-    title: "BlockPlan - AI-Powered Study Planner for College Students",
+    title: "BlockPlan — Syllabus-to-Study-Plan AI for College Students",
     description:
-      "Study smarter with AI-generated flash cards, quizzes, smart scheduling, and more. Free to start.",
+      "Upload your syllabus. BlockPlan builds the plan. AI tutoring built around your actual courses, not generic ChatGPT.",
     url: "https://block-plan.com",
     siteName: "BlockPlan",
     type: "website",

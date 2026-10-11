@@ -279,6 +279,13 @@ export async function updateTaskStatus(
     return { error: "Failed to update task status." };
   }
 
+  // Update streak counter when a task is marked done. Fire and forget —
+  // a streak-update failure must not fail the user-visible status change.
+  if (newStatus === "done") {
+    const { recordTaskCompletionForStreak } = await import("@/lib/streaks");
+    await recordTaskCompletionForStreak(supabase, user.id);
+  }
+
   revalidatePath("/tasks");
   revalidatePath("/plan");
   revalidatePath("/dashboard");

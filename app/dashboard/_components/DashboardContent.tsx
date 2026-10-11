@@ -42,6 +42,8 @@ interface DashboardContentProps {
   todayTaskDoneCount: number;
   upcomingDeadlines: UpcomingDeadline[];
   isFirstVisit?: boolean;
+  currentStreak?: number;
+  longestStreak?: number;
 }
 
 function getDeadlineLabel(dueDate: string): { text: string; color: string } {
@@ -73,6 +75,8 @@ export default function DashboardContent({
   todayTaskDoneCount,
   upcomingDeadlines,
   isFirstVisit = false,
+  currentStreak = 0,
+  longestStreak = 0,
 }: DashboardContentProps) {
   const todayLabel = new Intl.DateTimeFormat(undefined, {
     weekday: "long",
@@ -93,14 +97,27 @@ export default function DashboardContent({
     <div>
       {/* Welcome card */}
       <div data-tour="dashboard-welcome" className="mb-4 rounded-xl border border-gray-200 bg-white p-6 shadow-[var(--shadow-card)]">
-        <h2 className="text-xl font-semibold tracking-tight text-gray-900">
-          {isFirstVisit ? "Welcome to BlockPlan!" : "Welcome back"}
-        </h2>
-        <p className="mt-1 text-sm text-gray-500">
-          {isFirstVisit
-            ? "Upload a syllabus below and we'll build your plan automatically."
-            : todayLabel}
-        </p>
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-xl font-semibold tracking-tight text-gray-900">
+              {isFirstVisit ? "Welcome to BlockPlan!" : "Welcome back"}
+            </h2>
+            <p className="mt-1 text-sm text-gray-500">
+              {isFirstVisit
+                ? "Upload a syllabus below and we'll build your plan automatically."
+                : todayLabel}
+            </p>
+          </div>
+          {!isFirstVisit && currentStreak > 0 && (
+            <div
+              className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 px-3 py-1.5 text-sm font-semibold text-orange-700"
+              title={longestStreak > currentStreak ? `Longest streak: ${longestStreak} days` : "This is your longest streak!"}
+            >
+              <span aria-hidden="true">🔥</span>
+              <span>{currentStreak} day{currentStreak === 1 ? "" : "s"}</span>
+            </div>
+          )}
+        </div>
 
         {hasTasks && (
           <div className="mt-4">

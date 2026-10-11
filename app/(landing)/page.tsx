@@ -291,20 +291,21 @@ export default function LandingPage() {
           <div className="mx-auto max-w-3xl text-center">
             <div className="landing-fade-in mb-6 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-700">
               <SparklesIcon className="h-4 w-4" />
-              AI-Powered Study Planning
+              Your semester, on autopilot
             </div>
 
             <h1 className="landing-fade-in landing-delay-1 text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
-              Study Smarter,{" "}
+              Turn your syllabus into a{" "}
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Not Harder
+                plan that runs itself
               </span>
             </h1>
 
             <p className="landing-fade-in landing-delay-2 mx-auto mt-6 max-w-2xl text-lg text-gray-600 sm:text-xl">
-              BlockPlan uses AI to turn your syllabus into a personalized study
-              plan with auto-generated flash cards, smart scheduling, and
-              deadline tracking. All in one place.
+              Upload your syllabus. BlockPlan pulls out every assignment, exam,
+              and due date, schedules study blocks around your classes, and
+              reminds you before deadlines sneak up. All the AI tutoring you
+              need, built around <em>your</em> actual courses.
             </p>
 
             {/* Social proof strip */}

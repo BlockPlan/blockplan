@@ -27,15 +27,17 @@ export default async function DashboardPage() {
     redirect("/auth");
   }
 
-  // Load user profile for timezone and planner settings
+  // Load user profile for timezone, planner settings, and streak counts
   const { data: profile } = await supabase
     .from("user_profiles")
-    .select("timezone, planner_settings")
+    .select("timezone, planner_settings, current_streak_days, longest_streak_days")
     .eq("id", user.id)
     .single();
 
   const timezone = (profile?.timezone as string | null) ?? "America/Boise";
   const plannerSettings = (profile?.planner_settings as typeof DEFAULT_PLANNER_SETTINGS | null) ?? DEFAULT_PLANNER_SETTINGS;
+  const currentStreak = (profile?.current_streak_days as number | null) ?? 0;
+  const longestStreak = (profile?.longest_streak_days as number | null) ?? 0;
 
   // Compute today's boundaries in user timezone
   const userTz = tz(timezone);
@@ -232,6 +234,8 @@ export default async function DashboardPage() {
           todayTaskDoneCount={totalTaskDoneCount}
           upcomingDeadlines={upcomingDeadlines}
           isFirstVisit={isFirstVisit}
+          currentStreak={currentStreak}
+          longestStreak={longestStreak}
         />
         <QuickNotes initialNotes={quickNotes} />
         <ReminderInit tasks={reminderTasks} />
