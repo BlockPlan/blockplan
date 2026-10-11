@@ -25,10 +25,20 @@ export async function getUserPlan(userId: string): Promise<SubscriptionPlan> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("user_profiles")
-    .select("subscription_plan")
+    .select("subscription_plan, trial_active_until")
     .eq("id", userId)
     .single();
-  return (data?.subscription_plan as SubscriptionPlan) ?? "free";
+
+  const basePlan = (data?.subscription_plan as SubscriptionPlan) ?? "free";
+
+  // Promo trial window — free users are treated as Pro while active.
+  // Pro/Max users are unaffected (they already have equal or better access).
+  const trialRaw = data?.trial_active_until as string | null | undefined;
+  if (basePlan === "free" && trialRaw && new Date(trialRaw) > new Date()) {
+    return "pro";
+  }
+
+  return basePlan;
 }
 
 // ---------------------------------------------------------------------------
