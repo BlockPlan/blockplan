@@ -307,6 +307,29 @@ export default function LandingPage() {
               deadline tracking. All in one place.
             </p>
 
+            {/* Social proof strip */}
+            <div className="landing-fade-in landing-delay-3 mx-auto mt-10 flex max-w-3xl flex-col items-center justify-center gap-x-6 gap-y-3 text-sm text-gray-500 sm:flex-row sm:text-base">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-gray-900">450+</span>
+                <span>courses planned</span>
+              </div>
+              <span className="hidden h-1 w-1 rounded-full bg-gray-300 sm:block" aria-hidden="true" />
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-gray-900">3,300+</span>
+                <span>assignments tracked</span>
+              </div>
+              <span className="hidden h-1 w-1 rounded-full bg-gray-300 sm:block" aria-hidden="true" />
+              <div className="flex items-center gap-2">
+                <span>Students across</span>
+                <span className="font-semibold text-gray-900">7+ countries</span>
+              </div>
+            </div>
+
+            <p className="landing-fade-in landing-delay-3 mx-auto mt-3 max-w-2xl text-xs text-gray-400">
+              Including students at Arizona State, University of Illinois, NC State,
+              UC Irvine, Portland State, and more.
+            </p>
+
           </div>
 
           {/* Hero mockup area — fades out on scroll */}
