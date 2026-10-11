@@ -156,66 +156,33 @@ export default function DashboardContent({
         )}
       </div>
 
-      {/* Getting Started — shown for brand-new users */}
+      {/* Getting Started — one primary action for brand-new users */}
       {!hasTasks && !hasBlocks && (
-        <div className="mb-4 rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-white p-6 shadow-[var(--shadow-card)]">
-          <h3 className="text-lg font-semibold text-gray-900">
-            Getting Started
+        <div className="mb-4 overflow-hidden rounded-xl border border-blue-200 bg-gradient-to-br from-blue-600 to-purple-600 p-6 shadow-[var(--shadow-card)]">
+          <h3 className="text-xl font-semibold text-white">
+            Turn your syllabus into a study plan
           </h3>
-          <p className="mt-1 mb-5 text-sm text-gray-500">
-            Set up your planner in three quick steps:
+          <p className="mt-1 text-sm text-blue-100">
+            Upload a PDF or snap a photo of your syllabus — we&apos;ll pull
+            out every assignment, exam, and due date automatically.
           </p>
-          <ol className="space-y-4">
-            <li className="flex items-start gap-3">
-              <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-600">
-                1
-              </span>
-              <div>
-                <p className="text-sm font-medium text-gray-900">Add your courses</p>
-                <p className="text-sm text-gray-500">
-                  Head to{" "}
-                  <Link href="/courses" className="font-medium text-blue-600 hover:underline">
-                    Courses
-                  </Link>{" "}
-                  and add each class you&apos;re taking this semester.
-                </p>
-              </div>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-600">
-                2
-              </span>
-              <div>
-                <p className="text-sm font-medium text-gray-900">Create tasks or upload a syllabus</p>
-                <p className="text-sm text-gray-500">
-                  Add assignments on the{" "}
-                  <Link href="/tasks" className="font-medium text-blue-600 hover:underline">
-                    Tasks
-                  </Link>{" "}
-                  page, or{" "}
-                  <Link href="/syllabi/upload" className="font-medium text-blue-600 hover:underline">
-                    Upload a Syllabus
-                  </Link>{" "}
-                  to auto-import them.
-                </p>
-              </div>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-600">
-                3
-              </span>
-              <div>
-                <p className="text-sm font-medium text-gray-900">Generate your study plan</p>
-                <p className="text-sm text-gray-500">
-                  Go to the{" "}
-                  <Link href="/plan" className="font-medium text-blue-600 hover:underline">
-                    Calendar
-                  </Link>{" "}
-                  and click &ldquo;Generate Plan&rdquo; to auto-schedule study blocks.
-                </p>
-              </div>
-            </li>
-          </ol>
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <Link
+              href="/syllabi/upload"
+              className="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-blue-700 shadow-sm transition-all hover:bg-blue-50 hover:shadow"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V3.75m0 0L7.5 8.25m4.5-4.5l4.5 4.5M3 17.25V18a2.25 2.25 0 002.25 2.25h13.5A2.25 2.25 0 0021 18v-.75" />
+              </svg>
+              Upload a syllabus
+            </Link>
+            <Link
+              href="/tasks"
+              className="text-sm font-medium text-blue-100 underline decoration-blue-300/60 underline-offset-2 hover:text-white hover:decoration-white"
+            >
+              Or add tasks manually
+            </Link>
+          </div>
         </div>
       )}
 
